@@ -1,3 +1,4 @@
 config.php
 .htaccess
 .htpasswd
+uploads/*.jpg
