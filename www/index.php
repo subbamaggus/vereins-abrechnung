@@ -13,9 +13,10 @@
 
 
 <div id="app">
+        <button @click="fetchData">Fetch Data</button>
   <ul>
     <li v-for="item in shoppingItems">
-      {{ item.name }} - {{ item.price }}
+      {{ item.name }} - {{ item.value }}
     </li>
   </ul>
 </div>
@@ -26,23 +27,24 @@ new Vue({
   data() {
     myData = {
       shoppingItems: [
-        { name: 'apple', price: '7' },
-        { name: 'orange', price: '12' }
+        { name: 'apple', value: '7' },
+        { name: 'orange', value: '12' }
       ]
     }
-    let url = 'http://localhost/v-a/www/api.php'
-
-    fetch(url)
-        .then(res => res.json())
-        .then((out) => {
-            console.log('Output: ', out);
-            myData = out;
-        })
-        .catch(err => console.error(err));
-
 
     console.log("myData: " + JSON.stringify(myData))
     return myData
+  },
+  methods: {
+    async fetchData() {
+      const response = await fetch("http://localhost/v-a/www/api.php");
+
+      var obj = {shoppingItems: "value1"};
+
+      obj.shoppingItems = await response.json();
+      this.data = obj;
+      console.log("fetch: " + JSON.stringify(obj));
+    }
   }
 });
 </script>
