@@ -7,8 +7,8 @@
     <title>Vue Standalone Demo</title>
   </head>
   <body>
-    <!--<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>-->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>-->
 
 
 
@@ -22,18 +22,18 @@
 </div>
 
 <script>
-new Vue({
-  el: "#app",
+const { createApp } = Vue;
+
+createApp({
   data() {
-    myData = {
+    return {
+      
       shoppingItems: [
         { name: 'apple', value: '7' },
         { name: 'orange', value: '12' }
       ]
-    }
-
-    console.log("myData: " + JSON.stringify(myData))
-    return myData
+    
+    };
   },
   methods: {
     async fetchData() {
@@ -46,7 +46,9 @@ new Vue({
       console.log("fetch: " + JSON.stringify(obj));
     }
   }
-});
+}).mount("#app");
+
+
 </script>
 
 
