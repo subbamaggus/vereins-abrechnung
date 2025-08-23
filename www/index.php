@@ -1,57 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vue Standalone Demo</title>
-  </head>
-  <body>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <!--<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>-->
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue Liste</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
 
-
-
-<div id="app">
-        <button @click="fetchData">Fetch Data</button>
-  <ul>
-    <li v-for="item in shoppingItems">
-      {{ item.name }} - {{ item.value }}
-    </li>
-  </ul>
-</div>
+<div id="app"></div>
 
 <script>
-const { createApp } = Vue;
+  const app = Vue.createApp({
+    setup() {
+      // Zustand für die Daten, den Ladezustand und eventuelle Fehler
+      const data = Vue.ref([]);
+      const loading = Vue.ref(true);
+      const error = Vue.ref(null);
 
-createApp({
-  data() {
-    return {
-      
-      shoppingItems: [
-        { name: 'apple', value: '7' },
-        { name: 'orange', value: '12' }
-      ]
-    
-    };
-  },
-  methods: {
-    async fetchData() {
-      const response = await fetch("http://localhost/v-a/www/api.php");
+      // Funktion zum Abrufen der Daten
+      const fetchData = async () => {
+        try {
+          // Die URL der JSON-Daten
+          const jsonUrl = 'http://localhost/v-a/www/api.php';
+          const response = await fetch(jsonUrl);
 
-      var obj = {shoppingItems: "value1"};
+          // Prüfen, ob die Antwort erfolgreich war
+          if (!response.ok) {
+            throw new Error(`HTTP Fehler! Status: ${response.status}`);
+          }
+          const result = await response.json();
+          data.value = result;
+        } catch (e) {
+          error.value = e;
+        } finally {
+          loading.value = false;
+        }
+      };
 
-      obj.shoppingItems = await response.json();
-      this.data = obj;
-      console.log("fetch: " + JSON.stringify(obj));
-    }
-  }
-}).mount("#app");
+      // Daten beim Erstellen der Komponente abrufen
+      Vue.onMounted(fetchData);
 
+      // Gib die Zustände und Daten an das Template zurück
+      return {
+        data,
+        loading,
+        error
+      };
+    },
+    template: `
+      <!-- Zeigt "Lädt..." an, solange die Daten geladen werden -->
+      <div v-if="loading">Lädt...</div>
 
+      <!-- Zeigt eine einfache Fehlermeldung an, wenn ein Fehler auftritt -->
+      <div v-else-if="error">Fehler: {{ error.message }}</div>
+
+      <!-- Zeigt die Liste an, wenn die Daten erfolgreich geladen wurden -->
+      <div v-else>
+        <h1>Posts aus JSON-URL</h1>
+        <div>
+          <div v-for="item in data" :key="item.id" style="margin-bottom: 15px; border: 1px solid #ccc; padding: 10px;">
+            {{ item.name }} : {{ item.value }}
+          </div>
+        </div>
+      </div>
+    `
+  });
+
+  app.mount('#app');
 </script>
 
-
-
-  </body>
+</body>
 </html>
