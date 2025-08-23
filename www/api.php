@@ -27,9 +27,17 @@ class DbManager {
 
 
 class SQLManager {
-    function insert_item($_connection, $_name, $_value, $_date) {
-        $sql = "INSERT INTO 1_account_item (name, value, date) VALUES (?, ?, ?)";
-        $stmt = $_connection -> prepare($sql);
+    public $connection;
+    public $_mandant;
+
+    function __construct($_connection, $_mandant) {
+        $this -> connection = $_connection;
+        $this -> mandant = $_mandant;
+    }
+
+    function insert_item($_name, $_value, $_date) {
+        $sql = "INSERT INTO " . $this -> mandant . "_account_item (name, value, date) VALUES (?, ?, ?)";
+        $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("sss", $name, $value, $date);
 
         $name = $_name;
@@ -39,9 +47,9 @@ class SQLManager {
         $stmt -> execute();
     }
 
-    function get_items($_connection) {
-        $sql = "SELECT * FROM 1_account_item WHERE name=?";
-        $stmt = $_connection -> prepare($sql);
+    function get_items() {
+        $sql = "SELECT * FROM " . $this -> mandant . "_account_item WHERE name=?";
+        $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("s", $name);
 
         $name = "zweite";
@@ -50,18 +58,23 @@ class SQLManager {
 
         $result = $stmt -> get_result();
 
-        while ($row = $result -> fetch_assoc()) {
-            print_r($row);
-        }
+        $data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        return $data;
     }
 }
 
 $myDbManager = new DbManager($db_srv, $db_name, $db_user, $db_pass);
 $myDbManager -> opendbconnection();
 
-$mySQLManager = new SQLManager();
-//$mySQLManager -> insert_item($myDbManager -> connection, "zweite", "-100", "2025-08-23");
+$mySQLManager = new SQLManager($myDbManager -> connection, 1);
 
-$mySQLManager -> get_items($myDbManager -> connection);
+//$mySQLManager -> insert_item("zweite", "-100", "2025-08-23");
+
+$mydata = $mySQLManager -> get_items();
+
+$mydata_json = json_encode($mydata);
+
+echo $mydata_json;
 
 ?>
