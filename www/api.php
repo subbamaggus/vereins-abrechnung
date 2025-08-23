@@ -25,7 +25,6 @@ class DbManager {
     }
 }
 
-
 class SQLManager {
     public $connection;
     public $_mandant;
