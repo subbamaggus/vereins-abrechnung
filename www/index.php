@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
 
 
-    
+
 <div id="app">
   <ul>
     <li v-for="item in shoppingItems">
@@ -24,12 +24,25 @@
 new Vue({
   el: "#app",
   data() {
-    return {
+    myData = {
       shoppingItems: [
         { name: 'apple', price: '7' },
         { name: 'orange', price: '12' }
       ]
     }
+    let url = 'http://localhost/v-a/www/api.php'
+
+    fetch(url)
+        .then(res => res.json())
+        .then((out) => {
+            console.log('Output: ', out);
+            myData = out;
+        })
+        .catch(err => console.error(err));
+
+
+    console.log("myData: " + JSON.stringify(myData))
+    return myData
   }
 });
 </script>
