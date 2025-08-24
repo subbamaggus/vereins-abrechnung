@@ -61,6 +61,19 @@ class SQLManager {
 
         return $data;
     }
+
+    function get_years() {
+        $sql = "SELECT distinct DATE_FORMAT(date, '%Y') as year FROM " . $this -> mandant . "_account_item";
+        $stmt = $this -> connection -> prepare($sql);
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        return $data;
+    }
 }
 
 $myDbManager = new DbManager($db_srv, $db_name, $db_user, $db_pass);
@@ -70,7 +83,13 @@ $mySQLManager = new SQLManager($myDbManager -> connection, 1);
 
 //$mySQLManager -> insert_item("zweite", "-100", "2025-08-23");
 
-$mydata = $mySQLManager -> get_items();
+if(isset($_GET['method']) and "get_years" == $_GET['method']) {
+    $mydata = $mySQLManager -> get_years();
+}
+else {
+    $mydata = $mySQLManager -> get_items();
+}
+
 
 $mydata_json = json_encode($mydata);
 

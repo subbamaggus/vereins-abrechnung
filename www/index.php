@@ -8,9 +8,54 @@
 </head>
 <body>
 
+<div id="navi"></div>
+
 <div id="app"></div>
 
 <script>
+  const navi = Vue.createApp({
+    setup() {
+      const data = Vue.ref([]);
+      const loading = Vue.ref(true);
+      const error = Vue.ref(null);
+
+      // Funktion zum Abrufen der Daten
+      const fetchData = async () => {
+        try {
+          // Die URL der JSON-Daten
+          const jsonUrl = 'http://localhost/v-a/www/api.php?method=get_years';
+          const response = await fetch(jsonUrl);
+
+          // Prüfen, ob die Antwort erfolgreich war
+          if (!response.ok) {
+            throw new Error(`HTTP Fehler! Status: ${response.status}`);
+          }
+          const result = await response.json();
+          data.value = result;
+        } catch (e) {
+          error.value = e;
+        } finally {
+          loading.value = false;
+        }
+      };
+
+      // Daten beim Erstellen der Komponente abrufen
+      Vue.onMounted(fetchData);
+
+      // Gib die Zustände und Daten an das Template zurück
+      return {
+        data,
+        loading,
+        error
+      };
+    },
+    template: `<div v-for="item in data" :key="item.id" style="margin-bottom: 15px; border: 1px solid #3656beff; padding: 10px;">
+            {{ item.year }}
+          </div>`
+
+  });
+  navi.mount('#navi');
+
   const app = Vue.createApp({
     setup() {
       // Zustand für die Daten, den Ladezustand und eventuelle Fehler
@@ -68,6 +113,8 @@
   });
 
   app.mount('#app');
+
+
 </script>
 
 </body>
