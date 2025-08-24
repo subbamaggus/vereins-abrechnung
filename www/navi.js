@@ -1,3 +1,4 @@
+
 const navi = Vue.createApp({
   setup() {
     const data = Vue.ref([]);
@@ -26,9 +27,10 @@ const navi = Vue.createApp({
     };
   },
   template: `
-    <div v-for="item in data" :key="item.id" style="margin-bottom: 15px; border: 1px solid #3656beff; padding: 10px;">
-      {{ item.year }}
-    </div>
+      <a v-for="item in data" :key="item.id" @click="console.log(item.year)" href="#">
+        {{ item.year }}&nbsp;
+      </a>
+
   `
 });
 navi.mount('#navi');

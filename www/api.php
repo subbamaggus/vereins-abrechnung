@@ -63,7 +63,7 @@ class SQLManager {
     }
 
     function get_years() {
-        $sql = "SELECT distinct DATE_FORMAT(date, '%Y') as year FROM " . $this -> mandant . "_account_item";
+        $sql = "SELECT distinct DATE_FORMAT(date, '%Y') as year FROM " . $this -> mandant . "_account_item ORDER BY 1 desc";
         $stmt = $this -> connection -> prepare($sql);
 
         $stmt -> execute();

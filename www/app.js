@@ -29,12 +29,14 @@ const app = Vue.createApp({
     <div v-if="loading">Lädt...</div>
     <div v-else-if="error">Fehler: {{ error.message }}</div>
     <div v-else>
-      <h1>Posts aus JSON-URL</h1>
-      <div>
-        <div v-for="item in data" :key="item.id" style="margin-bottom: 15px; border: 1px solid #ccc; padding: 10px;">
-          {{ item.name }} : {{ item.value }}
-        </div>
-      </div>
+      <h1>Daten</h1>
+      <table class="table table-striped">
+        <tr v-for="item in data" :key="item.id">
+          <th scope="row">{{ item.date }}</th>  
+          <td>{{ item.name }}</td> 
+          <td>{{ item.value }}</td>  
+        </tr>
+      </table>
     </div>
   `
 });
