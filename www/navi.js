@@ -1,37 +1,34 @@
-  const navi = Vue.createApp({
-    setup() {
-      const data = Vue.ref([]);
-      const loading = Vue.ref(true);
-      const error = Vue.ref(null);
-
-      const fetchData = async () => {
-        try {
-          const jsonUrl = 'api.php?method=get_years';
-          const response = await fetch(jsonUrl);
-
-          if (!response.ok) {
-            throw new Error(`HTTP Fehler! Status: ${response.status}`);
-          }
-          const result = await response.json();
-          data.value = result;
-        } catch (e) {
-          error.value = e;
-        } finally {
-          loading.value = false;
+const navi = Vue.createApp({
+  setup() {
+    const data = Vue.ref([]);
+    const loading = Vue.ref(true);
+    const error = Vue.ref(null);
+    const fetchData = async () => {
+      try {
+        const jsonUrl = 'api.php?method=get_years';
+        const response = await fetch(jsonUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP Fehler! Status: ${response.status}`);
         }
-      };
-
-      Vue.onMounted(fetchData);
-
-      return {
-        data,
-        loading,
-        error
-      };
-    },
-    template: `<div v-for="item in data" :key="item.id" style="margin-bottom: 15px; border: 1px solid #3656beff; padding: 10px;">
-            {{ item.year }}
-          </div>`
-
-  });
-  navi.mount('#navi');
+        const result = await response.json();
+        data.value = result;
+      } catch (e) {
+        error.value = e;
+      } finally {
+        loading.value = false;
+      }
+    };
+    Vue.onMounted(fetchData);
+    return {
+      data,
+      loading,
+      error
+    };
+  },
+  template: `
+    <div v-for="item in data" :key="item.id" style="margin-bottom: 15px; border: 1px solid #3656beff; padding: 10px;">
+      {{ item.year }}
+    </div>
+  `
+});
+navi.mount('#navi');

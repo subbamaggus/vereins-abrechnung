@@ -8,12 +8,11 @@
 </head>
 <body>
 
-<div id="navi"></div>
+  <div id="navi"></div>
+  <script src="navi.js"></script>
 
-<div id="app"></div>
-
-<script src="app.js"></script>
-<script src="navi.js"></script>
+  <div id="app"></div>
+  <script src="app.js"></script>
 
 </body>
 </html>
