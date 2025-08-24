@@ -19,14 +19,11 @@
       const loading = Vue.ref(true);
       const error = Vue.ref(null);
 
-      // Funktion zum Abrufen der Daten
       const fetchData = async () => {
         try {
-          // Die URL der JSON-Daten
-          const jsonUrl = 'http://localhost/v-a/www/api.php?method=get_years';
+          const jsonUrl = 'api.php?method=get_years';
           const response = await fetch(jsonUrl);
 
-          // Prüfen, ob die Antwort erfolgreich war
           if (!response.ok) {
             throw new Error(`HTTP Fehler! Status: ${response.status}`);
           }
@@ -39,10 +36,8 @@
         }
       };
 
-      // Daten beim Erstellen der Komponente abrufen
       Vue.onMounted(fetchData);
 
-      // Gib die Zustände und Daten an das Template zurück
       return {
         data,
         loading,
@@ -58,19 +53,15 @@
 
   const app = Vue.createApp({
     setup() {
-      // Zustand für die Daten, den Ladezustand und eventuelle Fehler
       const data = Vue.ref([]);
       const loading = Vue.ref(true);
       const error = Vue.ref(null);
 
-      // Funktion zum Abrufen der Daten
       const fetchData = async () => {
         try {
-          // Die URL der JSON-Daten
-          const jsonUrl = 'http://localhost/v-a/www/api.php';
+          const jsonUrl = 'api.php';
           const response = await fetch(jsonUrl);
 
-          // Prüfen, ob die Antwort erfolgreich war
           if (!response.ok) {
             throw new Error(`HTTP Fehler! Status: ${response.status}`);
           }
@@ -83,10 +74,8 @@
         }
       };
 
-      // Daten beim Erstellen der Komponente abrufen
       Vue.onMounted(fetchData);
 
-      // Gib die Zustände und Daten an das Template zurück
       return {
         data,
         loading,
