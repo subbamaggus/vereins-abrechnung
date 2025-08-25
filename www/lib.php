@@ -88,6 +88,29 @@ class SQLManager {
 
         return $data;        
     }
+
+    function register_user($email, $password) {
+        $sql = "INSERT INTO " . $this -> mandant . "_account_user (email, password) VALUES (?,?)";
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("ss", $email, $pw_hash);
+
+        $email = $email;
+        $pw_hash = password_hash($password, PASSWORD_DEFAULT);
+        
+        try {
+            $stmt -> execute();
+
+            $result = $stmt -> get_result();
+
+            $data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $data = array( "error" => "duplicate",);
+        }
+
+        return $data;        
+    }
 }
 
 ?>

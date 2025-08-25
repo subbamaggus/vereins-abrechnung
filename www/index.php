@@ -24,8 +24,21 @@ if(isset($_GET['method']) and "login" == $_GET['method']) {
   header("Location: ./");
 }
 
+if(isset($_GET['method']) and "register" == $_GET['method']) {
+  require "config.php";
+  require('lib.php');
+
+  session_start();
+
+  $myDbManager = new DbManager($db_srv, $db_name, $db_user, $db_pass);
+  $myDbManager -> opendbconnection();
+
+  $mySQLManager = new SQLManager($myDbManager -> connection, 1);
+  $mydata = $mySQLManager -> register_user($_POST['email'], $_POST['password']);
+
+}
+
 if(isset($_GET['method']) and "logout" == $_GET['method']) {
-  error_log("logging out");
   setcookie("email", "", time() - 3600);
   setcookie("privilege", "", time() - 3600);
 
@@ -46,7 +59,15 @@ $user_privilege = isset($_COOKIE['privilege']) ? $_COOKIE['privilege'] : -1;
 <body>
 
 <?php if(0 > $user_privilege) { ?>
+  LOGIN
   <form action="?method=login" method="post">
+    email: <input type="text" name="email"/><br/>
+    password: <input type="password" name="password"/><br/>
+    <button type="submit" value="Submit">Submit</button>
+  </form>
+  <hr/>
+  REGISTER
+  <form action="?method=register" method="post">
     email: <input type="text" name="email"/><br/>
     password: <input type="password" name="password"/><br/>
     <button type="submit" value="Submit">Submit</button>
