@@ -19,15 +19,20 @@ const navi = Vue.createApp({
         loading.value = false;
       }
     };
+    const handleClick = (item) => {
+      let tmp = `Sie haben auf Post "${item}" geklickt.`;
+      console.log(tmp);
+    };
     Vue.onMounted(fetchData);
     return {
       data,
       loading,
-      error
+      error,
+      handleClick
     };
   },
   template: `
-      <a v-for="item in data" :key="item.id" @click="console.log(item.year)" href="#">
+      <a v-for="item in data" :key="item.id" @click="handleClick(item.year)" href="#">
         {{ item.year }}&nbsp;
       </a>
 
