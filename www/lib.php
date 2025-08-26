@@ -125,12 +125,11 @@ class WebManager {
     
     function __construct() {
         $this -> content = <<<END
-<!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
   <link href="main.css" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vereinsabrechnung</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
