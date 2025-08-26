@@ -86,6 +86,11 @@ class SQLManager {
 
         $data = $result -> fetch_all(MYSQLI_ASSOC);
 
+        $verify = password_verify($password, $data[0]['password']);
+
+        if(false === $verify)
+            $data = false;
+
         return $data;        
     }
 
@@ -102,11 +107,12 @@ class SQLManager {
 
             $result = $stmt -> get_result();
 
-            $data = $result -> fetch_all(MYSQLI_ASSOC);
+            error_log("insert result" . json_encode($result));
 
+            $data = array( "success" => "done",);            
         } catch (Exception $e) {
             error_log($e->getMessage());
-            $data = array( "error" => "duplicate",);
+            $data = false;
         }
 
         return $data;        

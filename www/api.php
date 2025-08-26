@@ -17,7 +17,6 @@ else {
     $mydata = $mySQLManager -> get_items();
 }
 
-
 $mydata_json = json_encode($mydata);
 
 echo $mydata_json;

@@ -1,5 +1,6 @@
 <?php
 $user_privilege = -1;
+$msg_error = "";
 
 if(isset($_GET['method']) and "login" == $_GET['method']) {
   require "config.php";
@@ -13,7 +14,7 @@ if(isset($_GET['method']) and "login" == $_GET['method']) {
   $mySQLManager = new SQLManager($myDbManager -> connection, 1);
   $mydata = $mySQLManager -> validate_user($_POST['email'], $_POST['password']);
 
-  if(0 < count($mydata)) {
+  if(false <> $mydata and 0 < count($mydata)) {
 
     $user_privilege = $mydata[0]['privilege'];
 
@@ -36,6 +37,8 @@ if(isset($_GET['method']) and "register" == $_GET['method']) {
   $mySQLManager = new SQLManager($myDbManager -> connection, 1);
   $mydata = $mySQLManager -> register_user($_POST['email'], $_POST['password']);
 
+  if(false === $mydata)
+    $msg_error = "email already taken";
 }
 
 if(isset($_GET['method']) and "logout" == $_GET['method']) {
@@ -68,12 +71,13 @@ $user_privilege = isset($_COOKIE['privilege']) ? $_COOKIE['privilege'] : -1;
   <hr/>
   REGISTER
   <form action="?method=register" method="post">
-    email: <input type="text" name="email"/><br/>
+    email: <input type="text" name="email"/><?php if("" <> $msg_error) echo $msg_error; ?><br/>
     password: <input type="password" name="password"/><br/>
     <button type="submit" value="Submit">Submit</button>
   </form>
 <?php } else { ?>
-  <a href="?method=logout">logout</a>
+  <a href="?method=logout">logout</a> - 
+  <a href="?method=add_entry">add entry</a>
 <?php } ?>
 
 <?php if(0 <= $user_privilege) { ?>
