@@ -119,4 +119,85 @@ class SQLManager {
     }
 }
 
+
+class WebManager {
+    public $content = "";
+    
+    function __construct() {
+        $this -> content = <<<END
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vereinsabrechnung</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+END;
+    }
+    function body_start() {
+        $this -> content .= <<<END
+
+<body>
+END;
+    }
+    function body_end() {
+        $this -> content .= <<<END
+
+</body>
+END;
+    }
+
+    function render_page() {
+        $this -> content .= <<<END
+
+</html>
+END;
+
+        echo $this -> content;
+    }
+
+    function login_form($msg_error) {
+        $this -> content .= <<<END
+
+  LOGIN
+  <form action="?method=login" method="post">
+    email: <input type="text" name="email"/>$msg_error<br/>
+    password: <input type="password" name="password"/><br/>
+    <button type="submit" value="Submit">Submit</button>
+  </form>
+END;
+    }
+
+    function register_form($msg_error) {
+        $this -> content .= <<<END
+
+  REGISTER
+  <form action="?method=register" method="post">
+    email: <input type="text" name="email"/>$msg_error<br/>
+    password: <input type="password" name="password"/><br/>
+    <button type="submit" value="Submit">Submit</button>
+  </form>
+END;
+    }
+
+    function menu() {
+        $this -> content .= <<<END
+
+  <a href="?method=logout">logout</a> - 
+  <a href="?method=add_entry">add entry</a>    
+END;
+    }
+
+    function main() {
+        $this -> content .= <<<END
+
+  <div id="navi"></div>
+  <script src="navi.js"></script>
+
+  <div id="app"></div>
+  <script src="app.js"></script>
+END;
+    }
+}
 ?>

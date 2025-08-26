@@ -1,11 +1,12 @@
 <?php
+
+require "config.php";
+require('lib.php');
+
 $user_privilege = -1;
 $msg_error = "";
 
 if(isset($_GET['method']) and "login" == $_GET['method']) {
-  require "config.php";
-  require('lib.php');
-
   session_start();
 
   $myDbManager = new DbManager($db_srv, $db_name, $db_user, $db_pass);
@@ -20,15 +21,15 @@ if(isset($_GET['method']) and "login" == $_GET['method']) {
 
     setcookie('email', $mydata[0]['email'], time() + 3600);
     setcookie('privilege', $mydata[0]['privilege'], time() + 3600);
+
+    header("Location: ./");
+    exit();
   }
   
-  header("Location: ./");
+  $login_error = "email not registered";
 }
 
 if(isset($_GET['method']) and "register" == $_GET['method']) {
-  require "config.php";
-  require('lib.php');
-
   session_start();
 
   $myDbManager = new DbManager($db_srv, $db_name, $db_user, $db_pass);
@@ -38,7 +39,7 @@ if(isset($_GET['method']) and "register" == $_GET['method']) {
   $mydata = $mySQLManager -> register_user($_POST['email'], $_POST['password']);
 
   if(false === $mydata)
-    $msg_error = "email already taken";
+    $register_error = "email already taken";
 }
 
 if(isset($_GET['method']) and "logout" == $_GET['method']) {
@@ -50,43 +51,22 @@ if(isset($_GET['method']) and "logout" == $_GET['method']) {
 
 $user_privilege = isset($_COOKIE['privilege']) ? $_COOKIE['privilege'] : -1;
 
+$myWebManager = new WebManager();
+
+$myWebManager -> body_start();
+$logged_in = 0 <= $user_privilege;
+
+
+if(!$logged_in) { 
+  $myWebManager -> login_form($login_error);
+  $myWebManager -> register_form($register_error);
+} else {
+  $myWebManager -> menu();
+  $myWebManager -> main();
+}
+
+$myWebManager -> body_end();
+
+$myWebManager -> render_page();
+
 ?>
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vereinsabrechnung</title>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-</head>
-<body>
-
-<?php if(0 > $user_privilege) { ?>
-  LOGIN
-  <form action="?method=login" method="post">
-    email: <input type="text" name="email"/><br/>
-    password: <input type="password" name="password"/><br/>
-    <button type="submit" value="Submit">Submit</button>
-  </form>
-  <hr/>
-  REGISTER
-  <form action="?method=register" method="post">
-    email: <input type="text" name="email"/><?php if("" <> $msg_error) echo $msg_error; ?><br/>
-    password: <input type="password" name="password"/><br/>
-    <button type="submit" value="Submit">Submit</button>
-  </form>
-<?php } else { ?>
-  <a href="?method=logout">logout</a> - 
-  <a href="?method=add_entry">add entry</a>
-<?php } ?>
-
-<?php if(0 <= $user_privilege) { ?>
-  <div id="navi"></div>
-  <script src="navi.js"></script>
-
-  <div id="app"></div>
-  <script src="app.js"></script>
-<?php } ?>
-
-</body>
-</html>
