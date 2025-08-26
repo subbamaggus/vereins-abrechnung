@@ -129,6 +129,7 @@ class WebManager {
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <link href="main.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vereinsabrechnung</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
@@ -198,6 +199,53 @@ END;
   <div id="app"></div>
   <script src="app.js"></script>
 END;
+    }
+
+    function entry() {
+        $this -> content .= <<<EOD
+
+<p>
+<form enctype="multipart/form-data" id="input_entry" action="?" method="post" onsubmit="deactivateSubmitButton()">
+    <label>mehrere Eintraege
+        <input type="checkbox" id="multientry" name="multientry" value="checked" class="myinput"$multientry_checked>
+    </label>
+    <br>
+    <br>
+    <label>Betrag<br>
+        <input type="number" step="0.01" id="value" name="value" class="myinput">
+    </label>
+    <br>
+    <label>Datum<br>
+        <input type="date" id="date" name="date" class="myinput">
+    </label>
+    <br>
+    <label>Bezeichnung<br>
+        <input type="text" id="name" name="name" data-clear-btn="true" class="myinput">
+    </label>
+    <br>
+    <label>Kaffeekasse
+        <input type="checkbox" id="hidden" name="hidden" value="checked" class="myinput">
+    </label>
+    <br><br>
+    <label>Veranstaltung<br>
+        <select name="event" id="event" class="myinput">
+        $myevents
+        </select>
+    </label>
+    <br>
+    <label>Bild<br>
+        <input type="file" accept="image/*" capture id="myimage" name="myimage" class="myinput">
+    </label>
+    <br>
+    <input id="mysubmit" type="submit" value="speichern" class="myinput">
+    <input type="hidden" value="store_entry" name="mode">
+</form>
+<form enctype="multipart/form-data" id="input_entry" action="?" method="post">
+    <input type="submit" value="abbrechen" class="myinput">
+</form>
+</p>
+
+EOD;
     }
 }
 ?>
