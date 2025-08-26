@@ -16,7 +16,7 @@ function is_method($get, $method) {
     return false;  
 }
 
-if(isset($_GET['method']) and "login" == $_GET['method']) {
+if(is_method($_GET, "login")) {
     session_start();
 
     $myDbManager = new DbManager($db_srv, $db_name, $db_user, $db_pass);
@@ -39,7 +39,7 @@ if(isset($_GET['method']) and "login" == $_GET['method']) {
     $login_error = "email not registered";
 }
 
-if(isset($_GET['method']) and "register" == $_GET['method']) {
+if(is_method($_GET, "register")) {
     session_start();
 
     $myDbManager = new DbManager($db_srv, $db_name, $db_user, $db_pass);
@@ -52,7 +52,7 @@ if(isset($_GET['method']) and "register" == $_GET['method']) {
         $register_error = "email already taken";
 }
 
-if(isset($_GET['method']) and "logout" == $_GET['method']) {
+if(is_method($_GET, "logout")) {
     setcookie("email", "", time() - 3600);
     setcookie("privilege", "", time() - 3600);
 
