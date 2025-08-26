@@ -7,15 +7,6 @@ $user_privilege = -1;
 $login_error = "";
 $register_error = "";
 
-function is_method($get, $method) {
-    if(isset($get['method']) and $method == $get['method']) {
-        return true;
-    }
-    
-
-    return false;  
-}
-
 if(is_method($_GET, "login")) {
     session_start();
 

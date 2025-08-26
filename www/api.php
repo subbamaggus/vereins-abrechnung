@@ -10,10 +10,11 @@ $mySQLManager = new SQLManager($myDbManager -> connection, 1);
 
 //$mySQLManager -> insert_item("zweite", "-100", "2025-08-23");
 
-if(isset($_GET['method']) and "get_years" == $_GET['method']) {
+if(is_method($_GET, "get_years")) {
     $mydata = $mySQLManager -> get_years();
 }
-else {
+
+if(is_method($_GET, "get_items")) {
     $mydata = $mySQLManager -> get_items();
 }
 

@@ -1,3 +1,4 @@
+
 const app = Vue.createApp({
   setup() {
     const data = Vue.ref([]);
@@ -5,7 +6,7 @@ const app = Vue.createApp({
     const error = Vue.ref(null);
     const fetchData = async () => {
       try {
-        const jsonUrl = 'api.php';
+        const jsonUrl = 'api.php?method=get_items';
         const response = await fetch(jsonUrl);
         if (!response.ok) {
           throw new Error(`HTTP Fehler! Status: ${response.status}`);

@@ -1,5 +1,13 @@
 <?php
 
+function is_method($get, $method) {
+    if(isset($get['method']) and $method == $get['method']) {
+        return true;
+    }
+
+    return false;  
+}
+
 class DbManager {
     public $srv;
     public $name;
@@ -139,6 +147,7 @@ END;
         $this -> content .= <<<END
 
 <body>
+<h1> Abrechnung </h1>
 END;
     }
     function body_end() {
