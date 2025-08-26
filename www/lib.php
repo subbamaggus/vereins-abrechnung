@@ -147,7 +147,6 @@ END;
         $this -> content .= <<<END
 
 <body>
-<h1> Abrechnung </h1>
 END;
     }
     function body_end() {

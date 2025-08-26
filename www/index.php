@@ -62,14 +62,12 @@ if(!$logged_in) {
     $myWebManager -> login_form($login_error);
     $myWebManager -> register_form($register_error);
 } else {
-    $myWebManager -> menu();
-
     if(is_method($_GET, "add_entry")) {
         $myWebManager -> entry();
     } else {
+        $myWebManager -> menu();
         $myWebManager -> main();
     }
-        
 }
 
 $myWebManager -> body_end();

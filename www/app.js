@@ -30,7 +30,7 @@ const app = Vue.createApp({
     <div v-if="loading">Lädt...</div>
     <div v-else-if="error">Fehler: {{ error.message }}</div>
     <div v-else>
-      <h1>Daten</h1>
+      <h1>&Uuml;bersicht</h1>
       <table class="table table-striped">
         <tr v-for="item in data" :key="item.id">
           <th scope="row">{{ item.date }}</th>  
