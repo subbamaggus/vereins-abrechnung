@@ -1,7 +1,8 @@
 <?php
 
-require('sqlmanager.php');
-require('dbmanager.php');
+require "lib.php";
+require "sqlmanager.php";
+require "dbmanager.php";
 
 class SessionManager {
     public $error_register;
