@@ -1,8 +1,8 @@
 <?PHP
 
-	$db_srv = 'localhost';
-	$db_name = 'accounting';
-	$db_user = 'newuser';
-	$db_pass = 'password';
+	$config['db_srv'] = 'localhost';
+	$config['db_name'] = 'accounting';
+	$config['db_user'] = 'newuser';
+	$config['db_pass'] = 'password';
 
 ?>

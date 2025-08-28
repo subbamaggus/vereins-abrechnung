@@ -2,11 +2,13 @@
 
 require "config.php";
 require "lib.php";
+require "sessionmanager.php";
 
-$myDbManager = new DbManager($db_srv, $db_name, $db_user, $db_pass);
+$myDbManager = new DbManager($config['db_srv'], $config['db_name'], $config['db_user'], $config['db_pass']);
 $myDbManager -> opendbconnection();
 
-$mySQLManager = new SQLManager($myDbManager -> connection, 1);
+$mySQLManager = new SQLManager($myDbManager -> connection);
+$mySQLManager -> set_mandant(1);
 
 //$mySQLManager -> insert_item("zweite", "-100", "2025-08-23");
 

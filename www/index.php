@@ -1,66 +1,24 @@
 <?php
 
 require "config.php";
-require('lib.php');
 
-$user_privilege = -1;
+require "sessionmanager.php";
+require "webmanager.php";
+
+
 $login_error = "";
 $register_error = "";
 
-if(is_method($_GET, "login")) {
-    session_start();
-
-    $myDbManager = new DbManager($db_srv, $db_name, $db_user, $db_pass);
-    $myDbManager -> opendbconnection();
-
-    $mySQLManager = new SQLManager($myDbManager -> connection, 1);
-    $mydata = $mySQLManager -> validate_user($_POST['email'], $_POST['password']);
-
-    if(false <> $mydata and 0 < count($mydata)) {
-
-        $user_privilege = $mydata[0]['privilege'];
-      
-        setcookie('email', $mydata[0]['email'], time() + 3600);
-        setcookie('privilege', $mydata[0]['privilege'], time() + 3600);
-      
-        header("Location: ./");
-        exit();
-    } 
-
-    $login_error = "email not registered";
-}
-
-if(is_method($_GET, "register")) {
-    session_start();
-
-    $myDbManager = new DbManager($db_srv, $db_name, $db_user, $db_pass);
-    $myDbManager -> opendbconnection();
-
-    $mySQLManager = new SQLManager($myDbManager -> connection, 1);
-    $mydata = $mySQLManager -> register_user($_POST['email'], $_POST['password']);
-
-    if(false === $mydata)
-        $register_error = "email already taken";
-}
-
-if(is_method($_GET, "logout")) {
-    setcookie("email", "", time() - 3600);
-    setcookie("privilege", "", time() - 3600);
-
-    header("Location: ./");
-}
-
-$user_privilege = isset($_COOKIE['privilege']) ? $_COOKIE['privilege'] : -1;
+$mySessionManager = new SessionManager($config, $_GET, $_POST);
 
 $myWebManager = new WebManager();
 
+
 $myWebManager -> body_start();
-$logged_in = 0 <= $user_privilege;
 
-
-if(!$logged_in) { 
-    $myWebManager -> login_form($login_error);
-    $myWebManager -> register_form($register_error);
+if(!$mySessionManager -> logged_in()) { 
+    $myWebManager -> login_form($mySessionManager -> error_login);
+    $myWebManager -> register_form($mySessionManager -> error_register);
 } else {
     if(is_method($_GET, "add_entry")) {
         $myWebManager -> entry();
