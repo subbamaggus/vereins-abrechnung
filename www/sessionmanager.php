@@ -1,6 +1,6 @@
 <?php
 
-require "lib.php";
+require_once "lib.php";
 require "sqlmanager.php";
 require "dbmanager.php";
 
@@ -9,6 +9,7 @@ class SessionManager {
     public $error_login;
     public $user_privilege;
     public $mandant;
+    public $user_id;
 
     function __construct($_config, $_get, $_post) {
 
@@ -26,7 +27,8 @@ class SessionManager {
             
                 setcookie('email', $mydata[0]['email'], time() + 3600);
                 setcookie('privilege', $mydata[0]['privilege'], time() + 3600);
-                setcookie('mandant', $mydata[0]['mandant'], time() + 3600);                
+                setcookie('mandant', $mydata[0]['mandant'], time() + 3600);             
+                setcookie('user_id', $mydata[0]['id'], time() + 3600);             
             
                 header("Location: ./");
                 exit();
@@ -47,12 +49,14 @@ class SessionManager {
             setcookie("email", "", time() - 3600);
             setcookie("privilege", "", time() - 3600);
             setcookie("mandant", "", time() - 3600);
+            setcookie("user_id", "", time() - 3600);
         
             header("Location: ./");
         }
 
         $this -> user_privilege = isset($_COOKIE['privilege']) ? $_COOKIE['privilege'] : -1;
         $this -> mandant = isset($_COOKIE['mandant']) ? $_COOKIE['mandant'] : -1;
+        $this -> user_id = isset($_COOKIE['user_id']) ? $_COOKIE['user_id'] : -1;
     }
 
     function logged_in() {

@@ -1,7 +1,7 @@
 <?php
 
 require "config.php";
-require "lib.php";
+require_once "lib.php";
 require "sessionmanager.php";
 
 $myDbManager = new DbManager($config['db_srv'], $config['db_name'], $config['db_user'], $config['db_pass']);

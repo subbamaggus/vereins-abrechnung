@@ -20,8 +20,11 @@ if(!$mySessionManager -> logged_in()) {
     $myWebManager -> login_form($mySessionManager -> error_login);
     $myWebManager -> register_form($mySessionManager -> error_register);
 } else {
-    if(is_method($_GET, "add_entry")) {
-        $myWebManager -> entry();
+    if(is_method($_REQUEST, "add_entry")) {
+        $mymultientry = "";
+        if(isset($_REQUEST['multientry']))
+            $mymultientry = $_REQUEST['multientry'];
+        $myWebManager -> entry($mymultientry);
     } else {
         $myWebManager -> menu();
         $myWebManager -> main();

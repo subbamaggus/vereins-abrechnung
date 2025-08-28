@@ -13,14 +13,15 @@ class SQLManager {
         $this -> mandant = $_mandant;
     }
     
-    function insert_item($_name, $_value, $_date) {
-        $sql = "INSERT INTO " . $this -> mandant . "_account_item (name, value, date) VALUES (?, ?, ?)";
+    function insert_item($_name, $_value, $_date, $_user_id) {
+        $sql = "INSERT INTO " . $this -> mandant . "_account_item (name, value, date, user) VALUES (?, ?, ?, ?)";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("sss", $name, $value, $date);
+        $stmt -> bind_param("sssi", $name, $value, $date, $user_id);
 
         $name = $_name;
         $value = $_value;
         $date = $_date;
+        $user_id = $_user_id;
 
         $stmt -> execute();
     }

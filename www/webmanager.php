@@ -80,11 +80,17 @@ END;
 END;
     }
 
-    function entry() {
+    function entry($_multientry) {
+        $multientry_checked = "";
+        if("checked" == $_multientry) {
+           $mode = "add_entry";
+            $multientry_checked = " checked";
+        }
+
         $this -> content .= <<<EOD
 
 <p>
-<form enctype="multipart/form-data" id="input_entry" action="?" method="post" onsubmit="deactivateSubmitButton()">
+<form enctype="multipart/form-data" id="input_entry" action="store_entry.php" method="post">
     <label>mehrere Eintraege
         <input type="checkbox" id="multientry" name="multientry" value="checked" class="myinput"$multientry_checked>
     </label>
@@ -106,18 +112,12 @@ END;
         <input type="checkbox" id="hidden" name="hidden" value="checked" class="myinput">
     </label>
     <br><br>
-    <label>Veranstaltung<br>
-        <select name="event" id="event" class="myinput">
-        $myevents
-        </select>
-    </label>
-    <br>
     <label>Bild<br>
         <input type="file" accept="image/*" capture id="myimage" name="myimage" class="myinput">
     </label>
     <br>
     <input id="mysubmit" type="submit" value="speichern" class="myinput">
-    <input type="hidden" value="store_entry" name="mode">
+    <input type="hidden" value="store_entry" name="method">
 </form>
 <form enctype="multipart/form-data" id="input_entry" action="?" method="post">
     <input type="submit" value="abbrechen" class="myinput">
