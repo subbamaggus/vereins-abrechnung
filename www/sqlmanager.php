@@ -21,12 +21,15 @@ class SQLManager {
         $user_id = $this -> user_id;
 
         $stmt -> execute();
+
+        $last_id = $stmt -> insert_id;
+
+        return $last_id;
     }
 
     function get_items() {
         $sql = "SELECT * FROM " . $this -> mandant . "_account_item";
         $stmt = $this -> connection -> prepare($sql);
-        //$stmt -> bind_param("s", $name);
 
         $stmt -> execute();
 
