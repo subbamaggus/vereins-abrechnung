@@ -13,14 +13,14 @@ $mySQLManager = new SQLManager($myDbManager -> connection);
 $mySQLManager -> mandant = $mySessionManager -> mandant;
 $mySQLManager -> user_id = $mySessionManager -> user_id;
 
+$last_id = $mySQLManager -> insert_item($_POST['name'], $_POST['value'], $_POST['date']);
+
 $msg = "";
 $imageFileType = strtolower(pathinfo(basename($_FILES["myimage"]["name"]),PATHINFO_EXTENSION));
 
-$uploadOk = true;
+$has_attachement = file_exists($_FILES["myimage"]["tmp_name"]);
 
-if(true == $uploadOk) {
-    $last_id = $mySQLManager -> insert_item($_POST['name'], $_POST['value'], $_POST['date']);
-    
+if(true == $has_attachement) {
     $target_dir = "items/";
     $target_file = $target_dir . $last_id . "." . $imageFileType;
 
