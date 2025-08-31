@@ -13,6 +13,8 @@ $mySQLManager = new SQLManager($myDbManager -> connection);
 $mySQLManager -> mandant = $mySessionManager -> mandant;
 $mySQLManager -> user_id = $mySessionManager -> user_id;
 
+$data = array();
+
 if(is_method($_GET, "get_mandants")) {
     $mydata = $mySQLManager -> get_mandants();
 }
