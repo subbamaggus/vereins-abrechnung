@@ -8,9 +8,7 @@ $myDbManager = new DbManager($config['db_srv'], $config['db_name'], $config['db_
 $myDbManager -> opendbconnection();
 
 $mySQLManager = new SQLManager($myDbManager -> connection);
-$mySQLManager -> set_mandant(1);
-
-//$mySQLManager -> insert_item("zweite", "-100", "2025-08-23");
+$mySQLManager -> mandant = 1;
 
 if(is_method($_GET, "get_years")) {
     $mydata = $mySQLManager -> get_years();

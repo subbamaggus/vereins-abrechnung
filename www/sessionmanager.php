@@ -24,8 +24,6 @@ class SessionManager {
             if(false <> $mydata and 0 < count($mydata)) {
             
                 setcookie('email', $mydata[0]['email'], time() + 3600);
-
-                setcookie('mandant', -1, time() + 3600);
                 setcookie('user_id', $mydata[0]['id'], time() + 3600);             
             
                 header("Location: ./");

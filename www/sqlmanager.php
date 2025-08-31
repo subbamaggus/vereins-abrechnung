@@ -2,15 +2,12 @@
 
 class SQLManager {
     public $connection;
-    public $_mandant;
+    public $mandant;
+    public $user_id;
 
     function __construct($_connection) {
         $this -> connection = $_connection;
         
-    }
-
-    function set_mandant($_mandant) {
-        $this -> mandant = $_mandant;
     }
     
     function insert_item($_name, $_value, $_date, $_user_id) {
