@@ -7,8 +7,15 @@ require "sessionmanager.php";
 $myDbManager = new DbManager($config['db_srv'], $config['db_name'], $config['db_user'], $config['db_pass']);
 $myDbManager -> opendbconnection();
 
+$mySessionManager = new SessionManager($config, $_GET, $_POST);
+
 $mySQLManager = new SQLManager($myDbManager -> connection);
-$mySQLManager -> mandant = 1;
+$mySQLManager -> mandant = $mySessionManager -> mandant;
+$mySQLManager -> user_id = $mySessionManager -> user_id;
+
+if(is_method($_GET, "get_mandants")) {
+    $mydata = $mySQLManager -> get_mandants();
+}
 
 if(is_method($_GET, "get_years")) {
     $mydata = $mySQLManager -> get_years();

@@ -54,6 +54,9 @@ END;
         $this -> content .= <<<END
 
   LOGIN
+  <div id="mandant"></div>
+  <script src="mandant.js"></script>
+
   <form action="?method=open_mandant" method="get">
     <input type="hidden" name="method" value="open_mandant"/>
     <input type="hidden" name="mandant" value="1"/>

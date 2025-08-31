@@ -7,12 +7,13 @@ require "sessionmanager.php";
 $myDbManager = new DbManager($config['db_srv'], $config['db_name'], $config['db_user'], $config['db_pass']);
 $myDbManager -> opendbconnection();
 
-$mySQLManager = new SQLManager($myDbManager -> connection);
-$mySQLManager -> set_mandant(1);
-
 $mySessionManager = new SessionManager($config, $_GET, $_POST);
 
-$mySQLManager -> insert_item($_POST['name'], $_POST['value'], $_POST['date'], $mySessionManager -> user_id);
+$mySQLManager = new SQLManager($myDbManager -> connection);
+$mySQLManager -> mandant = $mySessionManager -> mandant;
+$mySQLManager -> user_id = $mySessionManager -> user_id;
+
+$mySQLManager -> insert_item($_POST['name'], $_POST['value'], $_POST['date']);
 
 //$msg = "";
 //$imageFileType = strtolower(pathinfo(basename($_FILES["myimage"]["name"]),PATHINFO_EXTENSION));

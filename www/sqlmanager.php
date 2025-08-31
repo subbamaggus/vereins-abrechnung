@@ -10,7 +10,7 @@ class SQLManager {
         
     }
     
-    function insert_item($_name, $_value, $_date, $_user_id) {
+    function insert_item($_name, $_value, $_date) {
         $sql = "INSERT INTO " . $this -> mandant . "_account_item (name, value, date, user) VALUES (?, ?, ?, ?)";
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("sssi", $name, $value, $date, $user_id);
@@ -18,17 +18,15 @@ class SQLManager {
         $name = $_name;
         $value = $_value;
         $date = $_date;
-        $user_id = $_user_id;
+        $user_id = $this -> user_id;
 
         $stmt -> execute();
     }
 
     function get_items() {
-        $sql = "SELECT * FROM " . $this -> mandant . "_account_item WHERE name=?";
+        $sql = "SELECT * FROM " . $this -> mandant . "_account_item";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("s", $name);
-
-        $name = "zweite";
+        //$stmt -> bind_param("s", $name);
 
         $stmt -> execute();
 
@@ -49,6 +47,23 @@ class SQLManager {
 
         $data = $result -> fetch_all(MYSQLI_ASSOC);
 
+        return $data;
+    }
+
+    function get_mandants() {
+        $sql = "SELECT mu.id as id, m.id as mid, m.name, mu.privilege FROM account_mandant m, account_mandant_user mu WHERE mu.mandant_id = m.id AND mu.user_id = ?";
+        error_log($sql);
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $user_id);
+
+        $user_id = $this -> user_id;
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $data = $result -> fetch_all(MYSQLI_ASSOC);
+        error_log(json_encode($data));
         return $data;
     }
 
