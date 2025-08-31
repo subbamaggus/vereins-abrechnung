@@ -23,11 +23,9 @@ class SessionManager {
 
             if(false <> $mydata and 0 < count($mydata)) {
             
-                $this -> user_privilege = $mydata[0]['privilege'];
-            
                 setcookie('email', $mydata[0]['email'], time() + 3600);
-                setcookie('privilege', $mydata[0]['privilege'], time() + 3600);
-                setcookie('mandant', $mydata[0]['mandant'], time() + 3600);             
+
+                setcookie('mandant', -1, time() + 3600);
                 setcookie('user_id', $mydata[0]['id'], time() + 3600);             
             
                 header("Location: ./");
@@ -35,6 +33,14 @@ class SessionManager {
             } 
         
             $this -> error_login = "email not registered";
+        }
+
+        if(is_method($_get, "open_mandant")) {
+            setcookie('mandant', $_get['mandant'], time() + 3600);
+            setcookie('privilege', 3, time() + 3600);
+
+            header("Location: ./");
+            exit();
         }
 
         if(is_method($_get, "register")) {
@@ -60,7 +66,7 @@ class SessionManager {
     }
 
     function logged_in() {
-        if(0 <= $this -> user_privilege) {
+        if(0 <= $this -> user_id) {
             return true;
         }
 

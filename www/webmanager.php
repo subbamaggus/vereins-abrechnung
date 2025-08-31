@@ -12,13 +12,14 @@ class WebManager {
   <link href="main.css" rel="stylesheet">
   <title>Vereinsabrechnung</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="./general.js"></script>
 </head>
 END;
     }
     function body_start() {
         $this -> content .= <<<END
 
-<body>
+<body onload="initform()">
 END;
     }
     function body_end() {
@@ -44,6 +45,23 @@ END;
   <form action="?method=login" method="post">
     email: <input type="text" name="email"/>$msg_error<br/>
     password: <input type="password" name="password"/><br/>
+    <button type="submit" value="Submit">Submit</button>
+  </form>
+END;
+    }
+
+    function open_mandant() {
+        $this -> content .= <<<END
+
+  LOGIN
+  <form action="?method=open_mandant" method="get">
+    <input type="hidden" name="method" value="open_mandant"/>
+    <input type="hidden" name="mandant" value="1"/>
+    1<br/>
+    <button type="submit" value="Submit">Submit</button>
+  </form>
+  <form action="?method=open_mandant" method="get">
+    <input type="hidden" name="mandant"/>create mandant<br/>
     <button type="submit" value="Submit">Submit</button>
   </form>
 END;
@@ -82,8 +100,8 @@ END;
 
     function entry($_multientry) {
         $multientry_checked = "";
-        if("checked" == $_multientry) {
-           $mode = "add_entry";
+        if("true" == $_multientry) {
+            $mode = "add_entry";
             $multientry_checked = " checked";
         }
 
@@ -92,7 +110,7 @@ END;
 <p>
 <form enctype="multipart/form-data" id="input_entry" action="store_entry.php" method="post">
     <label>mehrere Eintraege
-        <input type="checkbox" id="multientry" name="multientry" value="checked" class="myinput"$multientry_checked>
+        <input type="checkbox" id="multientry" name="multientry" value="true" class="myinput"$multientry_checked>
     </label>
     <br>
     <br>
