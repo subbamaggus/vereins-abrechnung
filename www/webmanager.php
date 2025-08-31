@@ -41,19 +41,22 @@ END;
     function login_form($msg_error) {
         $this -> content .= <<<END
 
+  <br/>
   LOGIN
-  <form action="?method=login" method="post">
-    email: <input type="text" name="email"/>$msg_error<br/>
-    password: <input type="password" name="password"/><br/>
-    <button type="submit" value="Submit">Submit</button>
-  </form>
+  <details>
+    <form action="?method=login" method="post">
+      email: <input type="text" name="email"/>$msg_error<br/>
+      password: <input type="password" name="password"/><br/>
+      <button type="submit" value="Submit">Submit</button>
+    </form>
+  </details>
 END;
     }
 
     function open_mandant() {
         $this -> content .= <<<END
 
-  LOGIN
+  Mandant
   
   <div id="mandant"></div>
   <script src="mandant.js"></script>
@@ -68,12 +71,15 @@ END;
     function register_form($msg_error) {
         $this -> content .= <<<END
 
+  <br/>
   REGISTER
-  <form action="?method=register" method="post">
-    email: <input type="text" name="email"/>$msg_error<br/>
-    password: <input type="password" name="password"/><br/>
-    <button type="submit" value="Submit">Submit</button>
-  </form>
+  <details>
+    <form action="?method=register" method="post">
+      email: <input type="text" name="email"/>$msg_error<br/>
+      password: <input type="password" name="password"/><br/>
+      <button type="submit" value="Submit">Submit</button>
+    </form>
+  </details>
 END;
     }
 
