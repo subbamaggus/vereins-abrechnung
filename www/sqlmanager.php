@@ -55,7 +55,7 @@ class SQLManager {
 
     function get_mandants() {
         $sql = "SELECT mu.id as id, m.id as mid, m.name, mu.privilege FROM account_mandant m, account_mandant_user mu WHERE mu.mandant_id = m.id AND mu.user_id = ?";
-        error_log($sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $user_id);
 
@@ -66,7 +66,7 @@ class SQLManager {
         $result = $stmt -> get_result();
 
         $data = $result -> fetch_all(MYSQLI_ASSOC);
-        error_log(json_encode($data));
+
         return $data;
     }
 

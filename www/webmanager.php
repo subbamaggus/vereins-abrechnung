@@ -42,7 +42,7 @@ END;
         $this -> content .= <<<END
 
   <br/>
-  LOGIN
+  <h1>LOGIN</h1>
   <details>
     <form action="?method=login" method="post">
       email: <input type="text" name="email"/>$msg_error<br/>
@@ -56,15 +56,17 @@ END;
     function open_mandant() {
         $this -> content .= <<<END
 
-  Mandant
+  <h1>Mandant</h1>
   
   <div id="mandant"></div>
   <script src="mandant.js"></script>
 
-  <form action="?method=create_mandant" method="get">
-    <input type="hidden" name="mandant"/>create mandant<br/>
-    <button type="submit" value="Submit">Submit</button>
-  </form>
+  <details>
+    <form action="?method=create_mandant" method="get">
+      <input type="hidden" name="mandant"/>create mandant<br/>
+      <button type="submit" value="Submit">Submit</button>
+    </form>
+  </details>
 END;
     }
 
@@ -72,7 +74,7 @@ END;
         $this -> content .= <<<END
 
   <br/>
-  REGISTER
+  <h1>REGISTER</h1>
   <details>
     <form action="?method=register" method="post">
       email: <input type="text" name="email"/>$msg_error<br/>

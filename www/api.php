@@ -13,7 +13,9 @@ $mySQLManager = new SQLManager($myDbManager -> connection);
 $mySQLManager -> mandant = $mySessionManager -> mandant;
 $mySQLManager -> user_id = $mySessionManager -> user_id;
 
-$data = array();
+if ($mySessionManager -> user_id < 0) {
+    exit();
+}
 
 if(is_method($_GET, "get_mandants")) {
     $mydata = $mySQLManager -> get_mandants();
