@@ -23,8 +23,11 @@ if(true == $uploadOk) {
     
     $target_dir = "items/";
     $target_file = $target_dir . $last_id . "." . $imageFileType;
-    
+
     move_uploaded_file($_FILES["myimage"]["tmp_name"], $target_file);
+
+    $mySQLManager -> update_image_name($last_id, $target_file);
+
     $msg .= "New record created successfully. Last inserted ID is: " . $last_id;
 }
 

@@ -27,6 +27,19 @@ class SQLManager {
         return $last_id;
     }
 
+    function update_image_name($_id, $_newname) {
+        $sql = "UPDATE " . $this -> mandant . "_account_item SET file = ? WHERE id = ?";
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("si", $filename, $id);
+
+        $filename = $_newname;
+        $id = $_id;
+
+        $stmt -> execute();
+
+        return true;        
+    }
+
     function get_items() {
         $sql = "SELECT * FROM " . $this -> mandant . "_account_item";
         $stmt = $this -> connection -> prepare($sql);

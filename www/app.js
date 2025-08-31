@@ -36,7 +36,7 @@ const app = Vue.createApp({
           <th scope="row">{{ item.date }}</th>  
           <td>{{ item.name }}</td> 
           <td>{{ item.value }}</td>
-          <td><div class="zoom"><img :src="'items/' + item.file" height="10"/></div></td>
+          <td><div class="zoom"><img :src="item.file" height="10"/></div></td>
         </tr>
       </table>
     </div>
