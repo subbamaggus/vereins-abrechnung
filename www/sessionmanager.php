@@ -23,8 +23,8 @@ class SessionManager {
 
             if(false <> $mydata and 0 < count($mydata)) {
             
-                setcookie('email', $mydata[0]['email'], time() + 3600);
-                setcookie('user_id', $mydata[0]['id'], time() + 3600);             
+                setcookie('email', $mydata[0]['email'], time() + COOKIE_TIMEOUT);
+                setcookie('user_id', $mydata[0]['id'], time() + COOKIE_TIMEOUT);
             
                 header("Location: ./");
                 exit();
@@ -34,8 +34,8 @@ class SessionManager {
         }
 
         if(is_method($_get, "open_mandant")) {
-            setcookie('mandant', $_get['mandant'], time() + 3600);
-            setcookie('privilege', 3, time() + 3600);
+            setcookie('mandant', $_get['mandant'], time() + COOKIE_TIMEOUT);
+            setcookie('privilege', USER_ADMIN, time() + COOKIE_TIMEOUT);
 
             header("Location: ./");
             exit();
@@ -50,10 +50,10 @@ class SessionManager {
         }
 
         if(is_method($_get, "logout")) {
-            setcookie("email", "", time() - 3600);
-            setcookie("privilege", "", time() - 3600);
-            setcookie("mandant", "", time() - 3600);
-            setcookie("user_id", "", time() - 3600);
+            setcookie("email", "", time() - COOKIE_TIMEOUT);
+            setcookie("privilege", "", time() - COOKIE_TIMEOUT);
+            setcookie("mandant", "", time() - COOKIE_TIMEOUT);
+            setcookie("user_id", "", time() - COOKIE_TIMEOUT);
         
             header("Location: ./");
         }

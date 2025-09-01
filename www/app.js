@@ -35,7 +35,7 @@ const app = Vue.createApp({
         <tr v-for="item in data" :key="item.id">
           <th scope="row">{{ item.date }}</th>  
           <td>{{ item.name }}</td> 
-          <td>{{ item.value }}</td>
+          <td style="text-align: right;">{{ item.value }}</td>
           <td><div class="zoom"><img :src="item.file" height="10"/></div></td>
         </tr>
       </table>

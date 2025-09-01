@@ -10,13 +10,17 @@ class SQLManager {
         
     }
     
+    function int2eur($value) {
+        return number_format($value / 100, 2, '.', '');
+    }
+
     function insert_item($_name, $_value, $_date) {
         $sql = "INSERT INTO " . $this -> mandant . "_account_item (name, value, date, user) VALUES (?, ?, ?, ?)";
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("sssi", $name, $value, $date, $user_id);
 
         $name = $_name;
-        $value = $_value;
+        $value = $_value * 100;
         $date = $_date;
         $user_id = $this -> user_id;
 
@@ -49,6 +53,11 @@ class SQLManager {
         $result = $stmt -> get_result();
 
         $data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        foreach ($data as &$single) {
+            $single['value'] = $this -> int2eur($single['value']);
+        }
+        unset($single);
 
         return $data;
     }
