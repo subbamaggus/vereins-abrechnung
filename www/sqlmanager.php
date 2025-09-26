@@ -62,6 +62,34 @@ class SQLManager {
         return $data;
     }
 
+    function get_items_with_attributes() {
+        $sql = <<<END
+            SELECT ai.*, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
+              FROM {$this -> mandant}_account_item ai
+                 , {$this -> mandant}_account_attribute_item aai
+                 , {$this -> mandant}_account_item_attribute_item aiai
+                 , {$this -> mandant}_account_attribute a 
+             WHERE ai.id = aiai.item_id 
+               AND aiai.attribute_item_id = aai.id 
+               AND aai.attribute_id = a.id
+             ORDER BY ai.id
+            END;
+        $stmt = $this -> connection -> prepare($sql);
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        foreach ($data as &$single) {
+            $single['value'] = $this -> int2eur($single['value']);
+        }
+        unset($single);
+
+        return $data;
+    }
+
     function get_years() {
         $sql = "SELECT distinct DATE_FORMAT(date, '%Y') as year FROM " . $this -> mandant . "_account_item ORDER BY 1 desc";
         $stmt = $this -> connection -> prepare($sql);

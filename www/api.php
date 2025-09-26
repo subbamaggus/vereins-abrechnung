@@ -29,6 +29,10 @@ if(is_method($_GET, "get_items")) {
     $mydata = $mySQLManager -> get_items();
 }
 
+if(is_method($_GET, "get_items_with_attributes")) {
+    $mydata = $mySQLManager -> get_items_with_attributes();
+}
+
 $mydata_json = json_encode($mydata);
 
 echo $mydata_json;
