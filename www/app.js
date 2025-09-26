@@ -6,7 +6,7 @@ const app = Vue.createApp({
     const error = Vue.ref(null);
     const fetchData = async () => {
       try {
-        const jsonUrl = 'api.php?method=get_items';
+        const jsonUrl = 'api.php?method=get_items_with_attributes';
         const response = await fetch(jsonUrl);
         if (!response.ok) {
           throw new Error(`HTTP Fehler! Status: ${response.status}`);
@@ -36,6 +36,9 @@ const app = Vue.createApp({
           <th scope="row">{{ item.date }}</th>  
           <td>{{ item.name }}</td> 
           <td style="text-align: right;">{{ item.value }}</td>
+          <td v-for="sub in item.attribute" :key="sub.id">
+          {{ sub.aai_name }}
+          </td>
           <td><div class="zoom"><img :src="item.file" height="10"/></div></td>
         </tr>
       </table>
