@@ -14,6 +14,7 @@ $mySQLManager -> mandant = $mySessionManager -> mandant;
 $mySQLManager -> user_id = $mySessionManager -> user_id;
 
 if ($mySessionManager -> user_id < 0) {
+    echo "no session";
     exit();
 }
 

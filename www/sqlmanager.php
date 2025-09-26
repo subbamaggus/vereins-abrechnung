@@ -63,8 +63,10 @@ class SQLManager {
     }
 
     function get_items_with_attributes() {
+        $data = $this -> get_items();
+
         $sql = <<<END
-            SELECT ai.*, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
+            SELECT ai.id, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
               FROM {$this -> mandant}_account_item ai
                  , {$this -> mandant}_account_attribute_item aai
                  , {$this -> mandant}_account_item_attribute_item aiai
@@ -80,10 +82,14 @@ class SQLManager {
 
         $result = $stmt -> get_result();
 
-        $data = $result -> fetch_all(MYSQLI_ASSOC);
+        $data_with_attributes = $result -> fetch_all(MYSQLI_ASSOC);
 
         foreach ($data as &$single) {
-            $single['value'] = $this -> int2eur($single['value']);
+            foreach($data_with_attributes as $attribute) {
+                if($attribute['id'] == $single['id']) {
+                    $single['attribute'][] = $attribute;
+                }
+            }
         }
         unset($single);
 
