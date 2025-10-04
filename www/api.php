@@ -31,7 +31,16 @@ if(is_method($_GET, "get_items")) {
 }
 
 if(is_method($_GET, "get_items_with_attributes")) {
-    $mydata = $mySQLManager -> get_items_with_attributes();
+    error_log("test");
+
+    if(isset($_GET['attributes'])) {
+        error_log("test1");
+        $mydata = $mySQLManager -> get_items_with_attributes2($_GET['attributes']);
+    }
+    else {
+        error_log("test2");
+        $mydata = $mySQLManager -> get_items_with_attributes();
+    }    
 }
 
 $mydata_json = json_encode($mydata);
