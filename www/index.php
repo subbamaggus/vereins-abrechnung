@@ -1,42 +1,31 @@
-<?php
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+  <link href="main.css" rel="stylesheet">
+  <title>Vereinsabrechnung</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body>
+  <div id="navi"></div>
+  <script src="navi.js"></script>
 
-require "config.php";
+  <div id="app"></div>
+  <script src="app.js"></script>
 
-require "sessionmanager.php";
-require "webmanager.php";
-
-
-$login_error = "";
-$register_error = "";
-
-$mySessionManager = new SessionManager($config, $_GET, $_POST);
-
-$myWebManager = new WebManager();
-
-
-$myWebManager -> body_start();
-
-if(!$mySessionManager -> logged_in()) { 
-    $myWebManager -> login_form($mySessionManager -> error_login);
-    $myWebManager -> register_form($mySessionManager -> error_register);
-} else {
-    if(0 > $mySessionManager -> mandant) {
-        $myWebManager -> open_mandant();
-    } else {
-        if(is_method($_REQUEST, "add_entry")) {
-            $mymultientry = "";
-            if(isset($_REQUEST['multientry']))
-                $mymultientry = $_REQUEST['multientry'];
-            $myWebManager -> entry($mymultientry);
-        } else {
-            $myWebManager -> menu();
-            $myWebManager -> main();
-        }
-    }
-}
-
-$myWebManager -> body_end();
-
-$myWebManager -> render_page();
-
-?>
+  this is the bottom
+  <br/>
+  this is the bottom
+  <br/>
+  this is the bottom
+  <br/>
+  this is the bottom
+  <br/>
+  this is the bottom
+  <br/>
+  this is the bottom
+  <br/>
+  
+</body>
+</html>

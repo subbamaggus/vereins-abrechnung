@@ -4,47 +4,110 @@ require "config.php";
 require_once "lib.php";
 require "sessionmanager.php";
 
-$myDbManager = new DbManager($config['db_srv'], $config['db_name'], $config['db_user'], $config['db_pass']);
-$myDbManager -> opendbconnection();
+header('Content-Type: application/json');
 
-$mySessionManager = new SessionManager($config, $_GET, $_POST);
+try {
+    $myDbManager = new DbManager($config['db_srv'], $config['db_name'], $config['db_user'], $config['db_pass']);
+    $myDbManager->opendbconnection();
 
-$mySQLManager = new SQLManager($myDbManager -> connection);
-$mySQLManager -> mandant = $mySessionManager -> mandant;
-$mySQLManager -> user_id = $mySessionManager -> user_id;
+    $mySQLManager = new SQLManager($myDbManager->connection);
 
-if ($mySessionManager -> user_id < 0) {
-    echo "no session";
-    exit();
-}
+    if (is_method($_GET, "login")) {
+        $mydata = $mySQLManager->validate_user($_POST['email'], $_POST['password']);
 
-if(is_method($_GET, "get_mandants")) {
-    $mydata = $mySQLManager -> get_mandants();
-}
-
-if(is_method($_GET, "get_years")) {
-    $mydata = $mySQLManager -> get_years();
-}
-
-if(is_method($_GET, "get_items")) {
-    $mydata = $mySQLManager -> get_items();
-}
-
-if(is_method($_GET, "get_items_with_attributes")) {
-    error_log("test");
-
-    if(isset($_GET['attributes'])) {
-        error_log("test1");
-        $mydata = $mySQLManager -> get_items_with_attributes2($_GET['attributes']);
+        if (false <> $mydata and 0 < count($mydata)) {
+            setcookie('email', $mydata[0]['email'], time() + COOKIE_TIMEOUT);
+            setcookie('user_id', $mydata[0]['id'], time() + COOKIE_TIMEOUT);
+            echo json_encode(['success' => true]);
+            exit();
+        } else {
+            http_response_code(401);
+            echo json_encode(['error' => 'Invalid credentials']);
+            exit();
+        }
     }
-    else {
-        error_log("test2");
-        $mydata = $mySQLManager -> get_items_with_attributes();
-    }    
+
+    if (is_method($_GET, "register")) {
+        $mydata = $mySQLManager->register_user($_POST['email'], $_POST['password']);
+
+        if (false === $mydata) {
+            http_response_code(409);
+            echo json_encode(['error' => 'Email already taken']);
+            exit();
+        } else {
+            echo json_encode(['success' => true]);
+            exit();
+        }
+    }
+
+    if (is_method($_GET, "logout")) {
+        setcookie("email", "", time() - COOKIE_TIMEOUT);
+        setcookie("privilege", "", time() - COOKIE_TIMEOUT);
+        setcookie("mandant", "", time() - COOKIE_TIMEOUT);
+        setcookie("user_id", "", time() - COOKIE_TIMEOUT);
+        echo json_encode(['success' => true]);
+        exit();
+    }
+
+    $mySessionManager = new SessionManager($config, $_GET, $_POST);
+
+    if ($mySessionManager->user_id < 0) {
+        http_response_code(401);
+        echo json_encode(['error' => 'No session']);
+        exit();
+    }
+
+    $mySQLManager->mandant = $mySessionManager->mandant;
+    $mySQLManager->user_id = $mySessionManager->user_id;
+
+    $mydata = null;
+
+    if (is_method($_GET, "get_mandants")) {
+        $mydata = $mySQLManager->get_mandants();
+    } elseif (is_method($_GET, "get_years")) {
+        $mydata = $mySQLManager->get_years();
+    } elseif (is_method($_GET, "get_items")) {
+        $mydata = $mySQLManager->get_items();
+    } elseif (is_method($_GET, "get_items_with_attributes")) {
+        if (isset($_GET['attributes'])) {
+            $mydata = $mySQLManager->get_items_with_attributes2($_GET['attributes']);
+        } else {
+            $mydata = $mySQLManager->get_items_with_attributes();
+        }
+    } elseif (is_method($_GET, "store_entry")) {
+        $last_id = $mySQLManager->insert_item($_POST['name'], $_POST['value'], $_POST['date']);
+
+        if (isset($_FILES["myimage"]) && file_exists($_FILES["myimage"]["tmp_name"])) {
+            $imageFileType = strtolower(pathinfo(basename($_FILES["myimage"]["name"]), PATHINFO_EXTENSION));
+            $target_dir = "items/";
+            $target_file = $target_dir . $last_id . "." . $imageFileType;
+
+            if (move_uploaded_file($_FILES["myimage"]["tmp_name"], $target_file)) {
+                $mySQLManager->update_image_name($last_id, $target_file);
+            }
+        }
+
+        $mydata = ['success' => true, 'last_id' => $last_id];
+    } elseif (is_method($_GET, "set_mandant")) {
+        if (isset($_POST['mandant'])) {
+            setcookie('mandant', $_POST['mandant'], time() + COOKIE_TIMEOUT);
+            setcookie('privilege', USER_ADMIN, time() + COOKIE_TIMEOUT);
+            $mydata = ['success' => true];
+        } else {
+            http_response_code(400);
+            echo json_encode(['error' => 'Mandant ID not provided']);
+            exit();
+        }
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid method']);
+        exit();
+    }
+
+    echo json_encode($mydata);
+
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['error' => $e->getMessage()]);
 }
-
-$mydata_json = json_encode($mydata);
-
-echo $mydata_json;
-
 ?>

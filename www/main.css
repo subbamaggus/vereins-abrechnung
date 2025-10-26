@@ -41,3 +41,7 @@ th{
     margin-left:145px;
     margin-top:145px;
 }
+
+table, th, td {
+  border: 1px solid;
+}

@@ -66,7 +66,7 @@ class SQLManager {
         $data = $this -> get_items();
 
         $sql = <<<END
-            SELECT ai.id, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
+            SELECT ai.id, ai.file, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
               FROM {$this -> mandant}_account_item ai
                  , {$this -> mandant}_account_attribute_item aai
                  , {$this -> mandant}_account_item_attribute_item aiai
@@ -100,7 +100,7 @@ class SQLManager {
         $data = $this -> get_items();
 
         $sql = <<<END
-            SELECT ai.id, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
+            SELECT ai.id, ai.file, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
               FROM {$this -> mandant}_account_item ai
                  , {$this -> mandant}_account_attribute_item aai
                  , {$this -> mandant}_account_item_attribute_item aiai
