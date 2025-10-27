@@ -19,6 +19,8 @@ const app = Vue.createApp({
       data: [],
       attributes: [],
       mandanten: [],
+      selectedItems: [],
+      selectedAttribute: null,
       loading: true,
       error: null,
     };
@@ -204,6 +206,57 @@ const app = Vue.createApp({
             this.error = e;
         }
     },
+    async setAttributesForSelected() {
+        if (!this.selectedItems.length || !this.selectedAttribute) {
+            return;
+        }
+        try {
+            const response = await fetch('api.php?method=set_attributes_bulk', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    item_ids: this.selectedItems,
+                    attribute_id: this.selectedAttribute
+                }),
+            });
+            if (!response.ok) {
+                throw new Error('Could not set attributes in bulk');
+            }
+            const result = await response.json();
+            if (result.success) {
+                // Update local data
+                this.selectedItems.forEach(itemId => {
+                    const item = this.data.find(i => i.id === itemId);
+                    if (item) {
+                        if (!item.attribute) {
+                            item.attribute = [];
+                        }
+                        // Avoid adding duplicates
+                        if (!item.attribute.some(attr => attr.aai_id === this.selectedAttribute)) {
+                            let attribute_item_to_add = null;
+                            for (const group of this.attributes) {
+                                const found = group.attribute.find(attr => attr.id === this.selectedAttribute);
+                                if (found) {
+                                    attribute_item_to_add = found;
+                                    break;
+                                }
+                            }
+                            if (attribute_item_to_add) {
+                                item.attribute.push({ aai_id: this.selectedAttribute, aai_name: attribute_item_to_add.name });
+                            }
+                        }
+                    }
+                });
+                // Reset selection
+                this.selectedItems = [];
+                this.selectedAttribute = null;
+            }
+        } catch (e) {
+            this.error = e;
+        }
+    },
     async resetAttributes(itemId, attributeId) {
         try {
             const response = await fetch('api.php?method=reset_attribute', {
@@ -342,9 +395,21 @@ const app = Vue.createApp({
             </form>
         </div>
         <h1>&Uuml;bersicht</h1>
+        <div v-if="attributes.length" style="margin-bottom: 10px;">
+            <select v-model="selectedAttribute">
+                <option :value="null" disabled>Select an attribute to apply</option>
+                <template v-for="group in attributes">
+                    <optgroup :label="group.name">
+                        <option v-for="attr in group.attribute" :value="attr.id">{{ attr.name }}</option>
+                    </optgroup>
+                </template>
+            </select>
+            <button @click="setAttributesForSelected" :disabled="!selectedItems.length || !selectedAttribute">Apply to selected</button>
+        </div>
         <table class="table table-striped">
           <thead>
             <tr>
+              <th></th>
               <th>Datum</th>
               <th>Bezeichnung</th>
               <th>Betrag</th>
@@ -354,6 +419,7 @@ const app = Vue.createApp({
           </thead>
           <tbody>
             <tr v-for="item in data" :key="item.id">
+              <td><input type="checkbox" :value="item.id" v-model="selectedItems"></td>
               <th scope="row">{{ item.date }}</th>  
               <td>{{ item.name }}</td> 
               <td style="text-align: right;">{{ item.value }}</td>
