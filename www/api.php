@@ -107,6 +107,9 @@ try {
     } elseif (is_method($_GET, "set_attributes_bulk")) {
         $post_data = json_decode(file_get_contents('php://input'), true);
         $mydata = $mySQLManager->set_attributes_bulk($post_data['item_ids'], $post_data['attribute_id']);
+    } elseif (is_method($_GET, "reset_attributes_bulk")) {
+        $post_data = json_decode(file_get_contents('php://input'), true);
+        $mydata = $mySQLManager->reset_attributes_bulk($post_data['item_ids'], $post_data['attribute_id']);
     } else {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid method']);

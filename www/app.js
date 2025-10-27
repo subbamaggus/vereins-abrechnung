@@ -21,6 +21,7 @@ const app = Vue.createApp({
       mandanten: [],
       selectedItems: [],
       selectedAttribute: null,
+      bulkAction: 'add',
       loading: true,
       error: null,
     };
@@ -206,12 +207,16 @@ const app = Vue.createApp({
             this.error = e;
         }
     },
-    async setAttributesForSelected() {
+    async applyBulkAction() {
         if (!this.selectedItems.length || !this.selectedAttribute) {
             return;
         }
+
+        const isAddAction = this.bulkAction === 'add';
+        const endpoint = isAddAction ? 'set_attributes_bulk' : 'reset_attributes_bulk';
+
         try {
-            const response = await fetch('api.php?method=set_attributes_bulk', {
+            const response = await fetch(`api.php?method=${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -221,30 +226,40 @@ const app = Vue.createApp({
                     attribute_id: this.selectedAttribute
                 }),
             });
+
             if (!response.ok) {
-                throw new Error('Could not set attributes in bulk');
+                throw new Error(`Could not ${this.bulkAction} attributes in bulk`);
             }
+
             const result = await response.json();
             if (result.success) {
                 // Update local data
                 this.selectedItems.forEach(itemId => {
                     const item = this.data.find(i => i.id === itemId);
                     if (item) {
-                        if (!item.attribute) {
-                            item.attribute = [];
-                        }
-                        // Avoid adding duplicates
-                        if (!item.attribute.some(attr => attr.aai_id === this.selectedAttribute)) {
-                            let attribute_item_to_add = null;
-                            for (const group of this.attributes) {
-                                const found = group.attribute.find(attr => attr.id === this.selectedAttribute);
-                                if (found) {
-                                    attribute_item_to_add = found;
-                                    break;
+                        if (isAddAction) {
+                            if (!item.attribute) {
+                                item.attribute = [];
+                            }
+                            if (!item.attribute.some(attr => attr.aai_id === this.selectedAttribute)) {
+                                let attribute_item_to_add = null;
+                                for (const group of this.attributes) {
+                                    const found = group.attribute.find(attr => attr.id === this.selectedAttribute);
+                                    if (found) {
+                                        attribute_item_to_add = found;
+                                        break;
+                                    }
+                                }
+                                if (attribute_item_to_add) {
+                                    item.attribute.push({ aai_id: this.selectedAttribute, aai_name: attribute_item_to_add.name });
                                 }
                             }
-                            if (attribute_item_to_add) {
-                                item.attribute.push({ aai_id: this.selectedAttribute, aai_name: attribute_item_to_add.name });
+                        } else { // Remove action
+                            if (item.attribute) {
+                                const index = item.attribute.findIndex(attr => attr.aai_id === this.selectedAttribute);
+                                if (index > -1) {
+                                    item.attribute.splice(index, 1);
+                                }
                             }
                         }
                     }
@@ -396,15 +411,17 @@ const app = Vue.createApp({
         </div>
         <h1>&Uuml;bersicht</h1>
         <div v-if="attributes.length" style="margin-bottom: 10px;">
+            <label><input type="radio" value="add" v-model="bulkAction"> Add</label>
+            <label><input type="radio" value="remove" v-model="bulkAction"> Remove</label>
             <select v-model="selectedAttribute">
-                <option :value="null" disabled>Select an attribute to apply</option>
+                <option :value="null" disabled>Select an attribute</option>
                 <template v-for="group in attributes">
                     <optgroup :label="group.name">
                         <option v-for="attr in group.attribute" :value="attr.id">{{ attr.name }}</option>
                     </optgroup>
                 </template>
             </select>
-            <button @click="setAttributesForSelected" :disabled="!selectedItems.length || !selectedAttribute">Apply to selected</button>
+            <button @click="applyBulkAction" :disabled="!selectedItems.length || !selectedAttribute">Apply to selected</button>
         </div>
         <table class="table table-striped">
           <thead>

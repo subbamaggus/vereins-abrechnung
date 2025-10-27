@@ -281,6 +281,25 @@ class SQLManager {
         }
     }
 
+    function reset_attributes_bulk($item_ids, $attribute_id) {
+        $sql = "DELETE FROM " . $this -> mandant . "_account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ?";
+        
+        $this -> connection -> begin_transaction();
+        try {
+            $stmt = $this -> connection -> prepare($sql);
+            foreach ($item_ids as $item_id) {
+                $stmt -> bind_param("ii", $item_id, $attribute_id);
+                $stmt -> execute();
+            }
+            $stmt -> close();
+            $this -> connection -> commit();
+            return ['success' => true];
+        } catch (Exception $e) {
+            $this -> connection -> rollback();
+            throw $e;
+        }
+    }
+
 }
 
 ?>
