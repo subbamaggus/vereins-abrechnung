@@ -209,6 +209,38 @@ class SQLManager {
 
         return $data;        
     }
+
+    function get_attributes() {
+        $sql = "SELECT * FROM " . $this -> mandant . "_account_attribute";
+        $stmt = $this -> connection -> prepare($sql);
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $attributes = $result -> fetch_all(MYSQLI_ASSOC);
+
+        $sql = "SELECT * FROM " . $this -> mandant . "_account_attribute_item";
+        $stmt = $this -> connection -> prepare($sql);
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $attribute_items = $result -> fetch_all(MYSQLI_ASSOC);
+        
+        foreach ($attributes as &$single) {
+            foreach($attribute_items as $attribute) {
+                if($attribute['attribute_id'] == $single['id']) {
+                    $single['attribute'][] = $attribute;
+                }
+            }
+        }
+        unset($single);
+
+        return $attributes;
+    }
+
 }
 
 ?>

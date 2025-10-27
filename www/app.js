@@ -17,6 +17,7 @@ const app = Vue.createApp({
         myimage: null,
       },
       data: [],
+      attributes: [],
       mandanten: [],
       loading: true,
       error: null,
@@ -148,7 +149,19 @@ const app = Vue.createApp({
             if (result.success) {
                 this.mandantSet = true;
                 this.fetchData();
+                this.fetchAttributes();
             }
+        } catch (e) {
+            this.error = e;
+        }
+    },
+    async fetchAttributes() {
+        try {
+            const response = await fetch('api.php?method=get_attributes');
+            if (!response.ok) {
+                throw new Error('Could not fetch attributes');
+            }
+            this.attributes = await response.json();
         } catch (e) {
             this.error = e;
         }
@@ -200,6 +213,7 @@ const app = Vue.createApp({
   },
   mounted() {
     this.fetchData();
+    this.fetchAttributes();
   },
   template: `
     <div v-if="!loggedIn">
@@ -264,15 +278,33 @@ const app = Vue.createApp({
         </div>
         <h1>&Uuml;bersicht</h1>
         <table class="table table-striped">
-          <tr v-for="item in data" :key="item.id">
-            <th scope="row">{{ item.date }}</th>  
-            <td>{{ item.name }}</td> 
-            <td style="text-align: right;">{{ item.value }}</td>
-            <td v-for="sub in item.attribute" :key="sub.id">
-            {{ sub.aai_name }}
-            </td>
-            <td v-if="item.file"><div class="zoom"><img :src="item.file" height="10"/></div></td>
-          </tr>
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Bezeichnung</th>
+              <th>Betrag</th>
+              <th v-for="attribute in attributes" :key="attribute.id">{{ attribute.name }}</th>
+              <th>Bild</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in data" :key="item.id">
+              <th scope="row">{{ item.date }}</th>  
+              <td>{{ item.name }}</td> 
+              <td style="text-align: right;">{{ item.value }}</td>
+              <td v-for="attribute in attributes" :key="attribute.id">
+                <span v-for="attribute_item in attribute.attribute" :key="attribute_item.id">
+                  {{ attribute_item.name }}
+                </span>
+                -
+                </span>
+                <span v-for="sub in item.attribute" :key="sub.id">
+                  <span v-if="sub.a_id == attribute.id"><b>{{ sub.aai_name }}</b></span>
+                </span>
+              </td>
+              <td v-if="item.file"><div class="zoom"><img :src="item.file" height="10"/></div></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>

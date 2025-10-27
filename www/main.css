@@ -38,8 +38,8 @@ th{
     -ms-transform: scale(30); /* IE 9 */
     -webkit-transform: scale(30); /* Safari 3-8 */
     transform: scale(30);
-    margin-left:145px;
-    margin-top:145px;
+    margin-left:120px;
+    margin-top:1px;
 }
 
 table, th, td {
