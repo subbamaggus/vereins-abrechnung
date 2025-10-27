@@ -100,6 +100,10 @@ try {
             echo json_encode(['error' => 'Mandant ID not provided']);
             exit();
         }
+    } elseif (is_method($_GET, "set_attribute")) {
+        $mydata = $mySQLManager->set_attribute($_POST['item_id'], $_POST['attribute_id']);
+    } elseif (is_method($_GET, "reset_attribute")) {
+        $mydata = $mySQLManager->reset_attribute($_POST['item_id'], $_POST['attribute_id']);
     } else {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid method']);

@@ -166,6 +166,46 @@ const app = Vue.createApp({
             this.error = e;
         }
     },
+    async setAttributes(itemId, attributeId) {
+        try {
+            const response = await fetch('api.php?method=set_attribute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `item_id=${itemId}&attribute_id=${attributeId}`,
+            });
+            if (!response.ok) {
+                throw new Error('Could not set attribute');
+            }
+            const result = await response.json();
+            if (result.success) {
+                this.fetchData(); // Refresh data to show the change
+            }
+        } catch (e) {
+            this.error = e;
+        }
+    },
+    async resetAttributes(itemId, attributeId) {
+        try {
+            const response = await fetch('api.php?method=reset_attribute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `item_id=${itemId}&attribute_id=${attributeId}`,
+            });
+            if (!response.ok) {
+                throw new Error('Could not reset attribute');
+            }
+            const result = await response.json();
+            if (result.success) {
+                this.fetchData(); // Refresh data to show the change
+            }
+        } catch (e) {
+            this.error = e;
+        }
+    },
     async fetchData() {
       this.loading = true;
       this.error = null;

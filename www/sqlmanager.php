@@ -241,6 +241,26 @@ class SQLManager {
         return $attributes;
     }
 
+    function set_attribute($item_id, $attribute_id) {
+        $sql = "INSERT INTO " . $this -> mandant . "_account_item_attribute_item (item_id, attribute_item_id) VALUES (?, ?)";
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("ii", $item_id, $attribute_id);
+
+        $stmt -> execute();
+
+        return ['success' => true];
+    }
+
+    function reset_attribute($item_id, $attribute_id) {
+        $sql = "DELETE FROM " . $this -> mandant . "_account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ?";
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("ii", $item_id, $attribute_id);
+
+        $stmt -> execute();
+
+        return ['success' => true];
+    }
+
 }
 
 ?>
