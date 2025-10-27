@@ -294,12 +294,10 @@ const app = Vue.createApp({
               <td style="text-align: right;">{{ item.value }}</td>
               <td v-for="attribute in attributes" :key="attribute.id">
                 <span v-for="attribute_item in attribute.attribute" :key="attribute_item.id">
-                  {{ attribute_item.name }}
-                </span>
-                -
-                </span>
-                <span v-for="sub in item.attribute" :key="sub.id">
-                  <span v-if="sub.a_id == attribute.id"><b>{{ sub.aai_name }}</b></span>
+                  &nbsp;<a href="#" @click.prevent="setAttributes(item.id, attribute_item.id)">{{ attribute_item.name }}</a>
+                  <span v-for="sub in item.attribute" :key="sub.id">
+                    <span v-if="sub.aai_id == attribute_item.id">&nbsp;<b><a href="#" @click.prevent="resetAttributes(item.id, attribute_item.id)">{{ attribute_item.name }}</a></b></span>
+                  </span>
                 </span>
               </td>
               <td v-if="item.file"><div class="zoom"><img :src="item.file" height="10"/></div></td>
