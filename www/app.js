@@ -180,7 +180,25 @@ const app = Vue.createApp({
             }
             const result = await response.json();
             if (result.success) {
-                this.fetchData(); // Refresh data to show the change
+                // Instead of fetching all data, update the local state
+                const item = this.data.find(i => i.id === itemId);
+                if (item) {
+                    if (!item.attribute) {
+                        item.attribute = [];
+                    }
+                    // Find the attribute details to add
+                    let attribute_item_to_add = null;
+                    for (const group of this.attributes) {
+                        const found = group.attribute.find(attr => attr.id === attributeId);
+                        if (found) {
+                            attribute_item_to_add = found;
+                            break;
+                        }
+                    }
+                    if (attribute_item_to_add) {
+                        item.attribute.push({ aai_id: attributeId, aai_name: attribute_item_to_add.name });
+                    }
+                }
             }
         } catch (e) {
             this.error = e;
@@ -200,7 +218,14 @@ const app = Vue.createApp({
             }
             const result = await response.json();
             if (result.success) {
-                this.fetchData(); // Refresh data to show the change
+                // Instead of fetching all data, update the local state
+                const item = this.data.find(i => i.id === itemId);
+                if (item && item.attribute) {
+                    const index = item.attribute.findIndex(attr => attr.aai_id === attributeId);
+                    if (index > -1) {
+                        item.attribute.splice(index, 1);
+                    }
+                }
             }
         } catch (e) {
             this.error = e;
