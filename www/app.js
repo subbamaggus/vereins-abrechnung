@@ -342,14 +342,22 @@ const app = Vue.createApp({
         this.registerSuccess = false;
         this.email = '';
         this.password = '';
-    }
-  },
-  mounted() {
-    this.fetchData();
-    this.fetchAttributes();
-  },
-  template: `
-    <div v-if="!loggedIn">
+      }
+    },
+    computed: {
+      totalValue() {
+        return this.data.reduce((sum, item) => {
+          const value = parseFloat(item.value);
+          return sum + (isNaN(value) ? 0 : value);
+        }, 0).toFixed(2);
+      }
+    },
+    mounted() {
+      this.fetchData();
+      this.fetchAttributes();
+    },
+    template: `
+      <div v-if="!loggedIn">
         <div v-if="isLogin">
             <h1>LOGIN</h1>
             <form @submit.prevent="login">
@@ -452,6 +460,13 @@ const app = Vue.createApp({
               <td v-if="item.file"><div class="zoom"><img :src="item.file" height="10"/></div></td>
             </tr>
           </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="text-align: right;"><strong>Summe:</strong></td>
+              <td style="text-align: right;"><strong>{{ totalValue }} &euro;</strong></td>
+              <td :colspan="attributes.length + 1"></td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>
