@@ -85,6 +85,10 @@ class SQLManager {
         $data_with_attributes = $result -> fetch_all(MYSQLI_ASSOC);
 
         foreach ($data as &$single) {
+            if("" <> $single['file']) {
+                $single['file'] = "items/" . $single['file'];
+            }
+
             foreach($data_with_attributes as $attribute) {
                 if($attribute['id'] == $single['id']) {
                     $single['attribute'][] = $attribute;

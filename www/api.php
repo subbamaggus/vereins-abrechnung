@@ -82,9 +82,9 @@ try {
         if (isset($_FILES["myimage"]) && file_exists($_FILES["myimage"]["tmp_name"])) {
             $imageFileType = strtolower(pathinfo(basename($_FILES["myimage"]["name"]), PATHINFO_EXTENSION));
             $target_dir = "items/";
-            $target_file = $target_dir . $last_id . "_" . uniqid() . "." . $imageFileType;
+            $target_file = $last_id . "_" . uniqid() . "." . $imageFileType;
 
-            if (move_uploaded_file($_FILES["myimage"]["tmp_name"], $target_file)) {
+            if (move_uploaded_file($_FILES["myimage"]["tmp_name"], $target_dir . $target_file)) {
                 $mySQLManager->update_image_name($last_id, $target_file);
             }
         }
