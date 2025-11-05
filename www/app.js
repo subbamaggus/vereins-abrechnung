@@ -22,11 +22,15 @@ const app = Vue.createApp({
       selectedItems: [],
       selectedAttribute: null,
       bulkAction: 'add',
+      selectedFilters: [],
       loading: true,
       error: null,
     };
   },
   methods: {
+    async applyFilters() {
+        this.fetchData(this.selectedFilters);
+    },
     async login() {
       this.loginError = null;
       try {
@@ -299,13 +303,16 @@ const app = Vue.createApp({
             this.error = e;
         }
     },
-    async fetchData() {
+    async fetchData(filters = []) {
       this.loading = true;
       this.error = null;
       try {
         // We need to check if a mandant is set. The easiest way is to try fetching data
         // that requires a mandant. If it fails in a specific way, we show the selection.
-        const jsonUrl = 'api.php?method=get_items_with_attributes';
+        let jsonUrl = 'api.php?method=get_items_with_attributes';
+        if (filters.length > 0) {
+            jsonUrl += '&attributes=' + filters.join(',');
+        }
         const response = await fetch(jsonUrl);
         
         if (response.status === 401) { // Not logged in
@@ -419,6 +426,16 @@ const app = Vue.createApp({
         </div>
         <h1>&Uuml;bersicht</h1>
         <div v-if="attributes.length" style="margin-bottom: 10px;">
+            <div style="margin-bottom: 10px;">
+                <strong>Filter by:</strong>
+                <div v-for="group in attributes" :key="group.id" style="margin-bottom: 5px;">
+                    <strong>{{ group.name }}:</strong>
+                    <label v-for="attr in group.attribute" :key="attr.id" style="margin-right: 10px; margin-left: 5px;">
+                        <input type="checkbox" :value="attr.id" v-model="selectedFilters"> {{ attr.name }}
+                    </label>
+                </div>
+                <button @click="applyFilters">Apply Filters</button>
+            </div>
             <label><input type="radio" value="add" v-model="bulkAction"> Add</label>
             <label><input type="radio" value="remove" v-model="bulkAction"> Remove</label>
             <select v-model="selectedAttribute">

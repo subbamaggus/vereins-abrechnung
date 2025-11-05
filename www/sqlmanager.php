@@ -101,35 +101,65 @@ class SQLManager {
     }
 
     function get_items_with_attributes2($_attributelist) {
-        $data = $this -> get_items();
-
+        if (empty($_attributelist)) {
+            return $this->get_items_with_attributes();
+        }
+    
+        $attribute_ids = array_map('intval', explode(',', $_attributelist));
+        $placeholders = implode(',', array_fill(0, count($attribute_ids), '?'));
+        $types = str_repeat('i', count($attribute_ids));
+    
         $sql = <<<END
+            SELECT DISTINCT ai.*
+            FROM {$this->mandant}_account_item ai
+            INNER JOIN {$this->mandant}_account_item_attribute_item aiai ON ai.id = aiai.item_id
+            WHERE aiai.attribute_item_id IN ($placeholders)
+        END;
+    
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bind_param($types, ...$attribute_ids);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+    
+        foreach ($data as &$single) {
+            $single['value'] = $this->int2eur($single['value']);
+        }
+        unset($single);
+    
+        if (empty($data)) {
+            return [];
+        }
+    
+        $item_ids = array_column($data, 'id');
+        $item_placeholders = implode(',', array_fill(0, count($item_ids), '?'));
+        $item_types = str_repeat('i', count($item_ids));
+    
+        $sql_attrs = <<<END
             SELECT ai.id, ai.file, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
-              FROM {$this -> mandant}_account_item ai
-                 , {$this -> mandant}_account_attribute_item aai
-                 , {$this -> mandant}_account_item_attribute_item aiai
-                 , {$this -> mandant}_account_attribute a 
+              FROM {$this->mandant}_account_item ai
+                 , {$this->mandant}_account_attribute_item aai
+                 , {$this->mandant}_account_item_attribute_item aiai
+                 , {$this->mandant}_account_attribute a 
              WHERE ai.id = aiai.item_id 
                AND aiai.attribute_item_id = aai.id 
                AND aai.attribute_id = a.id
-               AND aai.id in (8,9)
+               AND ai.id IN ($item_placeholders)
              ORDER BY ai.id
             END;
-        $stmt = $this -> connection -> prepare($sql);
-        //$stmt -> bind_param("s", $attributelist);
-        $attributelist = $_attributelist;
-
-        error_log($_attributelist);
-
-        $stmt -> execute();
-
-        $result = $stmt -> get_result();
-
-        $data_with_attributes = $result -> fetch_all(MYSQLI_ASSOC);
-
+        $stmt_attrs = $this->connection->prepare($sql_attrs);
+        $stmt_attrs->bind_param($item_types, ...$item_ids);
+        $stmt_attrs->execute();
+        $result_attrs = $stmt_attrs->get_result();
+        $data_with_attributes = $result_attrs->fetch_all(MYSQLI_ASSOC);
+    
         foreach ($data as &$single) {
-            foreach($data_with_attributes as $attribute) {
-                if($attribute['id'] == $single['id']) {
+            if (!empty($single['file'])) {
+                $single['file'] = "items/" . $single['file'];
+            }
+            $single['attribute'] = [];
+            foreach ($data_with_attributes as $attribute) {
+                if ($attribute['id'] == $single['id']) {
                     $single['attribute'][] = $attribute;
                 }
             }
