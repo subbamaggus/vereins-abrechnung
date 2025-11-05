@@ -242,13 +242,26 @@ class SQLManager {
     }
 
     function set_attribute($item_id, $attribute_id) {
+        $sql = "SELECT * FROM " . $this -> mandant . "_account_item_attribute_item where item_id=? and attribute_item_id=?";
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("ii", $item_id, $attribute_id);
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $count = $result -> num_rows;
+        if(0 < $count) {
+            return ['success' => true];
+        }
+
         $sql = "INSERT INTO " . $this -> mandant . "_account_item_attribute_item (item_id, attribute_item_id) VALUES (?, ?)";
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("ii", $item_id, $attribute_id);
 
         $stmt -> execute();
 
-        return ['success' => true];
+        return ['success' => true, 'inserted' => true];
     }
 
     function reset_attribute($item_id, $attribute_id) {

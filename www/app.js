@@ -198,7 +198,7 @@ const app = Vue.createApp({
                             break;
                         }
                     }
-                    if (attribute_item_to_add) {
+                    if (attribute_item_to_add && result.inserted) {
                         item.attribute.push({ aai_id: attributeId, aai_name: attribute_item_to_add.name });
                     }
                 }
@@ -442,10 +442,11 @@ const app = Vue.createApp({
               <td style="text-align: right;">{{ item.value }}</td>
               <td v-for="attribute in attributes" :key="attribute.id">
                 <span v-for="attribute_item in attribute.attribute" :key="attribute_item.id">
-                  &nbsp;<a href="#" @click.prevent="setAttributes(item.id, attribute_item.id)">{{ attribute_item.name }}</a><br/>
+                  &nbsp;<a href="#" @click.prevent="setAttributes(item.id, attribute_item.id)">{{ attribute_item.name }}</a>
                   <span v-for="sub in item.attribute" :key="sub.id">
-                    <span v-if="sub.aai_id == attribute_item.id">&nbsp;<b><a href="#" @click.prevent="resetAttributes(item.id, attribute_item.id)">{{ attribute_item.name }}</a></b><br/></span>
+                    <span v-if="sub.aai_id == attribute_item.id">&nbsp;<b><a href="#" @click.prevent="resetAttributes(item.id, attribute_item.id)">X</a></b></span>
                   </span>
+                  <br/>
                 </span>
               </td>
               <td v-if="item.file"><div class="zoom"><img :src="item.file" height="10"/></div></td>
