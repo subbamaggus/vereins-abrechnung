@@ -15,9 +15,9 @@ class SQLManager {
     }
 
     function insert_item($_name, $_value, $_date) {
-        $sql = "INSERT INTO " . $this -> mandant . "_account_item (name, value, date, user) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO account_item (name, value, date, user, mandant_id) VALUES (?, ?, ?, ?, ?)";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("sssi", $name, $value, $date, $user_id);
+        $stmt -> bind_param("sssii", $name, $value, $date, $user_id, $this -> mandant);
 
         $name = $_name;
         $value = $_value * 100;
@@ -32,9 +32,9 @@ class SQLManager {
     }
 
     function update_image_name($_id, $_newname) {
-        $sql = "UPDATE " . $this -> mandant . "_account_item SET file = ? WHERE id = ?";
+        $sql = "UPDATE account_item SET file = ? WHERE id = ? and mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("si", $filename, $id);
+        $stmt -> bind_param("sii", $filename, $id, $this -> mandant);
 
         $filename = $_newname;
         $id = $_id;
@@ -45,8 +45,9 @@ class SQLManager {
     }
 
     function get_items() {
-        $sql = "SELECT * FROM " . $this -> mandant . "_account_item";
+        $sql = "SELECT * FROM account_item WHERE mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $this -> mandant);
 
         $stmt -> execute();
 
@@ -63,21 +64,25 @@ class SQLManager {
     }
 
     function get_items_without_attributes() {
-        error_log("get_items_without_attributes");
         $data = $this -> get_items();
+
+        if(0 > $this -> mandant)
+            throw new ErrorException("no mandant");
 
         $sql = <<<END
             SELECT ai.id, ai.file, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
-              FROM {$this -> mandant}_account_item ai
-                 , {$this -> mandant}_account_attribute_item aai
-                 , {$this -> mandant}_account_item_attribute_item aiai
-                 , {$this -> mandant}_account_attribute a 
+              FROM account_item ai
+                 , account_attribute_item aai
+                 , account_item_attribute_item aiai
+                 , account_attribute a 
              WHERE ai.id = aiai.item_id 
                AND aiai.attribute_item_id = aai.id 
                AND aai.attribute_id = a.id
+               AND ai.mandant_id = ?
              ORDER BY ai.id
             END;
         $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $this -> mandant);
 
         $stmt -> execute();
 
@@ -102,7 +107,6 @@ class SQLManager {
     }
 
     function get_items_with_attributes($_attributelist) {
-        error_log("get_items_with_attributes");
         if (empty($_attributelist)) {
             return $this->get_items_without_attributes();
         }
@@ -113,9 +117,10 @@ class SQLManager {
     
         $sql = <<<END
             SELECT DISTINCT ai.*
-            FROM {$this->mandant}_account_item ai
-            INNER JOIN {$this->mandant}_account_item_attribute_item aiai ON ai.id = aiai.item_id
+            FROM account_item ai
+            INNER JOIN account_item_attribute_item aiai ON ai.id = aiai.item_id
             WHERE aiai.attribute_item_id IN ($placeholders)
+            AND ai.mandant_id = {$this -> mandant}
         END;
     
         $stmt = $this->connection->prepare($sql);
@@ -139,14 +144,15 @@ class SQLManager {
     
         $sql_attrs = <<<END
             SELECT ai.id, ai.file, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
-              FROM {$this->mandant}_account_item ai
-                 , {$this->mandant}_account_attribute_item aai
-                 , {$this->mandant}_account_item_attribute_item aiai
-                 , {$this->mandant}_account_attribute a 
+              FROM account_item ai
+                 , account_attribute_item aai
+                 , account_item_attribute_item aiai
+                 , account_attribute a 
              WHERE ai.id = aiai.item_id 
                AND aiai.attribute_item_id = aai.id 
                AND aai.attribute_id = a.id
                AND ai.id IN ($item_placeholders)
+               AND ai.mandant_id = {$this -> mandant}
              ORDER BY ai.id
             END;
         $stmt_attrs = $this->connection->prepare($sql_attrs);
@@ -172,8 +178,9 @@ class SQLManager {
     }
 
     function get_years() {
-        $sql = "SELECT distinct DATE_FORMAT(date, '%Y') as year FROM " . $this -> mandant . "_account_item ORDER BY 1 desc";
+        $sql = "SELECT distinct DATE_FORMAT(date, '%Y') as year FROM account_item WHERE mandant_id = ? ORDER BY 1 desc";
         $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $this -> mandant);
 
         $stmt -> execute();
 
@@ -247,8 +254,9 @@ class SQLManager {
     }
 
     function get_attributes() {
-        $sql = "SELECT * FROM " . $this -> mandant . "_account_attribute";
+        $sql = "SELECT * FROM account_attribute WHERE mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $this -> mandant);
 
         $stmt -> execute();
 
@@ -256,8 +264,9 @@ class SQLManager {
 
         $attributes = $result -> fetch_all(MYSQLI_ASSOC);
 
-        $sql = "SELECT * FROM " . $this -> mandant . "_account_attribute_item";
+        $sql = "SELECT * FROM account_attribute_item WHERE mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $this -> mandant);
 
         $stmt -> execute();
 
@@ -278,9 +287,9 @@ class SQLManager {
     }
 
     function set_attribute($item_id, $attribute_id) {
-        $sql = "SELECT * FROM " . $this -> mandant . "_account_item_attribute_item where item_id=? and attribute_item_id=?";
+        $sql = "SELECT * FROM account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ? AND mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("ii", $item_id, $attribute_id);
+        $stmt -> bind_param("iii", $item_id, $attribute_id, $this -> mandant);
 
         $stmt -> execute();
 
@@ -291,9 +300,9 @@ class SQLManager {
             return ['success' => true];
         }
 
-        $sql = "INSERT INTO " . $this -> mandant . "_account_item_attribute_item (item_id, attribute_item_id) VALUES (?, ?)";
+        $sql = "INSERT INTO account_item_attribute_item (item_id, attribute_item_id, mandant_id) VALUES (?, ?, ?)";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("ii", $item_id, $attribute_id);
+        $stmt -> bind_param("iii", $item_id, $attribute_id, $this -> mandant);
 
         $stmt -> execute();
 
@@ -301,9 +310,9 @@ class SQLManager {
     }
 
     function reset_attribute($item_id, $attribute_id) {
-        $sql = "DELETE FROM " . $this -> mandant . "_account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ?";
+        $sql = "DELETE FROM account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ? AND mandant = ?";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("ii", $item_id, $attribute_id);
+        $stmt -> bind_param("iii", $item_id, $attribute_id, $this -> mandant);
 
         $stmt -> execute();
 
@@ -311,14 +320,14 @@ class SQLManager {
     }
 
     function set_attributes_bulk($item_ids, $attribute_id) {
-        $sql = "INSERT INTO " . $this -> mandant . "_account_item_attribute_item (item_id, attribute_item_id) VALUES (?, ?)";
+        $sql = "INSERT INTO account_item_attribute_item (item_id, attribute_item_id, mandant_id) VALUES (?, ?, ?)";
         
         $this -> connection -> begin_transaction();
         try {
             $stmt = $this -> connection -> prepare($sql);
             foreach ($item_ids as $item_id) {
                 // Use IGNORE to prevent errors on duplicate entries
-                $stmt -> bind_param("ii", $item_id, $attribute_id);
+                $stmt -> bind_param("iii", $item_id, $attribute_id, $this -> mandant);
                 $stmt -> execute();
             }
             $stmt -> close();
@@ -331,13 +340,13 @@ class SQLManager {
     }
 
     function reset_attributes_bulk($item_ids, $attribute_id) {
-        $sql = "DELETE FROM " . $this -> mandant . "_account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ?";
+        $sql = "DELETE FROM account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ? AND mandant_id = ?";
         
         $this -> connection -> begin_transaction();
         try {
             $stmt = $this -> connection -> prepare($sql);
             foreach ($item_ids as $item_id) {
-                $stmt -> bind_param("ii", $item_id, $attribute_id);
+                $stmt -> bind_param("iii", $item_id, $attribute_id, $this -> mandant);
                 $stmt -> execute();
             }
             $stmt -> close();
