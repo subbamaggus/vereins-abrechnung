@@ -13,19 +13,6 @@
 
   <div id="app"></div>
   <script src="app.js"></script>
-
-  this is the bottom
-  <br/>
-  this is the bottom
-  <br/>
-  this is the bottom
-  <br/>
-  this is the bottom
-  <br/>
-  this is the bottom
-  <br/>
-  this is the bottom
-  <br/>
   
 </body>
 </html>

@@ -118,6 +118,10 @@ const app = Vue.createApp({
             const result = await response.json();
             if (result.success) {
                 this.showAddEntry = false;
+                this.newEntry.name = '';
+                this.newEntry.value = '';
+                this.newEntry.myimage = null;
+                this.$refs.fileInput.value = '';
                 this.fetchData();
             } else {
                 throw new Error('Failed to add entry');
@@ -418,7 +422,7 @@ const app = Vue.createApp({
                 </label>
                 <br>
                 <label>Bild<br>
-                    <input type="file" @change="handleFileUpload">
+                    <input type="file" @change="handleFileUpload" ref="fileInput">
                 </label>
                 <br>
                 <button type="submit">speichern</button>

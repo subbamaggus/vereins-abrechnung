@@ -310,7 +310,7 @@ class SQLManager {
     }
 
     function reset_attribute($item_id, $attribute_id) {
-        $sql = "DELETE FROM account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ? AND mandant = ?";
+        $sql = "DELETE FROM account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ? AND mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("iii", $item_id, $attribute_id, $this -> mandant);
 

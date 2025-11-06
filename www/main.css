@@ -39,7 +39,7 @@ th{
     -webkit-transform: scale(30); /* Safari 3-8 */
     transform: scale(30);
     margin-left:120px;
-    margin-top:1px;
+    margin-top:-100px;
 }
 
 table, th, td {
