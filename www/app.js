@@ -364,6 +364,7 @@ const app = Vue.createApp({
     mounted() {
       this.fetchData();
       this.fetchAttributes();
+      this.fetchMandanten();
     },
     template: `
       <div v-if="!loggedIn">
@@ -402,6 +403,15 @@ const app = Vue.createApp({
       <div v-if="loading">Lädt...</div>
       <div v-else-if="error">Fehler: {{ error.message }}</div>
       <div v-else>
+        <details>
+        <summary>Mandaten</summary>
+        <div style="margin-bottom: 10px;">
+            <strong>Mandant:</strong>
+            <span v-for="mandant in mandanten" :key="mandant.id" style="margin-left: 10px;">
+                <a href="#" @click.prevent="setMandant(mandant.id)">{{ mandant.name }}</a>
+            </span>
+        </div>
+        </details>
         <button @click="logout">Logout</button>
         <button @click="showAddEntry = !showAddEntry">{{ showAddEntry ? 'Cancel' : 'Add Entry' }}</button>
         <div v-if="showAddEntry">
