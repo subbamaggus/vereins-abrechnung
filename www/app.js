@@ -451,17 +451,6 @@ const app = Vue.createApp({
                 <button @click="applyFilters">Apply Filters</button>
             </div>
             </details>
-            <label><input type="radio" value="add" v-model="bulkAction"> Add</label>
-            <label><input type="radio" value="remove" v-model="bulkAction"> Remove</label>
-            <select v-model="selectedAttribute">
-                <option :value="null" disabled>Select an attribute</option>
-                <template v-for="group in attributes">
-                    <optgroup :label="group.name">
-                        <option v-for="attr in group.attribute" :value="attr.id">{{ attr.name }}</option>
-                    </optgroup>
-                </template>
-            </select>
-            <button @click="applyBulkAction" :disabled="!selectedItems.length || !selectedAttribute">Apply to selected</button>
         </div>
         <table class="table table-striped">
           <thead>
@@ -500,6 +489,17 @@ const app = Vue.createApp({
             </tr>
           </tfoot>
         </table>
+            <label><input type="radio" value="add" v-model="bulkAction"> Add</label>
+            <label><input type="radio" value="remove" v-model="bulkAction"> Remove</label>
+            <select v-model="selectedAttribute">
+                <option :value="null" disabled>Select an attribute</option>
+                <template v-for="group in attributes">
+                    <optgroup :label="group.name">
+                        <option v-for="attr in group.attribute" :value="attr.id">{{ attr.name }}</option>
+                    </optgroup>
+                </template>
+            </select>
+            <button @click="applyBulkAction" :disabled="!selectedItems.length || !selectedAttribute">Apply to selected</button>
       </div>
     </div>
   `
