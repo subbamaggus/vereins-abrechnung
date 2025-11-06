@@ -89,10 +89,7 @@ const app = Vue.createApp({
         try {
             await fetch('api.php?method=logout');
         } finally {
-            this.loggedIn = false;
-            this.mandantSet = false;
-            this.email = '';
-            this.password = '';
+            window.location.reload();
         }
     },
     async storeEntry() {
@@ -161,6 +158,7 @@ const app = Vue.createApp({
                 this.mandantSet = true;
                 this.fetchData();
                 this.fetchAttributes();
+                window.location.reload();
             }
         } catch (e) {
             this.error = e;
