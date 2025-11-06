@@ -16,7 +16,7 @@ class SessionManager {
         $myDbManager = new DbManager($_config['db_srv'], $_config['db_name'], $_config['db_user'], $_config['db_pass']);
         $myDbManager -> opendbconnection();
 
-        $mySQLManager = new SQLManager($myDbManager -> connection);
+        $mySQLManager = new SQLManager($myDbManager -> connection, $_config);
 
         if(is_method($_get, "login")) {
             $mydata = $mySQLManager -> validate_user($_post['email'], $_post['password']);

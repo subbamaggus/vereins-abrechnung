@@ -10,7 +10,7 @@ try {
     $myDbManager = new DbManager($config['db_srv'], $config['db_name'], $config['db_user'], $config['db_pass']);
     $myDbManager->opendbconnection();
 
-    $mySQLManager = new SQLManager($myDbManager->connection);
+    $mySQLManager = new SQLManager($myDbManager->connection, $config);
 
     if (is_method($_GET, "login")) {
         $mydata = $mySQLManager->validate_user($_POST['email'], $_POST['password']);

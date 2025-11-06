@@ -4,10 +4,11 @@ class SQLManager {
     public $connection;
     public $mandant;
     public $user_id;
+    public $config;
 
-    function __construct($_connection) {
+    function __construct($_connection, $_config) {
         $this -> connection = $_connection;
-        
+        $this -> config = $_config;
     }
     
     function int2eur($value) {
@@ -92,7 +93,7 @@ class SQLManager {
 
         foreach ($data as &$single) {
             if("" <> $single['file']) {
-                $single['file'] = "items/" . $single['file'];
+                $single['file'] = $this -> config['image_path'] . $single['file'];
             }
 
             foreach($data_with_attributes as $attribute) {
@@ -163,12 +164,16 @@ class SQLManager {
     
         foreach ($data as &$single) {
             if (!empty($single['file'])) {
-                $single['file'] = $config['image_path'] . $single['file'];
+                $single['file'] = $this -> config['image_path'] . $single['file'];
             }
             $single['attribute'] = [];
             foreach ($data_with_attributes as $attribute) {
                 if ($attribute['id'] == $single['id']) {
+                    if (!empty($attribute['file'])) {
+                        $attribute['file'] = $this -> config['image_path'] . $attribute['file'];
+                    }
                     $single['attribute'][] = $attribute;
+
                 }
             }
         }
