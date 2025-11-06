@@ -426,6 +426,8 @@ const app = Vue.createApp({
         </div>
         <h1>&Uuml;bersicht</h1>
         <div v-if="attributes.length" style="margin-bottom: 10px;">
+            <details>
+            <summary>Filter</summary>
             <div style="margin-bottom: 10px;">
                 <strong>Filter by:</strong>
                 <div v-for="group in attributes" :key="group.id" style="margin-bottom: 5px;">
@@ -436,6 +438,7 @@ const app = Vue.createApp({
                 </div>
                 <button @click="applyFilters">Apply Filters</button>
             </div>
+            </details>
             <label><input type="radio" value="add" v-model="bulkAction"> Add</label>
             <label><input type="radio" value="remove" v-model="bulkAction"> Remove</label>
             <select v-model="selectedAttribute">
