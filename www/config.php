@@ -4,6 +4,7 @@
 	$config['db_name'] = 'accounting';
 	$config['db_user'] = 'newuser';
 	$config['db_pass'] = 'password';
+	$config['image_path'] = 'items/';
 
 	define('USER_REGISTERED', 0);
 	define('USER_VALIDATED', 1);

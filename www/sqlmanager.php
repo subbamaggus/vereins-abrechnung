@@ -62,7 +62,8 @@ class SQLManager {
         return $data;
     }
 
-    function get_items_with_attributes() {
+    function get_items_without_attributes() {
+        error_log("get_items_without_attributes");
         $data = $this -> get_items();
 
         $sql = <<<END
@@ -100,9 +101,10 @@ class SQLManager {
         return $data;
     }
 
-    function get_items_with_attributes2($_attributelist) {
+    function get_items_with_attributes($_attributelist) {
+        error_log("get_items_with_attributes");
         if (empty($_attributelist)) {
-            return $this->get_items_with_attributes();
+            return $this->get_items_without_attributes();
         }
     
         $attribute_ids = array_map('intval', explode(',', $_attributelist));
@@ -155,7 +157,7 @@ class SQLManager {
     
         foreach ($data as &$single) {
             if (!empty($single['file'])) {
-                $single['file'] = "items/" . $single['file'];
+                $single['file'] = $config['image_path'] . $single['file'];
             }
             $single['attribute'] = [];
             foreach ($data_with_attributes as $attribute) {

@@ -72,16 +72,16 @@ try {
         $mydata = $mySQLManager->get_items();
     } elseif (is_method($_GET, "get_items_with_attributes")) {
         if (isset($_GET['attributes'])) {
-            $mydata = $mySQLManager->get_items_with_attributes2($_GET['attributes']);
+            $mydata = $mySQLManager->get_items_with_attributes($_GET['attributes']);
         } else {
-            $mydata = $mySQLManager->get_items_with_attributes();
+            $mydata = $mySQLManager->get_items_without_attributes();
         }
     } elseif (is_method($_GET, "store_entry")) {
         $last_id = $mySQLManager->insert_item($_POST['name'], $_POST['value'], $_POST['date']);
 
         if (isset($_FILES["myimage"]) && file_exists($_FILES["myimage"]["tmp_name"])) {
             $imageFileType = strtolower(pathinfo(basename($_FILES["myimage"]["name"]), PATHINFO_EXTENSION));
-            $target_dir = "items/";
+            $target_dir = $config['image_path'];
             $target_file = $last_id . "_" . uniqid() . "." . $imageFileType;
 
             if (move_uploaded_file($_FILES["myimage"]["tmp_name"], $target_dir . $target_file)) {
