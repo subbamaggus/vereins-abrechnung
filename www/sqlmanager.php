@@ -12,7 +12,7 @@ class SQLManager {
     }
     
     function int2eur($value) {
-        return number_format($value / 100, 2, ',', '');
+        return number_format($value / 100, 2, '.', '');
     }
 
     function insert_item($_name, $_value, $_date) {
