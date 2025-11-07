@@ -12,7 +12,7 @@ class SQLManager {
     }
     
     function int2eur($value) {
-        return number_format($value / 100, 2, '.', '');
+        return number_format($value / 100, 2, ',', '');
     }
 
     function insert_item($_name, $_value, $_date) {
@@ -69,10 +69,10 @@ class SQLManager {
     }
 
     function get_items_without_attributes() {
-        $data = $this -> get_all_items();
-
         if(0 > $this -> mandant)
             throw new ErrorException("no mandant");
+        
+        $data = $this -> get_all_items();
 
         $sql = <<<END
             SELECT ai.id, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
@@ -108,6 +108,9 @@ class SQLManager {
     }
 
     function get_items_with_attributes($_attributelist) {
+        if(0 > $this -> mandant)
+            throw new ErrorException("no mandant");
+        
         $attribute_ids = array_map('intval', explode(',', $_attributelist));
         $placeholders = implode(',', array_fill(0, count($attribute_ids), '?'));
         $types = str_repeat('i', count($attribute_ids));
