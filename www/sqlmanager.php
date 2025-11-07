@@ -46,7 +46,7 @@ class SQLManager {
     }
 
     function get_all_items() {
-        $sql = "SELECT * FROM account_item WHERE mandant_id = ?";
+        $sql = "SELECT * FROM account_item WHERE mandant_id = ? ORDER BY date";
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $this -> mandant);
 
@@ -58,6 +58,10 @@ class SQLManager {
 
         foreach ($data as &$single) {
             $single['value'] = $this -> int2eur($single['value']);
+            
+            if("" <> $single['file']) {
+                $single['file'] = $this -> config['image_path'] . $single['file'];
+            }
         }
         unset($single);
 
@@ -80,7 +84,7 @@ class SQLManager {
                AND aiai.attribute_item_id = aai.id 
                AND aai.attribute_id = a.id
                AND ai.mandant_id = ?
-             ORDER BY ai.id
+             ORDER BY ai.date
             END;
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $this -> mandant);
@@ -92,10 +96,6 @@ class SQLManager {
         $data_with_attributes = $result -> fetch_all(MYSQLI_ASSOC);
 
         foreach ($data as &$single) {
-            if("" <> $single['file']) {
-                $single['file'] = $this -> config['image_path'] . $single['file'];
-            }
-
             foreach($data_with_attributes as $attribute) {
                 if($attribute['id'] == $single['id']) {
                     $single['attribute'][] = $attribute;
@@ -114,10 +114,11 @@ class SQLManager {
     
         $sql = <<<END
             SELECT DISTINCT ai.*
-            FROM account_item ai
-            INNER JOIN account_item_attribute_item aiai ON ai.id = aiai.item_id
-            WHERE aiai.attribute_item_id IN ($placeholders)
-            AND ai.mandant_id = {$this -> mandant}
+              FROM account_item ai
+             INNER JOIN account_item_attribute_item aiai ON ai.id = aiai.item_id
+             WHERE aiai.attribute_item_id IN ($placeholders)
+               AND ai.mandant_id = {$this -> mandant}
+             ORDER BY ai.date
         END;
     
         $stmt = $this->connection->prepare($sql);
@@ -128,6 +129,9 @@ class SQLManager {
     
         foreach ($data as &$single) {
             $single['value'] = $this->int2eur($single['value']);
+            if (!empty($single['file'])) {
+                $single['file'] = $this -> config['image_path'] . $single['file'];
+            }
         }
         unset($single);
     
@@ -150,7 +154,6 @@ class SQLManager {
                AND aai.attribute_id = a.id
                AND ai.id IN ($item_placeholders)
                AND ai.mandant_id = {$this -> mandant}
-             ORDER BY ai.id
             END;
         $stmt_attrs = $this->connection->prepare($sql_attrs);
         $stmt_attrs->bind_param($item_types, ...$item_ids);
@@ -159,17 +162,11 @@ class SQLManager {
         $data_with_attributes = $result_attrs->fetch_all(MYSQLI_ASSOC);
     
         foreach ($data as &$single) {
-            if (!empty($single['file'])) {
-                $single['file'] = $this -> config['image_path'] . $single['file'];
-            }
+
             $single['attribute'] = [];
             foreach ($data_with_attributes as $attribute) {
                 if ($attribute['id'] == $single['id']) {
-                    if (!empty($attribute['file'])) {
-                        $attribute['file'] = $this -> config['image_path'] . $attribute['file'];
-                    }
                     $single['attribute'][] = $attribute;
-
                 }
             }
         }
