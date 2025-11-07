@@ -64,6 +64,8 @@ try {
 
     if (is_method($_GET, "get_mandants")) {
         $mydata = $mySQLManager->get_mandants();
+    } elseif (is_method($_GET, "get_summary")) {
+        $mydata = $mySQLManager->get_summary($_GET['year']);
     } elseif (is_method($_GET, "get_years")) {
         $mydata = $mySQLManager->get_years();
     } elseif (is_method($_GET, "get_attributes")) {

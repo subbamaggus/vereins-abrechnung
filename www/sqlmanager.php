@@ -198,6 +198,45 @@ class SQLManager {
         return $data;
     }
 
+    function get_summary($_year) {
+        $year = $_year;
+        if(empty($year))
+            $year = date("Y");
+
+        $sql = <<<END
+           select max(mystart)/100 as start
+                , max(myend)/100 as ende
+                , mydate 
+             from (
+                    select case when name = 'start' then value else null END as mystart
+                         , case when name = 'ende' then value else null END as myend
+                         , mydate from (
+                                select 'ende' as name
+                                     , value
+                                     , DATE_FORMAT(date, '%Y') as mydate 
+                                  from account_depot_value 
+                                 where date = (SELECT max(date) max_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '2025') 
+                                 union select 'start' as name
+                                     , value, DATE_FORMAT(date, '%Y') as mydate 
+                                  from account_depot_value 
+                                 where date = (SELECT min(date) min_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '2025') 
+                                 ) myalias 
+                   ) myalias2 
+             group by mydate;
+           END;
+
+        $stmt = $this -> connection -> prepare($sql);
+        //$stmt -> bind_param("i", $this -> mandant);
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        return $data;
+    }
+
     function get_mandants() {
         $sql = "SELECT mu.id as id, m.id as mid, m.name, mu.privilege FROM account_mandant m, account_mandant_user mu WHERE mu.mandant_id = m.id AND mu.user_id = ?";
 

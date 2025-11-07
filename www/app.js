@@ -19,6 +19,7 @@ const app = Vue.createApp({
       data: [],
       years: [],
       currentYear: 0,
+      summary: [],
       attributes: [],
       mandanten: [],
       selectedItems: [],
@@ -370,6 +371,24 @@ const app = Vue.createApp({
         //loading.value = false;
       }
     },
+    async fetchSummary() {
+      try {
+        const jsonUrl = 'api.php?method=get_summary';
+        if(this.currentYear > 0) {
+            jsonUrl += '&year=' + this.currentYear;
+        }
+        const response = await fetch(jsonUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP Fehler! Status: ${response.status}`);
+        }
+        const result = await response.json();
+        this.summary = result;
+      } catch (e) {
+        error.value = e;
+      } finally {
+        //loading.value = false;
+      }
+    },
     toggleForm() {
         this.isLogin = !this.isLogin;
         this.loginError = null;
@@ -385,6 +404,10 @@ const app = Vue.createApp({
           const value = parseFloat(item.value);
           return sum + (isNaN(value) ? 0 : value);
         }, 0).toFixed(2);
+      },
+      totalSummary() {
+        console.log('uiui' + this.summary[0].start);
+        return this.summary[0].ende - this.summary[0].start;
       }
     },
     mounted() {
@@ -392,6 +415,7 @@ const app = Vue.createApp({
       this.fetchAttributes();
       this.fetchMandanten();
       this.fetchYears();
+      this.fetchSummary();
     },
     template: `
       <div v-if="!loggedIn">
@@ -518,6 +542,11 @@ const app = Vue.createApp({
             <tr>
               <td colspan="3" style="text-align: right;"><strong>Summe:</strong></td>
               <td style="text-align: right;"><strong>{{ totalValue }} &euro;</strong></td>
+              <td :colspan="attributes.length + 1"></td>
+            </tr>
+            <tr>
+              <td colspan="3" style="text-align: right;"><strong>Summe:</strong></td>
+              <td style="text-align: right;"><strong>{{ totalSummary }} &euro;</strong></td>
               <td :colspan="attributes.length + 1"></td>
             </tr>
           </tfoot>
