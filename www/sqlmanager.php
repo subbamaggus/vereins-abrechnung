@@ -215,18 +215,18 @@ class SQLManager {
                                      , value
                                      , DATE_FORMAT(date, '%Y') as mydate 
                                   from account_depot_value 
-                                 where date = (SELECT max(date) max_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '2025') 
+                                 where date = (SELECT max(date) max_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '$year' and mandant_id = ?) 
                                  union select 'start' as name
                                      , value, DATE_FORMAT(date, '%Y') as mydate 
                                   from account_depot_value 
-                                 where date = (SELECT min(date) min_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '2025') 
+                                 where date = (SELECT min(date) min_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '$year' and mandant_id = ?) 
                                  ) myalias 
                    ) myalias2 
              group by mydate;
            END;
 
         $stmt = $this -> connection -> prepare($sql);
-        //$stmt -> bind_param("i", $this -> mandant);
+        $stmt -> bind_param("ii", $this -> mandant, $this -> mandant);
 
         $stmt -> execute();
 
