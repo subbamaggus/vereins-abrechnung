@@ -18,6 +18,7 @@ const app = Vue.createApp({
       },
       data: [],
       years: [],
+      currentYear: 0,
       attributes: [],
       mandanten: [],
       selectedItems: [],
@@ -281,7 +282,9 @@ const app = Vue.createApp({
     },
     async clickYear(year) {
       let tmp = `Sie haben auf Post ${year} geklickt.`;
+      this.currentYear = year;
       console.log(tmp);
+      this.fetchData(this.selectedFilters);
     },
     async resetAttributes(itemId, attributeId) {
         try {
@@ -319,6 +322,9 @@ const app = Vue.createApp({
         let jsonUrl = 'api.php?method=get_items';
         if (filters.length > 0) {
             jsonUrl += '&attributes=' + filters.join(',');
+        }
+        if(this.currentYear > 0) {
+            jsonUrl += '&year=' + this.currentYear;
         }
         const response = await fetch(jsonUrl);
         

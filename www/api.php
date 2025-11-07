@@ -72,7 +72,7 @@ try {
         $mydata = $mySQLManager->get_all_items();
     } elseif (is_method($_GET, "get_items")) {
         if (isset($_GET['attributes'])) {
-            $mydata = $mySQLManager->get_items_with_attributes($_GET['attributes']);
+            $mydata = $mySQLManager->get_items_with_attributes($_GET['attributes'], $_GET['year']);
         } else {
             $mydata = $mySQLManager->get_items_without_attributes();
         }

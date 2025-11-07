@@ -107,9 +107,13 @@ class SQLManager {
         return $data;
     }
 
-    function get_items_with_attributes($_attributelist) {
+    function get_items_with_attributes($_attributelist, $_year) {
         if(0 > $this -> mandant)
             throw new ErrorException("no mandant");
+
+        $year = $_year;
+        if(empty($year))
+            $year = date("Y");
         
         $attribute_ids = array_map('intval', explode(',', $_attributelist));
         $placeholders = implode(',', array_fill(0, count($attribute_ids), '?'));
@@ -121,6 +125,7 @@ class SQLManager {
              INNER JOIN account_item_attribute_item aiai ON ai.id = aiai.item_id
              WHERE aiai.attribute_item_id IN ($placeholders)
                AND ai.mandant_id = {$this -> mandant}
+               AND DATE_FORMAT(ai.date, '%Y') = ($year)
              ORDER BY ai.date
         END;
     
