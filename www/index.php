@@ -8,8 +8,6 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
 <body>
-  <div id="navi"></div>
-  <script src="navi.js"></script>
 
   <div id="app"></div>
   <script src="app.js"></script>

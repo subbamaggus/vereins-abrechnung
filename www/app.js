@@ -17,6 +17,7 @@ const app = Vue.createApp({
         myimage: null,
       },
       data: [],
+      years: [],
       attributes: [],
       mandanten: [],
       selectedItems: [],
@@ -278,6 +279,10 @@ const app = Vue.createApp({
             this.error = e;
         }
     },
+    async clickYear(year) {
+      let tmp = `Sie haben auf Post ${year} geklickt.`;
+      console.log(tmp);
+    },
     async resetAttributes(itemId, attributeId) {
         try {
             const response = await fetch('api.php?method=reset_attribute', {
@@ -344,6 +349,21 @@ const app = Vue.createApp({
         this.loading = false;
       }
     },
+    async fetchYears() {
+      try {
+        const jsonUrl = 'api.php?method=get_years';
+        const response = await fetch(jsonUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP Fehler! Status: ${response.status}`);
+        }
+        const result = await response.json();
+        this.years = result;
+      } catch (e) {
+        error.value = e;
+      } finally {
+        //loading.value = false;
+      }
+    },
     toggleForm() {
         this.isLogin = !this.isLogin;
         this.loginError = null;
@@ -365,6 +385,7 @@ const app = Vue.createApp({
       this.fetchData();
       this.fetchAttributes();
       this.fetchMandanten();
+      this.fetchYears();
     },
     template: `
       <div v-if="!loggedIn">
@@ -435,6 +456,11 @@ const app = Vue.createApp({
                 <br>
                 <button type="submit">speichern</button>
             </form>
+        </div>
+        <div>
+            <a v-for="item in years" :key="item.id" @click.prevent="clickYear(item.year)" href="#">
+                {{ item.year }}
+            </a>&nbsp;
         </div>
         <h1>&Uuml;bersicht</h1>
         <div v-if="attributes.length" style="margin-bottom: 10px;">
