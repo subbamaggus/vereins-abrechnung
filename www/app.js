@@ -458,9 +458,9 @@ const app = Vue.createApp({
             </form>
         </div>
         <div>
-            <a v-for="item in years" :key="item.id" @click.prevent="clickYear(item.year)" href="#">
-                {{ item.year }}
-            </a>&nbsp;
+            <li v-for="item in years" :key="item.id">
+                <a href="#" @click.prevent="clickYear(item.year)">{{ item.year }}</a>
+            </li>
         </div>
         <h1>&Uuml;bersicht</h1>
         <div v-if="attributes.length" style="margin-bottom: 10px;">
