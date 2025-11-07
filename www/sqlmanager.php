@@ -45,7 +45,7 @@ class SQLManager {
         return true;        
     }
 
-    function get_items() {
+    function get_all_items() {
         $sql = "SELECT * FROM account_item WHERE mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $this -> mandant);
@@ -65,13 +65,13 @@ class SQLManager {
     }
 
     function get_items_without_attributes() {
-        $data = $this -> get_items();
+        $data = $this -> get_all_items();
 
         if(0 > $this -> mandant)
             throw new ErrorException("no mandant");
 
         $sql = <<<END
-            SELECT ai.id, ai.file, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
+            SELECT ai.id, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
               FROM account_item ai
                  , account_attribute_item aai
                  , account_item_attribute_item aiai
@@ -108,10 +108,6 @@ class SQLManager {
     }
 
     function get_items_with_attributes($_attributelist) {
-        if (empty($_attributelist)) {
-            return $this->get_items_without_attributes();
-        }
-    
         $attribute_ids = array_map('intval', explode(',', $_attributelist));
         $placeholders = implode(',', array_fill(0, count($attribute_ids), '?'));
         $types = str_repeat('i', count($attribute_ids));
@@ -144,7 +140,7 @@ class SQLManager {
         $item_types = str_repeat('i', count($item_ids));
     
         $sql_attrs = <<<END
-            SELECT ai.id, ai.file, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
+            SELECT ai.id, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
               FROM account_item ai
                  , account_attribute_item aai
                  , account_item_attribute_item aiai

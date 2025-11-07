@@ -311,7 +311,7 @@ const app = Vue.createApp({
       try {
         // We need to check if a mandant is set. The easiest way is to try fetching data
         // that requires a mandant. If it fails in a specific way, we show the selection.
-        let jsonUrl = 'api.php?method=get_items_with_attributes';
+        let jsonUrl = 'api.php?method=get_items';
         if (filters.length > 0) {
             jsonUrl += '&attributes=' + filters.join(',');
         }

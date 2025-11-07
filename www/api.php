@@ -68,9 +68,9 @@ try {
         $mydata = $mySQLManager->get_years();
     } elseif (is_method($_GET, "get_attributes")) {
         $mydata = $mySQLManager->get_attributes();
+    } elseif (is_method($_GET, "get_all_items")) {
+        $mydata = $mySQLManager->get_all_items();
     } elseif (is_method($_GET, "get_items")) {
-        $mydata = $mySQLManager->get_items();
-    } elseif (is_method($_GET, "get_items_with_attributes")) {
         if (isset($_GET['attributes'])) {
             $mydata = $mySQLManager->get_items_with_attributes($_GET['attributes']);
         } else {
