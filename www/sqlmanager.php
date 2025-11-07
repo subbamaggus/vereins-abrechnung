@@ -161,6 +161,7 @@ class SQLManager {
                AND aiai.attribute_item_id = aai.id 
                AND aai.attribute_id = a.id
                AND ai.id IN ($item_placeholders)
+               AND DATE_FORMAT(ai.date, '%Y') = ($year)
                AND ai.mandant_id = {$this -> mandant}
             END;
         $stmt_attrs = $this->connection->prepare($sql_attrs);
