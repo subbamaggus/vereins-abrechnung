@@ -403,7 +403,16 @@ const app = Vue.createApp({
         }, 0).toFixed(2);
       },
       totalSummary() {
-        return this.summary[0].ende - this.summary[0].start;
+        myStart = 0;
+        myEnde = 0;
+        try {
+            myStart = this.summary[0].start;
+            myEnde = this.summary[0].ende;
+        } finally {
+            
+        }
+
+        return myEnde - myStart;
       }
     },
     mounted() {
