@@ -454,7 +454,6 @@ const app = Vue.createApp({
       <div v-if="loading">Lädt...</div>
       <div v-else-if="error">Fehler: {{ error.message }}</div>
       <div v-else>
-        <details>
         <summary>Mandaten</summary>
         <div style="margin-bottom: 10px;">
             <strong>Mandant:</strong>
@@ -462,7 +461,6 @@ const app = Vue.createApp({
                 <a href="#" @click.prevent="setMandant(mandant.id)">{{ mandant.name }}</a>
             </span>
         </div>
-        </details>
         <button @click="logout">Logout</button>
         <button @click="showAddEntry = !showAddEntry">{{ showAddEntry ? 'Cancel' : 'Add Entry' }}</button>
         <div v-if="showAddEntry">
@@ -492,7 +490,6 @@ const app = Vue.createApp({
         </div>
         <h1>&Uuml;bersicht</h1>
         <div v-if="attributes.length" style="margin-bottom: 10px;">
-            <details>
             <summary>Filter</summary>
             <li v-for="item in years" :key="item.id">
                 <a href="#" @click.prevent="clickYear(item.year)">{{ item.year }}</a>
@@ -507,7 +504,6 @@ const app = Vue.createApp({
                 </div>
                 <button @click="applyFilters">Apply Filters</button>
             </div>
-            </details>
         </div>
         <table class="table table-striped">
           <thead>

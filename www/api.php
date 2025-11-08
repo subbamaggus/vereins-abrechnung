@@ -73,11 +73,7 @@ try {
     } elseif (is_method($_GET, "get_all_items")) {
         $mydata = $mySQLManager->get_all_items();
     } elseif (is_method($_GET, "get_items")) {
-        if (isset($_GET['attributes'])) {
-            $mydata = $mySQLManager->get_items_with_attributes($_GET['attributes'], $_GET['year']);
-        } else {
-            $mydata = $mySQLManager->get_items_without_attributes();
-        }
+        $mydata = $mySQLManager->get_items($_GET['attributes'], $_GET['year']);
     } elseif (is_method($_GET, "store_entry")) {
         $last_id = $mySQLManager->insert_item($_POST['name'], $_POST['value'], $_POST['date']);
 
