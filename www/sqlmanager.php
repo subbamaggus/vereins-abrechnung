@@ -121,12 +121,6 @@ class SQLManager {
             return [];
         }
 
-        if(!empty($_attributelist)) {
-            $item_ids = array_column($data, 'id');
-            $item_placeholders = implode(',', array_fill(0, count($item_ids), '?'));
-            $item_types = str_repeat('i', count($item_ids));
-        }
-
         $sql = <<<END
             SELECT ai.id, a.id as a_id, a.name as a_name, aai.id as aai_id, aai.name as aai_name
               FROM account_item ai
@@ -141,14 +135,18 @@ class SQLManager {
         END;
 
         if(!empty($_attributelist)) {
+            $item_ids = array_column($data, 'id');
+            $item_placeholders = implode(',', array_fill(0, count($item_ids), '?'));
+            $item_types = str_repeat('i', count($item_ids));
+
             $sql .= " AND ai.id IN ($item_placeholders)";
-        }
-        $sql .= " ORDER BY ai.date";
-
-        $stmt = $this->connection->prepare($sql);
-
-        if(!empty($_attributelist)) {
+            $sql .= " ORDER BY ai.date";
+            $stmt = $this->connection->prepare($sql);
             $stmt->bind_param($item_types, ...$item_ids);
+        }
+        else {
+            $sql .= " ORDER BY ai.date";
+            $stmt = $this->connection->prepare($sql);
         }
 
         $stmt->execute();
