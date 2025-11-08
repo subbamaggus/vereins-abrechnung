@@ -497,8 +497,8 @@ const app = Vue.createApp({
         <div v-if="attributes.length" style="margin-bottom: 10px;">
             <summary>Filter</summary>
             <div v-for="item in years" :key="item.id">
-                <input type="radio" id="item.id" name="yearPicked" value="item.year" v-model="yearPicked" @change="$emit('yearPicked', item); clickYear(item.year);" >
-                <label for="item.id">{{ item.year }}</label>
+                <input type="radio" :id="'year-' + item.year" name="yearPicked" :value="item.year" v-model="currentYear" @change="clickYear(item.year)" >
+                <label :for="'year-' + item.year">{{ item.year }}</label>
             </div>
             <div style="margin-bottom: 10px;">
                 <strong>Filter by:</strong>
