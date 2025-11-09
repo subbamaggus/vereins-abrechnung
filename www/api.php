@@ -11,8 +11,12 @@ try {
     $myDbManager->opendbconnection();
 
     $mySQLManager = new SQLManager($myDbManager->connection, $config);
+    $current_method = "";
+    if(isset($_GET['method'])) {
+        $current_method = $_GET['method'];
+    }
 
-    if (is_method($_GET, "login")) {
+    if ("login" == $current_method) {
         $mydata = $mySQLManager->validate_user($_POST['email'], $_POST['password']);
 
         if (false <> $mydata and 0 < count($mydata)) {
@@ -27,7 +31,7 @@ try {
         }
     }
 
-    if (is_method($_GET, "register")) {
+    if ("register" == $current_method) {
         $mydata = $mySQLManager->register_user($_POST['email'], $_POST['password']);
 
         if (false === $mydata) {
@@ -40,7 +44,7 @@ try {
         }
     }
 
-    if (is_method($_GET, "logout")) {
+    if ("logout" == $current_method) {
         setcookie("email", "", time() - COOKIE_TIMEOUT);
         setcookie("privilege", "", time() - COOKIE_TIMEOUT);
         setcookie("mandant", "", time() - COOKIE_TIMEOUT);
@@ -62,19 +66,7 @@ try {
 
     $mydata = null;
 
-    if (is_method($_GET, "get_mandants")) {
-        $mydata = $mySQLManager->get_mandants();
-    } elseif (is_method($_GET, "get_summary")) {
-        $mydata = $mySQLManager->get_summary($_GET['year']);
-    } elseif (is_method($_GET, "get_years")) {
-        $mydata = $mySQLManager->get_years();
-    } elseif (is_method($_GET, "get_attributes")) {
-        $mydata = $mySQLManager->get_attributes();
-    } elseif (is_method($_GET, "get_all_items")) {
-        $mydata = $mySQLManager->get_all_items();
-    } elseif (is_method($_GET, "get_items")) {
-        $mydata = $mySQLManager->get_items($_GET['attributes'], $_GET['year']);
-    } elseif (is_method($_GET, "store_entry")) {
+    if ("store_entry" == $current_method) {
         $last_id = $mySQLManager->insert_item($_POST['name'], $_POST['value'], $_POST['date']);
 
         if (isset($_FILES["myimage"]) && file_exists($_FILES["myimage"]["tmp_name"])) {
@@ -88,7 +80,7 @@ try {
         }
 
         $mydata = ['success' => true, 'last_id' => $last_id];
-    } elseif (is_method($_GET, "set_mandant")) {
+    } elseif ("set_mandant" == $current_method) {
         if (isset($_POST['mandant'])) {
             setcookie('mandant', $_POST['mandant'], time() + COOKIE_TIMEOUT);
             setcookie('privilege', USER_ADMIN, time() + COOKIE_TIMEOUT);
@@ -98,16 +90,30 @@ try {
             echo json_encode(['error' => 'Mandant ID not provided']);
             exit();
         }
-    } elseif (is_method($_GET, "set_attribute")) {
+    } elseif ("get_items" == $current_method) {
+        $mydata = $mySQLManager->get_items($_GET['attributes'], $_GET['year']);
+    } elseif ("set_attribute" == $current_method) {
         $mydata = $mySQLManager->set_attribute($_POST['item_id'], $_POST['attribute_id']);
-    } elseif (is_method($_GET, "reset_attribute")) {
+    } elseif ("reset_attribute" == $current_method) {
         $mydata = $mySQLManager->reset_attribute($_POST['item_id'], $_POST['attribute_id']);
-    } elseif (is_method($_GET, "set_attributes_bulk")) {
+    } elseif ("set_attributes_bulk" == $current_method) {
         $post_data = json_decode(file_get_contents('php://input'), true);
         $mydata = $mySQLManager->set_attributes_bulk($post_data['item_ids'], $post_data['attribute_id']);
-    } elseif (is_method($_GET, "reset_attributes_bulk")) {
+    } elseif ("reset_attributes_bulk" == $current_method) {
         $post_data = json_decode(file_get_contents('php://input'), true);
         $mydata = $mySQLManager->reset_attributes_bulk($post_data['item_ids'], $post_data['attribute_id']);
+    } elseif ("get_mandants" == $current_method) {
+        $mydata = $mySQLManager->get_mandants();
+    } elseif ("get_summary" == $current_method) {
+        $mydata = $mySQLManager->get_summary($_GET['year']);
+    } elseif ("get_years" == $current_method) {
+        $mydata = $mySQLManager->get_years();
+    } elseif ("get_attributes" == $current_method) {
+        $mydata = $mySQLManager->get_attributes();
+    } elseif ("get_depots" == $current_method) {
+        $mydata = $mySQLManager->get_depots();
+    } elseif ("get_all_items" == $current_method) {
+        $mydata = $mySQLManager->get_all_items();
     } else {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid method']);

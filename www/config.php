@@ -11,5 +11,5 @@
 	define('USER_WRITE', 2);
 	define('USER_ADMIN', 3);
 
-	define('COOKIE_TIMEOUT', 3600);
+	define('COOKIE_TIMEOUT', 36000);
 ?>
