@@ -413,9 +413,13 @@ const app = Vue.createApp({
       <div v-if="loading">Lädt...</div>
       <div v-else-if="error">Fehler: {{ error.message }}</div>
       <div v-else>
-        <button @click="logout">Logout</button>
+        <a href="index.php">Home</a>&nbsp;
         <a href="add_entry.php">Add Entry</a>&nbsp;
-        <a href="attribute.php">Attribute</a>
+        <a href="attribute.php">Attribute</a>&nbsp;
+        <a href="depot.php">Depot</a>&nbsp;
+        <a href="mandant.php">Mandant</a>&nbsp;
+
+        <button @click="logout">Logout</button>
 
         <h1>&Uuml;bersicht</h1>
 

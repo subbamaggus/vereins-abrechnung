@@ -1,4 +1,4 @@
-const mandantApp = Vue.createApp({
+const depotApp = Vue.createApp({
   data() {
     return {
       attributes: [],
@@ -31,7 +31,7 @@ const mandantApp = Vue.createApp({
       <a href="depot.php">Depot</a>&nbsp;
       <a href="mandant.php">Mandant</a>&nbsp;
 
-      <h1>Manage Mandants</h1>
+      <h1>Manage Depots</h1>
       
 
       <div style="margin-bottom: 10px;">
@@ -58,4 +58,4 @@ const mandantApp = Vue.createApp({
     </div>
   `
 });
-mandantApp.mount('#mandant-app');
+depotApp.mount('#depot-app');
