@@ -9,8 +9,8 @@
 </head>
 <body>
 
-  <div id="depot-app"></div>
-  <script src="depot.js"></script>
+  <div id="mandant-app"></div>
+  <script src="mandant.js"></script>
   
 </body>
 </html>
