@@ -9,7 +9,7 @@
 </head>
 <body>
 
-  <div id="attibute-app"></div>
+  <div id="attribute-app"></div>
   <script src="attribute.js"></script>
   
 </body>

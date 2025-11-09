@@ -35,7 +35,7 @@ const attributeApp = Vue.createApp({
           <strong>{{ group.name }}:</strong>
           <br/>
           <label v-for="attr in group.attribute" :key="attr.id" style="margin-right: 10px; margin-left: 5px;">
-            <input type="input" :value="attr.id" v-model="selectedFilters" value="{{ attr.name }}"</input>
+            <input type="text" v-model="attr.name" />
             <br/>
           </label>
           <a href="#">new attribute</a>
@@ -48,4 +48,4 @@ const attributeApp = Vue.createApp({
     </div>
   `
 });
-attributeApp.mount('#attibute-app');
+attributeApp.mount('#attribute-app');
