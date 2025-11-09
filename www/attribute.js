@@ -1,79 +1,53 @@
 const attributeApp = Vue.createApp({
   data() {
     return {
-      newEntry: {
-        name: '',
-        value: '',
-        date: new Date().toISOString().slice(0, 10),
-        myimage: null,
-      },
+      attributes: [],
+      selectedAttribute: null,
       error: null,
       success: false,
     };
   },
   methods: {
-    async storeEntry() {
-      this.error = null;
-      this.success = false;
-      const formData = new FormData();
-      formData.append('name', this.newEntry.name);
-      formData.append('value', this.newEntry.value);
-      formData.append('date', this.newEntry.date);
-      if (this.newEntry.myimage) {
-        formData.append('myimage', this.newEntry.myimage);
-      }
-
-      try {
-        const response = await fetch('api.php?method=store_entry', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to add entry');
+    async fetchAttributes() {
+        try {
+            const response = await fetch('api.php?method=get_attributes');
+            if (!response.ok) {
+                throw new Error('Could not fetch attributes');
+            }
+            this.attributes = await response.json();
+        } catch (e) {
+            this.error = e;
         }
-
-        const result = await response.json();
-        if (result.success) {
-          this.success = true;
-          window.location.href = 'index.php';
-        } else {
-          throw new Error('Failed to add entry');
-        }
-      } catch (e) {
-        this.error = e.message;
-      }
-    },
-    handleFileUpload(event) {
-      this.newEntry.myimage = event.target.files[0];
     },
   },
+  mounted() {
+    this.fetchAttributes();
+  },  
   template: `
     <div>
       <a href="index.php">Back to Overview</a>
 
       <h1>Manage Attributes</h1>
       
-      <form @submit.prevent="storeEntry">
-        <label>Betrag<br>
-          <input type="number" step="0.01" v-model="newEntry.value">
-        </label>
-        <br>
-        <label>Datum<br>
-          <input type="date" v-model="newEntry.date">
-        </label>
-        <br>
-        <label>Bezeichnung<br>
-          <input type="text" v-model="newEntry.name">
-        </label>
-        <br>
-        <label>Bild<br>
-          <input type="file" @change="handleFileUpload" ref="fileInput">
-        </label>
-        <br>
-        <button type="submit">speichern</button>
-      </form>
+        <div v-if="attributes.length" style="margin-bottom: 10px;">
+
+            <div v-for="item in years" :key="item.id">
+                <input type="radio" :id="'year-' + item.year" name="yearPicked" :value="item.year" v-model="currentYear" @change="clickYear(item.year)" >
+                <label :for="'year-' + item.year">{{ item.year }}</label>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <strong>Filter by:</strong>
+                <div v-for="group in attributes" :key="group.id" style="margin-bottom: 5px;">
+                    <strong>{{ group.name }}:</strong>
+                    <label v-for="attr in group.attribute" :key="attr.id" style="margin-right: 10px; margin-left: 5px;">
+                        <input type="checkbox" :value="attr.id" v-model="selectedFilters"> {{ attr.name }}
+                    </label>
+                </div>
+                <button @click="applyFilters">Apply Filters</button>
+            </div>
+
+        </div>
+
       <p v-if="error" style="color: red;">{{ error }}</p>
       <p v-if="success" style="color: green;">Entry added successfully!</p>
     </div>

@@ -348,58 +348,57 @@ const app = Vue.createApp({
         this.registerSuccess = false;
         this.email = '';
         this.password = '';
+    }
+  },
+  computed: {
+    totalValue() {
+      return this.data.reduce((sum, item) => {
+        const value = parseFloat(item.value);
+        return sum + (isNaN(value) ? 0 : value);
+      }, 0).toFixed(2);
+    },
+    totalSummary() {
+      myStart = 0;
+      myEnde = 0;
+      try {
+          myStart = this.summary[0].start;
+          myEnde = this.summary[0].ende;
+      } finally {
+          
       }
-    },
-    computed: {
-      totalValue() {
-        return this.data.reduce((sum, item) => {
-          const value = parseFloat(item.value);
-          return sum + (isNaN(value) ? 0 : value);
-        }, 0).toFixed(2);
-      },
-      totalSummary() {
-        myStart = 0;
-        myEnde = 0;
-        try {
-            myStart = this.summary[0].start;
-            myEnde = this.summary[0].ende;
-        } finally {
-            
-        }
-
-        return myEnde - myStart;
-      }
-    },
-    mounted() {
-      this.fetchData();
-      this.fetchAttributes();
-      this.fetchMandanten();
-      this.fetchYears();
-      this.fetchSummary();
-    },
-    template: `
-      <div v-if="!loggedIn">
-        <div v-if="isLogin">
-            <h1>LOGIN</h1>
-            <form @submit.prevent="login">
-                email: <input type="text" v-model="email" /><br/>
-                password: <input type="password" v-model="password" /><br/>
-                <button type="submit">Submit</button>
-            </form>
-            <p v-if="loginError" style="color: red;">{{ loginError }}</p>
-            <a href="#" @click.prevent="toggleForm">Don't have an account? Register here.</a>
-        </div>
-        <div v-else>
-            <h1>REGISTER</h1>
-            <form @submit.prevent="register">
-                email: <input type="text" v-model="email" /><br/>
-                password: <input type="password" v-model="password" /><br/>
-                <button type="submit">Submit</button>
-            </form>
-            <p v-if="registerError" style="color: red;">{{ registerError }}</p>
-            <p v-if="registerSuccess" style="color: green;">Registration successful! You can now log in.</p>
-            <a href="#" @click.prevent="toggleForm">Already have an account? Login here.</a>
-        </div>
+     return myEnde - myStart;
+    }
+  },
+  mounted() {
+    this.fetchData();
+    this.fetchAttributes();
+    this.fetchMandanten();
+    this.fetchYears();
+    this.fetchSummary();
+  },
+  template: `
+    <div v-if="!loggedIn">
+      <div v-if="isLogin">
+          <h1>LOGIN</h1>
+          <form @submit.prevent="login">
+              email: <input type="text" v-model="email" /><br/>
+              password: <input type="password" v-model="password" /><br/>
+              <button type="submit">Submit</button>
+          </form>
+          <p v-if="loginError" style="color: red;">{{ loginError }}</p>
+          <a href="#" @click.prevent="toggleForm">Don't have an account? Register here.</a>
+      </div>
+      <div v-else>
+          <h1>REGISTER</h1>
+          <form @submit.prevent="register">
+              email: <input type="text" v-model="email" /><br/>
+              password: <input type="password" v-model="password" /><br/>
+              <button type="submit">Submit</button>
+          </form>
+          <p v-if="registerError" style="color: red;">{{ registerError }}</p>
+          <p v-if="registerSuccess" style="color: green;">Registration successful! You can now log in.</p>
+          <a href="#" @click.prevent="toggleForm">Already have an account? Login here.</a>
+      </div>
     </div>
     <div v-else-if="!mandantSet">
         <h1>Select Mandant</h1>
@@ -415,7 +414,7 @@ const app = Vue.createApp({
       <div v-else-if="error">Fehler: {{ error.message }}</div>
       <div v-else>
         <button @click="logout">Logout</button>
-        <a href="add_entry.php">Add Entry</a>
+        <a href="add_entry.php">Add Entry</a>&nbsp;
         <a href="attribute.php">Attribute</a>
 
         <h1>&Uuml;bersicht</h1>
