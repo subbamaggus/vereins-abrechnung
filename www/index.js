@@ -414,6 +414,7 @@ const app = Vue.createApp({
       <div v-else-if="error">Fehler: {{ error.message }}</div>
       <div v-else>
         <h1>&Uuml;bersicht</h1>
+        <p align="right"><button @click="logout">Logout</button></p>
 
         <div v-if="attributes.length" style="margin-bottom: 10px;">
           <details>
