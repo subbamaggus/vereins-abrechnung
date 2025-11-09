@@ -414,22 +414,11 @@ const app = Vue.createApp({
       <div v-if="loading">Lädt...</div>
       <div v-else-if="error">Fehler: {{ error.message }}</div>
       <div v-else>
-        <details>
-          <summary>Mandaten</summary>
-          <div style="margin-bottom: 10px;">
-              <strong>Mandant:</strong>
-              <span v-for="mandant in mandanten" :key="mandant.id" style="margin-left: 10px;">
-                  <a href="#" @click.prevent="setMandant(mandant.id)">{{ mandant.name }}</a>
-              </span>
-          </div>
-        </details>
-
         <button @click="logout">Logout</button>
-        <a href="add_entry.php" class="button">Add Entry</a>
+        <a href="add_entry.php">Add Entry</a>
 
-        <div>
-        </div>
         <h1>&Uuml;bersicht</h1>
+
         <div v-if="attributes.length" style="margin-bottom: 10px;">
           <details>
             <summary>Filter</summary>
@@ -449,6 +438,7 @@ const app = Vue.createApp({
             </div>
           </details>
         </div>
+        
         <table class="table table-striped">
           <thead>
             <tr>
@@ -506,7 +496,16 @@ const app = Vue.createApp({
             </select>
             <button @click="applyBulkAction" :disabled="!selectedItems.length || !selectedAttribute">Apply to selected</button>
           </div>
-      </div>
+        </div>
+        <details>
+          <summary>Mandaten</summary>
+          <div style="margin-bottom: 10px;">
+              <strong>Mandant:</strong>
+              <span v-for="mandant in mandanten" :key="mandant.id" style="margin-left: 10px;">
+                  <a href="#" @click.prevent="setMandant(mandant.id)">{{ mandant.name }}</a>
+              </span>
+          </div>
+        </details>
     </div>
   `
 });

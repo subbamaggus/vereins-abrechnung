@@ -51,7 +51,10 @@ const addEntryApp = Vue.createApp({
   },
   template: `
     <div>
-      <h2>Add New Entry</h2>
+      <a href="index.php">Back to Overview</a>
+
+      <h1>Add New Entry</h1>
+      
       <form @submit.prevent="storeEntry">
         <label>Betrag<br>
           <input type="number" step="0.01" v-model="newEntry.value">
@@ -73,7 +76,6 @@ const addEntryApp = Vue.createApp({
       </form>
       <p v-if="error" style="color: red;">{{ error }}</p>
       <p v-if="success" style="color: green;">Entry added successfully!</p>
-      <a href="index.php">Back to Overview</a>
     </div>
   `
 });
