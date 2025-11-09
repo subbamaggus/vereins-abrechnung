@@ -15,34 +15,38 @@ body {
   }
 }
 
-th{
-    font-weight: normal;
-    font-size:23px;
-}
+
 
 * {
     box-sizing: border-box;
 }
 
 .zoom {
-    padding: 1px;
-    //background-color: green;
-    //transition: transform .2s;
-    width: 10px;
-    height: 10px;
-    margin-left:1px;
-    margin-top:1px;
+  padding: 1px;
+  width: 10px;
+  height: 10px;
+  margin-left:1px;
+  margin-top:1px;
 }
 
 .zoom:hover {
-    -ms-transform: scale(30); /* IE 9 */
-    -webkit-transform: scale(30); /* Safari 3-8 */
-    transform: scale(30);
-    margin-left:120px;
-    margin-top:-100px;
+  -ms-transform: scale(30); /* IE 9 */
+  -webkit-transform: scale(30); /* Safari 3-8 */
+  transform: scale(30);
+  margin-left:120px;
+  margin-top:-100px;
 }
 
-table, th, td {
-  border: 1px solid;
-  border-collapse:collapse;
+th, td {
+  outline: 1px solid lightgray;
+}
+
+th {
+  font-weight: normal;
+  font-size: 2vw;
+}
+
+table {  
+  outline: 2px solid white;
+  outline-offset: -2px;
 }

@@ -438,7 +438,7 @@ const app = Vue.createApp({
             </div>
           </details>
         </div>
-        
+
         <table class="table table-striped">
           <thead>
             <tr>
@@ -453,7 +453,7 @@ const app = Vue.createApp({
           <tbody>
             <tr v-for="item in data" :key="item.id">
               <td><input type="checkbox" :value="item.id" v-model="selectedItems"></td>
-              <th scope="row">{{ item.date }}</th>  
+              <td scope="row">{{ item.date }}</td>  
               <td>{{ item.name }}</td> 
               <td style="text-align: right;">{{ item.value }}</td>
               <td v-for="attribute in attributes" :key="attribute.id">
@@ -483,6 +483,8 @@ const app = Vue.createApp({
             </tr>
           </tfoot>
         </table>
+        
+        <br/>
         <div>
             <label><input type="radio" value="add" v-model="bulkAction"> Add</label>
             <label><input type="radio" value="remove" v-model="bulkAction"> Remove</label>
@@ -497,6 +499,8 @@ const app = Vue.createApp({
             <button @click="applyBulkAction" :disabled="!selectedItems.length || !selectedAttribute">Apply to selected</button>
           </div>
         </div>
+
+        <br/>
         <details>
           <summary>Mandaten</summary>
           <div style="margin-bottom: 10px;">
