@@ -414,20 +414,24 @@ const app = Vue.createApp({
       <div v-if="loading">Lädt...</div>
       <div v-else-if="error">Fehler: {{ error.message }}</div>
       <div v-else>
-        <summary>Mandaten</summary>
-        <div style="margin-bottom: 10px;">
-            <strong>Mandant:</strong>
-            <span v-for="mandant in mandanten" :key="mandant.id" style="margin-left: 10px;">
-                <a href="#" @click.prevent="setMandant(mandant.id)">{{ mandant.name }}</a>
-            </span>
-        </div>
+        <details>
+          <summary>Mandaten</summary>
+          <div style="margin-bottom: 10px;">
+              <strong>Mandant:</strong>
+              <span v-for="mandant in mandanten" :key="mandant.id" style="margin-left: 10px;">
+                  <a href="#" @click.prevent="setMandant(mandant.id)">{{ mandant.name }}</a>
+              </span>
+          </div>
+        </details>
+
         <button @click="logout">Logout</button>
         <a href="add_entry.php" class="button">Add Entry</a>
-        <div>
 
+        <div>
         </div>
         <h1>&Uuml;bersicht</h1>
         <div v-if="attributes.length" style="margin-bottom: 10px;">
+          <details>
             <summary>Filter</summary>
             <div v-for="item in years" :key="item.id">
                 <input type="radio" :id="'year-' + item.year" name="yearPicked" :value="item.year" v-model="currentYear" @change="clickYear(item.year)" >
@@ -443,6 +447,7 @@ const app = Vue.createApp({
                 </div>
                 <button @click="applyFilters">Apply Filters</button>
             </div>
+          </details>
         </div>
         <table class="table table-striped">
           <thead>
@@ -470,7 +475,9 @@ const app = Vue.createApp({
                   <br/>
                 </span>
               </td>
-              <td v-if="item.file"><div class="zoom"><img :src="item.file" height="10"/></div></td>
+              <td>
+                <div class="zoom" v-if="item.file"><img :src="item.file" height="10"/></div>
+              </td>
             </tr>
           </tbody>
           <tfoot>
@@ -486,6 +493,7 @@ const app = Vue.createApp({
             </tr>
           </tfoot>
         </table>
+        <div>
             <label><input type="radio" value="add" v-model="bulkAction"> Add</label>
             <label><input type="radio" value="remove" v-model="bulkAction"> Remove</label>
             <select v-model="selectedAttribute">
@@ -497,6 +505,7 @@ const app = Vue.createApp({
                 </template>
             </select>
             <button @click="applyBulkAction" :disabled="!selectedItems.length || !selectedAttribute">Apply to selected</button>
+          </div>
       </div>
     </div>
   `
