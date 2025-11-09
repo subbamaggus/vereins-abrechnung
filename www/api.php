@@ -102,18 +102,10 @@ try {
     } elseif ("reset_attributes_bulk" == $current_method) {
         $post_data = json_decode(file_get_contents('php://input'), true);
         $mydata = $mySQLManager->reset_attributes_bulk($post_data['item_ids'], $post_data['attribute_id']);
-    } elseif ("get_mandants" == $current_method) {
-        $mydata = $mySQLManager->get_mandants();
     } elseif ("get_summary" == $current_method) {
         $mydata = $mySQLManager->get_summary($_GET['year']);
-    } elseif ("get_years" == $current_method) {
-        $mydata = $mySQLManager->get_years();
-    } elseif ("get_attributes" == $current_method) {
-        $mydata = $mySQLManager->get_attributes();
-    } elseif ("get_depots" == $current_method) {
-        $mydata = $mySQLManager->get_depots();
-    } elseif ("get_all_items" == $current_method) {
-        $mydata = $mySQLManager->get_all_items();
+    } elseif (method_exists($mySQLManager, $current_method)) {
+        $mydata = $mySQLManager->{$current_method}();
     } else {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid method']);
