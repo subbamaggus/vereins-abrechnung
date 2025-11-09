@@ -25,14 +25,7 @@ const attributeApp = Vue.createApp({
   },  
   template: `
     <div>
-      <a href="index.php">Home</a>&nbsp;
-      <a href="add_entry.php">Add Entry</a>&nbsp;
-      <a href="attribute.php">Attribute</a>&nbsp;
-      <a href="depot.php">Depot</a>&nbsp;
-      <a href="mandant.php">Mandant</a>&nbsp;
-
       <h1>Manage Attributes</h1>
-      
 
       <div style="margin-bottom: 10px;">
         <div v-for="group in attributes" :key="group.id" style="margin-bottom: 5px;">

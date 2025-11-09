@@ -8,6 +8,7 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
 <body>
+  <?php include 'navi.php' ?>
 
   <div id="depot-app"></div>
   <script src="depot.js"></script>

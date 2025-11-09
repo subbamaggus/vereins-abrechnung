@@ -222,12 +222,9 @@ class SQLManager {
     }
 
     function get_mandants() {
-        $sql = "SELECT mu.id as id, m.id as mid, m.name, mu.privilege FROM account_mandant m, account_mandant_user mu WHERE mu.mandant_id = m.id AND mu.user_id = ?";
-
+        $sql = "SELECT DISTINCT m.id as mid, m.name FROM account_mandant m, account_mandant_user mu WHERE mu.mandant_id = m.id AND mu.user_id = ?";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $user_id);
-
-        $user_id = $this -> user_id;
+        $stmt -> bind_param("i", $this -> user_id);
 
         $stmt -> execute();
 
@@ -235,7 +232,26 @@ class SQLManager {
 
         $data = $result -> fetch_all(MYSQLI_ASSOC);
 
-        return $data;
+        $sql = "SELECT DISTINCT mu.*, u.email FROM account_mandant m, account_mandant_user mu, account_user u WHERE mu.mandant_id = m.id AND mu.user_id = u.id";
+        $stmt = $this -> connection -> prepare($sql);
+        //$stmt -> bind_param("i", $this -> user_id);
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $details = $result -> fetch_all(MYSQLI_ASSOC);
+
+        foreach ($data as &$single) {
+            foreach($details as $detail) {
+                if($detail['mandant_id'] == $single['mid']) {
+                    $single['user'][] = $detail;
+                }
+            }
+        }
+        unset($single);
+
+        return $data;        
     }
 
     function validate_user($email, $password) {

@@ -1,46 +1,40 @@
 const mandantApp = Vue.createApp({
   data() {
     return {
-      attributes: [],
-      selectedAttribute: null,
+      mandants: [],
       error: null,
       success: false,
     };
   },
   methods: {
-    async fetchAttributes() {
+    async fetchMandants() {
         try {
-            const response = await fetch('api.php?method=get_attributes');
+            const response = await fetch('api.php?method=get_mandants');
             if (!response.ok) {
-                throw new Error('Could not fetch attributes');
+                throw new Error('Could not fetch mandants');
             }
-            this.attributes = await response.json();
+            this.mandants = await response.json();
         } catch (e) {
             this.error = e;
         }
     },
   },
   mounted() {
-    this.fetchAttributes();
+    this.fetchMandants();
   },  
   template: `
     <div>
-      <a href="index.php">Home</a>&nbsp;
-      <a href="add_entry.php">Add Entry</a>&nbsp;
-      <a href="attribute.php">Attribute</a>&nbsp;
-      <a href="depot.php">Depot</a>&nbsp;
-      <a href="mandant.php">Mandant</a>&nbsp;
-
       <h1>Manage Mandants</h1>
-      
 
       <div style="margin-bottom: 10px;">
-        <div v-for="group in attributes" :key="group.id" style="margin-bottom: 5px;">
-          <strong>Gruppe</strong>
-          <input type="text" v-model="group.name" /><a href="#">speichern</a>
+        <div v-for="mandant in mandants" :key="mandant.mid" style="margin-bottom: 5px;">
+          <strong>Mandant</strong>
+          <input type="text" v-model="mandant.name" /><a href="#">speichern</a>
           <br/>
-          <label v-for="attr in group.attribute" :key="attr.id" style="margin-right: 10px; margin-left: 5px;">
-            <input type="text" v-model="attr.name" /><a href="#">speichern</a>
+          <label v-for="user in mandant.user" :key="user.id" style="margin-right: 10px; margin-left: 5px;">
+            <input type="text" v-model="user.email" />
+            <input type="text" v-model="user.privilege" />
+            <a href="#">speichern</a>
             <br/>
           </label>
           <label>
@@ -48,7 +42,7 @@ const mandantApp = Vue.createApp({
           </label>
           <br/>-----
         </div>
-        <strong>Gruppe</strong>
+        <strong>Mandant</strong>
         <input type="text" />
         <a href="#">neu</a>
       </div>

@@ -8,6 +8,7 @@
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
 <body>
+  <?php include 'navi.php' ?>
 
   <div id="mandant-app"></div>
   <script src="mandant.js"></script>
