@@ -112,29 +112,7 @@ try {
         echo json_encode(['error' => 'Invalid method']);
         exit();
     }
-/*
-manage attributes
-manage depots
 
-calulate depots vs items
-
-export csv/pdf
-
-check security
-
-put create sql to project
-
-user level
-
-multi page application
-
-audit trail
-
-item without attributes, helper
-
-
-
-*/
     echo json_encode($mydata);
 
 } catch (Exception $e) {
