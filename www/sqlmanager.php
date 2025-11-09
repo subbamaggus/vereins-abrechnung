@@ -327,7 +327,7 @@ class SQLManager {
 
         $depots = $result -> fetch_all(MYSQLI_ASSOC);
 
-        $sql = "SELECT * FROM account_depot_value WHERE mandant_id = ?";
+        $sql = "SELECT * FROM account_depot_value WHERE mandant_id = ? ORDER BY date";
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $this -> mandant);
 
@@ -340,6 +340,7 @@ class SQLManager {
         foreach ($depots as &$single) {
             foreach($depot_values as $depot_value) {
                 if($depot_value['depot_id'] == $single['id']) {
+                    $depot_value['value'] = $this->int2eur($depot_value['value']);
                     $single['depot_value'][] = $depot_value;
                 }
             }

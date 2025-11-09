@@ -1,8 +1,7 @@
 const depotApp = Vue.createApp({
   data() {
     return {
-      attributes: [],
-      selectedAttribute: null,
+      depots: [],
       error: null,
       success: false,
     };
@@ -14,7 +13,7 @@ const depotApp = Vue.createApp({
             if (!response.ok) {
                 throw new Error('Could not fetch depots');
             }
-            this.attributes = await response.json();
+            this.depots = await response.json();
         } catch (e) {
             this.error = e;
         }
@@ -35,12 +34,13 @@ const depotApp = Vue.createApp({
       
 
       <div style="margin-bottom: 10px;">
-        <div v-for="group in attributes" :key="group.id" style="margin-bottom: 5px;">
-          <strong>Gruppe</strong>
+        <div v-for="group in depots" :key="group.id" style="margin-bottom: 5px;">
+          <strong>Depot</strong>
           <input type="text" v-model="group.name" /><a href="#">speichern</a>
           <br/>
-          <label v-for="attr in group.attribute" :key="attr.id" style="margin-right: 10px; margin-left: 5px;">
-            <input type="text" v-model="attr.name" /><a href="#">speichern</a>
+          <label v-for="value in group.depot_value" :key="value.id" style="margin-right: 10px; margin-left: 5px;">
+            <input type="text" v-model="value.value" />
+            <input type="text" v-model="value.date" /><a href="#">speichern</a>
             <br/>
           </label>
           <label>
@@ -48,7 +48,7 @@ const depotApp = Vue.createApp({
           </label>
           <br/>-----
         </div>
-        <strong>Gruppe</strong>
+        <strong>Depot</strong>
         <input type="text" />
         <a href="#">neu</a>
       </div>
