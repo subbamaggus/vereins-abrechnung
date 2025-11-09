@@ -18,7 +18,12 @@ class SessionManager {
 
         $mySQLManager = new SQLManager($myDbManager -> connection, $_config);
 
-        if(is_method($_get, "login")) {
+        $current_method = "";
+        if(isset($_GET['method'])) {
+            $current_method = $_GET['method'];
+        }
+
+        if("login" == $current_method) {
             $mydata = $mySQLManager -> validate_user($_post['email'], $_post['password']);
 
             if(false <> $mydata and 0 < count($mydata)) {
@@ -33,7 +38,7 @@ class SessionManager {
             $this -> error_login = "email not registered";
         }
 
-        if(is_method($_get, "open_mandant")) {
+        if("open_mandant" == $current_method) {
             setcookie('mandant', $_get['mandant'], time() + COOKIE_TIMEOUT);
             setcookie('privilege', USER_ADMIN, time() + COOKIE_TIMEOUT);
 
@@ -41,7 +46,7 @@ class SessionManager {
             exit();
         }
 
-        if(is_method($_get, "register")) {
+        if("register" == $current_method) {
         
             $mydata = $mySQLManager -> register_user($_post['email'], $_post['password']);
         
@@ -49,7 +54,7 @@ class SessionManager {
                 $this -> error_register = "email already taken";
         }
 
-        if(is_method($_get, "logout")) {
+        if("logout" == $current_method) {
             setcookie("email", "", time() - COOKIE_TIMEOUT);
             setcookie("privilege", "", time() - COOKIE_TIMEOUT);
             setcookie("mandant", "", time() - COOKIE_TIMEOUT);

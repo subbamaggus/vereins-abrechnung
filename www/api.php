@@ -11,6 +11,7 @@ try {
     $myDbManager->opendbconnection();
 
     $mySQLManager = new SQLManager($myDbManager->connection, $config);
+    
     $current_method = "";
     if(isset($_GET['method'])) {
         $current_method = $_GET['method'];
