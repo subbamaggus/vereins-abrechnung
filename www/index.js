@@ -416,6 +416,7 @@ const app = Vue.createApp({
       <div v-else>
         <button @click="logout">Logout</button>
         <a href="add_entry.php">Add Entry</a>
+        <a href="attribute.php">Attribute</a>
 
         <h1>&Uuml;bersicht</h1>
 
