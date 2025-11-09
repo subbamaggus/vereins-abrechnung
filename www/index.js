@@ -404,8 +404,8 @@ const app = Vue.createApp({
         <h1>Select Mandant</h1>
         <div v-if="error">{{ error.message }}</div>
         <ul v-else>
-            <li v-for="mandant in mandanten" :key="mandant.id">
-                <a href="#" @click.prevent="setMandant(mandant.id)">{{ mandant.name }}</a>
+            <li v-for="mandant in mandanten" :key="mandant.mid">
+                <a href="#" @click.prevent="setMandant(mandant.mid)">{{ mandant.name }}</a>
             </li>
         </ul>
     </div>
@@ -462,7 +462,7 @@ const app = Vue.createApp({
                 </span>
               </td>
               <td>
-                <div class="zoom" v-if="item.file"><img :src="item.file" height="10"/></div>
+                <div class="zoom" v-if="item.file"><img :src="item.file" style="max-width:50px; overflow: auto;"/></div>
               </td>
             </tr>
           </tbody>
@@ -501,8 +501,8 @@ const app = Vue.createApp({
           <summary>Mandaten</summary>
           <div style="margin-bottom: 10px;">
               <strong>Mandant:</strong>
-              <span v-for="mandant in mandanten" :key="mandant.id" style="margin-left: 10px;">
-                  <a href="#" @click.prevent="setMandant(mandant.id)">{{ mandant.name }}</a>
+              <span v-for="mandant in mandanten" :key="mandant.mid" style="margin-left: 10px;">
+                  <a href="#" @click.prevent="setMandant(mandant.mid)">{{ mandant.name }}</a>
               </span>
           </div>
         </details>
