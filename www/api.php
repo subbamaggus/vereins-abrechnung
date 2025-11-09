@@ -92,7 +92,7 @@ try {
             exit();
         }
     } elseif ("get_items" == $current_method) {
-        $mydata = $mySQLManager->get_items($_GET['attributes'], $_GET['year']);
+        $mydata = $mySQLManager->get_items(value_if_isset($_GET, 'attributes'), value_if_isset($_GET, 'year'));
     } elseif ("set_attribute" == $current_method) {
         $mydata = $mySQLManager->set_attribute($_POST['item_id'], $_POST['attribute_id']);
     } elseif ("reset_attribute" == $current_method) {
@@ -104,7 +104,7 @@ try {
         $post_data = json_decode(file_get_contents('php://input'), true);
         $mydata = $mySQLManager->reset_attributes_bulk($post_data['item_ids'], $post_data['attribute_id']);
     } elseif ("get_summary" == $current_method) {
-        $mydata = $mySQLManager->get_summary($_GET['year']);
+        $mydata = $mySQLManager->get_summary(value_if_isset($_GET, 'year'));
     } elseif (method_exists($mySQLManager, $current_method)) {
         $mydata = $mySQLManager->{$current_method}();
     } else {
