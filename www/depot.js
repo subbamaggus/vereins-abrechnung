@@ -8,11 +8,11 @@ const depotApp = Vue.createApp({
     };
   },
   methods: {
-    async fetchAttributes() {
+    async fetchDepots() {
         try {
-            const response = await fetch('api.php?method=get_attributes');
+            const response = await fetch('api.php?method=get_depots');
             if (!response.ok) {
-                throw new Error('Could not fetch attributes');
+                throw new Error('Could not fetch depots');
             }
             this.attributes = await response.json();
         } catch (e) {
@@ -21,7 +21,7 @@ const depotApp = Vue.createApp({
     },
   },
   mounted() {
-    this.fetchAttributes();
+    this.fetchDepots();
   },  
   template: `
     <div>

@@ -316,6 +316,39 @@ class SQLManager {
         return $attributes;
     }
 
+    function get_depots() {
+        $sql = "SELECT * FROM account_depot WHERE mandant_id = ?";
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $this -> mandant);
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $depots = $result -> fetch_all(MYSQLI_ASSOC);
+
+        $sql = "SELECT * FROM account_depot_value WHERE mandant_id = ?";
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $this -> mandant);
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $depot_values = $result -> fetch_all(MYSQLI_ASSOC);
+
+        foreach ($depots as &$single) {
+            foreach($depot_values as $depot_value) {
+                if($depot_value['depot_id'] == $single['id']) {
+                    $single['depot_value'][] = $depot_value;
+                }
+            }
+        }
+        unset($single);
+
+        return $depots;
+    }
+
     function set_attribute($item_id, $attribute_id) {
         $sql = "SELECT * FROM account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ? AND mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);

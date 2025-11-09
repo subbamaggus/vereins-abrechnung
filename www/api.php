@@ -105,8 +105,10 @@ try {
         $mydata = $mySQLManager->reset_attributes_bulk($post_data['item_ids'], $post_data['attribute_id']);
     } elseif ("get_summary" == $current_method) {
         $mydata = $mySQLManager->get_summary(value_if_isset($_GET, 'year'));
+
     } elseif (method_exists($mySQLManager, $current_method)) {
         $mydata = $mySQLManager->{$current_method}();
+        
     } else {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid method']);
