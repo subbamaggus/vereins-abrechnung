@@ -28,7 +28,6 @@ const attributeApp = Vue.createApp({
         }
     },
     async saveAttribute(groupid, attributeid, value) {
-      console.log('saveAttribute' + groupid + attributeid);
       this.error = null;
       this.success = false;
       const formData = new FormData();
@@ -48,7 +47,6 @@ const attributeApp = Vue.createApp({
         }
 
         const result = await response.json();
-        console.log(result);
         if (result.success) {
           this.success = true;
           //window.location.href = 'index.php';
