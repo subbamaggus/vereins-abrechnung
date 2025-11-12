@@ -33,10 +33,9 @@ class SQLManager {
     }
 
     function save_attribute($_groupid, $_itemid, $_text) {
-        error_log("groupid: " . $_groupid . ", itemid:" . $_itemid . ", text:" . $_text);
 
-        if(-1 == $_groupid) {
-            if(-1 == $_itemid) {
+        if(-1 == $_itemid) {
+            if(-1 == $_groupid) {
                 $sql = "INSERT INTO account_attribute (name, mandant_id) VALUES (?, ?)";
                 $stmt = $this -> connection -> prepare($sql);
                 $stmt -> bind_param("si", $name, $mandant);
@@ -49,9 +48,7 @@ class SQLManager {
                 $last_id = $stmt -> insert_id;
 
                 return $last_id;
-            }
-        } else {
-            if(-1 == $_itemid) {
+            } else {
                 $sql = "INSERT INTO account_attribute_item (name, mandant_id, attribute_id) VALUES (?, ?, ?)";
                 $stmt = $this -> connection -> prepare($sql);
                 $stmt -> bind_param("sii", $name, $mandant, $attribute_id);
@@ -66,6 +63,35 @@ class SQLManager {
 
                 return $last_id;
             }
+        }
+
+        if("" == $_itemid) {
+            $sql = "UPDATE account_attribute SET name = ? WHERE id = ? AND mandant_id = ?";
+            $stmt = $this -> connection -> prepare($sql);
+            $stmt -> bind_param("sii", $name, $id, $mandant);
+
+            $name = $_text;
+            $id = $_groupid;
+            $mandant = $this->mandant;
+
+            $stmt -> execute();
+
+            return "ok";         
+        }
+
+        if(0 < $_itemid and 0 < $_groupid) {
+            $sql = "UPDATE account_attribute_item SET name = ? WHERE id = ? AND attribute_id = ? AND mandant_id = ?";
+            $stmt = $this -> connection -> prepare($sql);
+            $stmt -> bind_param("siii", $name, $id, $attribute_id, $mandant);
+
+            $name = $_text;
+            $id = $_itemid;
+            $attribute_id = $_groupid;
+            $mandant = $this->mandant;
+
+            $stmt -> execute();
+            
+            return "ok";
         }
 
         return "uiui";

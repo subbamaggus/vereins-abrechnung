@@ -23,14 +23,14 @@ const attributeApp = Vue.createApp({
             this.error = e;
         }
     },
-    async saveAttribute(groupid, attributeid) {
+    async saveAttribute(groupid, attributeid, value) {
       console.log('saveAttribute' + groupid + attributeid);
       this.error = null;
       this.success = false;
       const formData = new FormData();
       formData.append('groupid', groupid);
       formData.append('attributeid', attributeid);
-      formData.append('text', this.newValue.name);
+      formData.append('text', value);
 
       try {
         const response = await fetch('api.php?method=save_attribute', {
@@ -67,20 +67,20 @@ const attributeApp = Vue.createApp({
       <div style="margin-bottom: 10px;">
         <div v-for="group in attributes" :key="group.id" style="margin-bottom: 5px;">
           <strong>Gruppe</strong>
-          <input type="text" v-model="group.name" /><a href="#" @click.prevent="saveAttribute(group.id, '')">speichern</a>
+          <input type="text" v-model="group.name" /><a href="#" @click.prevent="saveAttribute(group.id, '', group.name)">speichern</a>
           <br/>
           <label v-for="attr in group.attribute" :key="attr.id" style="margin-right: 10px; margin-left: 5px;">
-            <input type="text" v-model="attr.name"/><a href="#" @click.prevent="saveAttribute(group.id, attr.id)">speichern</a>
+            <input type="text" v-model="attr.name"/><a href="#" @click.prevent="saveAttribute(group.id, attr.id, attr.name)">speichern</a>
             <br/>
           </label>
           <label>
-            <input type="text" v-model="newValue.name"/><a href="#" @click.prevent="saveAttribute(group.id, -1)">neu</a>
+            <input type="text" v-model="newValue.name"/><a href="#" @click.prevent="saveAttribute(group.id, -1, newValue.name)">neu</a>
           </label>
           <br/>-----
         </div>
         <strong>Gruppe</strong>
         <input type="text" v-model="newValue.name"/>
-        <a href="#" @click.prevent="saveAttribute(-1, -1)">neu</a>
+        <a href="#" @click.prevent="saveAttribute(-1, -1, newValue.name)">neu</a>
       </div>
 
       <p v-if="error" style="color: red;">{{ error }}</p>

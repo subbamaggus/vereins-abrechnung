@@ -96,7 +96,6 @@ try {
     } elseif ("set_attribute" == $current_method) {
         $mydata = $mySQLManager->set_attribute($_POST['item_id'], $_POST['attribute_id']);
     } elseif ("save_attribute" == $current_method) {
-        error_log("save_attribute:" . json_encode($_POST));
         $last_id = $mySQLManager->save_attribute($_POST['groupid'], $_POST['attributeid'], $_POST['text']);
         $mydata = ['success' => true, 'last_id' => $last_id];
     } elseif ("reset_attribute" == $current_method) {
