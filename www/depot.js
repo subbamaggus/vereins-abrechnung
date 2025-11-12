@@ -1,6 +1,13 @@
 const depotApp = Vue.createApp({
   data() {
     return {
+      newDepot: {
+        name: '',
+      },
+      newDepotValue: {
+        date: '',
+        value: '',
+      },
       depots: [],
       error: null,
       success: false,
@@ -14,9 +21,45 @@ const depotApp = Vue.createApp({
                 throw new Error('Could not fetch depots');
             }
             this.depots = await response.json();
+            this.depots.forEach(group => {
+                group.name = '';
+            });
+            this.newDepot.name = '';
         } catch (e) {
             this.error = e;
         }
+    },
+    async saveDepot(depotid, depotname) {
+      console.log('saveDepot' + depotid + depotname);
+      this.error = null;
+      this.success = false;
+      const formData = new FormData();
+      formData.append('depotid', depotid);
+      formData.append('text', depotname);
+
+      try {
+        const response = await fetch('api.php?method=save_depot', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to add entry');
+        }
+
+        const result = await response.json();
+        console.log(result);
+        if (result.success) {
+          this.success = true;
+          //window.location.href = 'index.php';
+          this.fetchDepots();
+        } else {
+          throw new Error('Failed to add entry');
+        }
+      } catch (e) {
+        this.error = e.message;
+      }
     },
   },
   mounted() {
@@ -29,21 +72,24 @@ const depotApp = Vue.createApp({
       <div style="margin-bottom: 10px;">
         <div v-for="group in depots" :key="group.id" style="margin-bottom: 5px;">
           <strong>Depot</strong>
-          <input type="text" v-model="group.name" /><a href="#">speichern</a>
+          <input type="text" v-model="group.name" /><a href="#" @click.prevent="saveDepot(group.id, group.name)">speichern</a>
           <br/>
           <label v-for="value in group.depot_value" :key="value.id" style="margin-right: 10px; margin-left: 5px;">
             <input type="text" v-model="value.value" />
-            <input type="text" v-model="value.date" /><a href="#">speichern</a>
+            <input type="text" v-model="value.date" />
+            <a href="#" @click.prevent="saveDepotValue(group.id, value.date, value.value)">speichern</a>
             <br/>
           </label>
           <label>
-            <input type="text" /><a href="#">neu</a>
+            <input type="text" v-model="newDepotValue.value" />
+            <input type="text" v-model="newDepotValue.date" />
+            <a href="#" @click.prevent="saveDepotValue(group.id, newDepotValue.date, newDepotValue.value)">neu</a>
           </label>
           <br/>-----
         </div>
         <strong>Depot</strong>
-        <input type="text" />
-        <a href="#">neu</a>
+        <input type="text" v-model="newDepot.name"/>
+        <a href="#" @click.prevent="saveDepot(-1, newDepot.name)">neu</a>
       </div>
 
       <p v-if="error" style="color: red;">{{ error }}</p>

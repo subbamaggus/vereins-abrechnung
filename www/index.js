@@ -499,15 +499,12 @@ const app = Vue.createApp({
         </div>
 
         <br/>
-        <details>
-          <summary>Mandaten</summary>
-          <div style="margin-bottom: 10px;">
-              <strong>Mandant:</strong>
-              <span v-for="mandant in mandanten" :key="mandant.mid" style="margin-left: 10px;">
-                  <a href="#" @click.prevent="setMandant(mandant.mid)">{{ mandant.name }}</a>
-              </span>
-          </div>
-        </details>
+        <div style="margin-bottom: 10px;">
+            <strong>Mandant:</strong>
+            <span v-for="mandant in mandanten" :key="mandant.mid" style="margin-left: 10px;">
+                <a href="#" @click.prevent="setMandant(mandant.mid)">{{ mandant.name }}</a>
+            </span>
+        </div>
     </div>
   `
 });

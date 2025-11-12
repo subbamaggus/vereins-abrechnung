@@ -97,6 +97,23 @@ class SQLManager {
         return "uiui";
     }
 
+    function save_depot($_depotid, $_depotname) {
+        if(-1 == $_depotid) {
+                $sql = "INSERT INTO account_depot (name, mandant_id) VALUES (?, ?)";
+                $stmt = $this -> connection -> prepare($sql);
+                $stmt -> bind_param("si", $name, $mandant);
+
+                $name = $_depotname;
+                $mandant = $this->mandant;
+
+                $stmt -> execute();
+
+                $last_id = $stmt -> insert_id;
+
+                return $last_id;
+        }
+    }
+
     function update_image_name($_id, $_newname) {
         $sql = "UPDATE account_item SET file = ? WHERE id = ? and mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
