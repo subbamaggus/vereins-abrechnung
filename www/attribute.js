@@ -4,9 +4,6 @@ const attributeApp = Vue.createApp({
       newAttribute: {
         name: '',
       },
-      newAttributeItem: {
-        name: '',
-      },
       attributes: [],
       selectedAttribute: null,
       error: null,
@@ -21,7 +18,11 @@ const attributeApp = Vue.createApp({
                 throw new Error('Could not fetch attributes');
             }
             this.attributes = await response.json();
-            this.newValue.name = '';
+            // Add a property to each group for the new attribute item's name
+            this.attributes.forEach(group => {
+                group.newAttributeItemName = '';
+            });
+            this.newAttribute.name = '';
         } catch (e) {
             this.error = e;
         }
@@ -77,7 +78,7 @@ const attributeApp = Vue.createApp({
             <br/>
           </label>
           <label>
-            <input type="text" v-model="newAttributeItem.name"/><a href="#" @click.prevent="saveAttribute(group.id, -1, newAttributeItem.name)">neu</a>
+            <input type="text" v-model="group.newAttributeItemName"/><a href="#" @click.prevent="saveAttribute(group.id, -1, group.newAttributeItemName)">neu</a>
           </label>
           <br/>-----
         </div>
