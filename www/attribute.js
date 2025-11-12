@@ -1,7 +1,10 @@
 const attributeApp = Vue.createApp({
   data() {
     return {
-      newValue: {
+      newAttribute: {
+        name: '',
+      },
+      newAttributeItem: {
         name: '',
       },
       attributes: [],
@@ -74,13 +77,13 @@ const attributeApp = Vue.createApp({
             <br/>
           </label>
           <label>
-            <input type="text" v-model="newValue.name"/><a href="#" @click.prevent="saveAttribute(group.id, -1, newValue.name)">neu</a>
+            <input type="text" v-model="newAttributeItem.name"/><a href="#" @click.prevent="saveAttribute(group.id, -1, newAttributeItem.name)">neu</a>
           </label>
           <br/>-----
         </div>
         <strong>Gruppe</strong>
-        <input type="text" v-model="newValue.name"/>
-        <a href="#" @click.prevent="saveAttribute(-1, -1, newValue.name)">neu</a>
+        <input type="text" v-model="newAttribute.name"/>
+        <a href="#" @click.prevent="saveAttribute(-1, -1, newAttribute.name)">neu</a>
       </div>
 
       <p v-if="error" style="color: red;">{{ error }}</p>
