@@ -32,6 +32,45 @@ class SQLManager {
         return $last_id;
     }
 
+    function save_attribute($_groupid, $_itemid, $_text) {
+        error_log("groupid: " . $_groupid . ", itemid:" . $_itemid . ", text:" . $_text);
+
+        if(-1 == $_groupid) {
+            if(-1 == $_itemid) {
+                $sql = "INSERT INTO account_attribute (name, mandant_id) VALUES (?, ?)";
+                $stmt = $this -> connection -> prepare($sql);
+                $stmt -> bind_param("si", $name, $mandant);
+
+                $name = $_text;
+                $mandant = $this->mandant;
+
+                $stmt -> execute();
+
+                $last_id = $stmt -> insert_id;
+
+                return $last_id;
+            }
+        } else {
+            if(-1 == $_itemid) {
+                $sql = "INSERT INTO account_attribute_item (name, mandant_id, attribute_id) VALUES (?, ?, ?)";
+                $stmt = $this -> connection -> prepare($sql);
+                $stmt -> bind_param("sii", $name, $mandant, $attribute_id);
+
+                $name = $_text;
+                $mandant = $this->mandant;
+                $attribute_id = $_groupid;
+
+                $stmt -> execute();
+
+                $last_id = $stmt -> insert_id;
+
+                return $last_id;
+            }
+        }
+
+        return "uiui";
+    }
+
     function update_image_name($_id, $_newname) {
         $sql = "UPDATE account_item SET file = ? WHERE id = ? and mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);

@@ -37,7 +37,7 @@ const addEntryApp = Vue.createApp({
         const result = await response.json();
         if (result.success) {
           this.success = true;
-          window.location.href = 'index.php';
+          //window.location.href = 'index.php';
         } else {
           throw new Error('Failed to add entry');
         }
