@@ -18,12 +18,13 @@ class SQLManager {
     function insert_item($_name, $_value, $_date) {
         $sql = "INSERT INTO account_item (name, value, date, user, mandant_id) VALUES (?, ?, ?, ?, ?)";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("sssii", $name, $value, $date, $user_id, $this -> mandant);
+        $stmt -> bind_param("sssii", $name, $value, $date, $user_id, $mandant);
 
         $name = $_name;
         $value = $_value * 100;
         $date = $_date;
-        $user_id = $this -> user_id;
+        $user_id = $this->user_id;
+        $mandant = $this->mandant;
 
         $stmt -> execute();
 
@@ -149,10 +150,11 @@ class SQLManager {
     function update_image_name($_id, $_newname) {
         $sql = "UPDATE account_item SET file = ? WHERE id = ? and mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("sii", $filename, $id, $this -> mandant);
+        $stmt -> bind_param("sii", $filename, $id, $mandant);
 
         $filename = $_newname;
         $id = $_id;
+        $mandant = $this->mandant;
 
         $stmt -> execute();
 
@@ -162,7 +164,9 @@ class SQLManager {
     function get_all_items() {
         $sql = "SELECT * FROM account_item WHERE mandant_id = ? ORDER BY date";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $this -> mandant);
+        $stmt -> bind_param("i", $mandant);
+
+        $mandant = $this->mandant;
 
         $stmt -> execute();
 
@@ -285,7 +289,9 @@ class SQLManager {
     function get_years() {
         $sql = "SELECT distinct DATE_FORMAT(date, '%Y') as year FROM account_item WHERE mandant_id = ? ORDER BY 1 desc";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $this -> mandant);
+        $stmt -> bind_param("i", $mandant);
+
+        $mandant = $this->mandant;
 
         $stmt -> execute();
 
@@ -324,9 +330,11 @@ class SQLManager {
            END;
 
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("ii", $this -> mandant, $this -> mandant);
+        $stmt -> bind_param("ii", $mandant1, $mandant2);
 
         $stmt -> execute();
+        $mandant1 = $this->mandant;
+        $mandant2 = $this->mandant;
 
         $result = $stmt -> get_result();
 
@@ -338,7 +346,9 @@ class SQLManager {
     function get_mandants() {
         $sql = "SELECT DISTINCT m.id as mid, m.name FROM account_mandant m, account_mandant_user mu WHERE mu.mandant_id = m.id AND mu.user_id = ?";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $this -> user_id);
+        $stmt -> bind_param("i", $userid);
+
+        $userid = $this->user_id;
 
         $stmt -> execute();
 
@@ -348,7 +358,6 @@ class SQLManager {
 
         $sql = "SELECT DISTINCT mu.*, u.email FROM account_mandant m, account_mandant_user mu, account_user u WHERE mu.mandant_id = m.id AND mu.user_id = u.id";
         $stmt = $this -> connection -> prepare($sql);
-        //$stmt -> bind_param("i", $this -> user_id);
 
         $stmt -> execute();
 
@@ -416,7 +425,9 @@ class SQLManager {
     function get_attributes() {
         $sql = "SELECT * FROM account_attribute WHERE mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $this -> mandant);
+        $stmt -> bind_param("i", $mandant);
+
+        $mandant = $this->mandant;
 
         $stmt -> execute();
 
@@ -426,7 +437,9 @@ class SQLManager {
 
         $sql = "SELECT * FROM account_attribute_item WHERE mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $this -> mandant);
+        $stmt -> bind_param("i", $mandant);
+
+        $mandant = $this->mandant;
 
         $stmt -> execute();
 
@@ -449,7 +462,9 @@ class SQLManager {
     function get_depots() {
         $sql = "SELECT * FROM account_depot WHERE mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $this -> mandant);
+        $stmt -> bind_param("i", $mandant);
+
+        $mandant = $this->mandant;
 
         $stmt -> execute();
 
@@ -459,7 +474,9 @@ class SQLManager {
 
         $sql = "SELECT * FROM account_depot_value WHERE mandant_id = ? ORDER BY date";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $this -> mandant);
+        $stmt -> bind_param("i", $mandant);
+
+        $mandant = $this->mandant;
 
         $stmt -> execute();
 
@@ -483,7 +500,9 @@ class SQLManager {
     function set_attribute($item_id, $attribute_id) {
         $sql = "SELECT * FROM account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ? AND mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("iii", $item_id, $attribute_id, $this -> mandant);
+        $stmt -> bind_param("iii", $item_id, $attribute_id, $mandant);
+
+        $mandant = $this->mandant;
 
         $stmt -> execute();
 
@@ -506,7 +525,9 @@ class SQLManager {
     function reset_attribute($item_id, $attribute_id) {
         $sql = "DELETE FROM account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ? AND mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("iii", $item_id, $attribute_id, $this -> mandant);
+        $stmt -> bind_param("iii", $item_id, $attribute_id, $mandant);
+
+        $mandant = $this->mandant;
 
         $stmt -> execute();
 
@@ -521,7 +542,8 @@ class SQLManager {
             $stmt = $this -> connection -> prepare($sql);
             foreach ($item_ids as $item_id) {
                 // Use IGNORE to prevent errors on duplicate entries
-                $stmt -> bind_param("iii", $item_id, $attribute_id, $this -> mandant);
+                $stmt -> bind_param("iii", $item_id, $attribute_id, $mandant);
+                $mandant = $this->mandant;
                 $stmt -> execute();
             }
             $stmt -> close();
@@ -540,7 +562,8 @@ class SQLManager {
         try {
             $stmt = $this -> connection -> prepare($sql);
             foreach ($item_ids as $item_id) {
-                $stmt -> bind_param("iii", $item_id, $attribute_id, $this -> mandant);
+                $stmt -> bind_param("iii", $item_id, $attribute_id, $mandant);
+                $mandant = $this->mandant;
                 $stmt -> execute();
             }
             $stmt -> close();
