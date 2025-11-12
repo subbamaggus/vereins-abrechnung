@@ -22,8 +22,8 @@ const depotApp = Vue.createApp({
             }
             this.depots = await response.json();
             this.depots.forEach(group => {
-                group.newDepotValue.value = '';
-                group.newDepotValue.date = '';
+                group.newDepotValuevalue = '';
+                group.newDepotValuedate = '';
             });
             this.newDepot.name = '';
         } catch (e) {
@@ -31,7 +31,6 @@ const depotApp = Vue.createApp({
         }
     },
     async saveDepot(depotid, depotname) {
-      console.log('saveDepot' + depotid + depotname);
       this.error = null;
       this.success = false;
       const formData = new FormData();
@@ -50,7 +49,37 @@ const depotApp = Vue.createApp({
         }
 
         const result = await response.json();
-        console.log(result);
+        if (result.success) {
+          this.success = true;
+          //window.location.href = 'index.php';
+          this.fetchDepots();
+        } else {
+          throw new Error('Failed to add entry');
+        }
+      } catch (e) {
+        this.error = e.message;
+      }
+    },
+    async saveDepotValue(depotid, entrydate, entryvalue) {
+      this.error = null;
+      this.success = false;
+      const formData = new FormData();
+      formData.append('depotid', depotid);
+      formData.append('entrydate', entrydate);
+      formData.append('entryvalue', entryvalue);
+
+      try {
+        const response = await fetch('api.php?method=save_depot_value', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to add entry');
+        }
+
+        const result = await response.json();
         if (result.success) {
           this.success = true;
           //window.location.href = 'index.php';
@@ -77,14 +106,14 @@ const depotApp = Vue.createApp({
           <br/>
           <label v-for="value in group.depot_value" :key="value.id" style="margin-right: 10px; margin-left: 5px;">
             <input type="text" v-model="value.value" />
-            <input type="text" v-model="value.date" />
+            <input type="date" v-model="value.date" />
             <a href="#" @click.prevent="saveDepotValue(group.id, value.date, value.value)">speichern</a>
             <br/>
           </label>
           <label>
-            <input type="text" v-model="newDepotValue.value" />
-            <input type="text" v-model="newDepotValue.date" />
-            <a href="#" @click.prevent="saveDepotValue(group.id, group.newDepotValue.date, group.newDepotValue.value)">neu</a>
+            <input type="text" v-model="group.newDepotValuevalue" />
+            <input type="date" v-model="group.newDepotValuedate" />
+            <a href="#" @click.prevent="saveDepotValue(group.id, group.newDepotValuedate, group.newDepotValuevalue)">neu</a>
           </label>
           <br/>-----
         </div>

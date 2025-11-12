@@ -101,6 +101,9 @@ try {
     } elseif ("save_depot" == $current_method) {
         $last_id = $mySQLManager->save_depot($_POST['depotid'], $_POST['text']);
         $mydata = ['success' => true, 'last_id' => $last_id];
+    } elseif ("save_depot_value" == $current_method) {
+        $last_id = $mySQLManager->save_depot_value($_POST['depotid'], $_POST['entrydate'], $_POST['entryvalue']);
+        $mydata = ['success' => true, 'last_id' => $last_id];
     } elseif ("reset_attribute" == $current_method) {
         $mydata = $mySQLManager->reset_attribute($_POST['item_id'], $_POST['attribute_id']);
     } elseif ("set_attributes_bulk" == $current_method) {

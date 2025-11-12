@@ -128,6 +128,24 @@ class SQLManager {
         }
     }
 
+    function save_depot_value($_depotid, $_entrydate, $_entryvalue) {
+
+        if(0 < $_depotid) {
+            $sql = "INSERT INTO account_depot_value (depot_id, mandant_id, value, date) VALUES (?, ?, ?, ?)";
+            $stmt = $this -> connection -> prepare($sql);
+            $stmt -> bind_param("iiis", $depotid, $mandant, $value, $date);
+
+            $depotid = $_depotid;
+            $mandant = $this->mandant;
+            $value = $_entryvalue * 100;
+            $date = $_entrydate;
+
+            $stmt -> execute();
+
+            return "ok";         
+        }
+    }
+
     function update_image_name($_id, $_newname) {
         $sql = "UPDATE account_item SET file = ? WHERE id = ? and mandant_id = ?";
         $stmt = $this -> connection -> prepare($sql);
