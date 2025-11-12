@@ -99,18 +99,32 @@ class SQLManager {
 
     function save_depot($_depotid, $_depotname) {
         if(-1 == $_depotid) {
-                $sql = "INSERT INTO account_depot (name, mandant_id) VALUES (?, ?)";
-                $stmt = $this -> connection -> prepare($sql);
-                $stmt -> bind_param("si", $name, $mandant);
+            $sql = "INSERT INTO account_depot (name, mandant_id) VALUES (?, ?)";
+            $stmt = $this -> connection -> prepare($sql);
+            $stmt -> bind_param("si", $name, $mandant);
 
-                $name = $_depotname;
-                $mandant = $this->mandant;
+            $name = $_depotname;
+            $mandant = $this->mandant;
 
-                $stmt -> execute();
+            $stmt -> execute();
 
-                $last_id = $stmt -> insert_id;
+            $last_id = $stmt -> insert_id;
 
-                return $last_id;
+            return $last_id;
+        }
+
+        if(0 < $_depotid) {
+            $sql = "UPDATE account_depot SET name = ? WHERE id = ? AND mandant_id = ?";
+            $stmt = $this -> connection -> prepare($sql);
+            $stmt -> bind_param("sii", $name, $id, $mandant);
+
+            $name = $_depotname;
+            $id = $_depotid;
+            $mandant = $this->mandant;
+
+            $stmt -> execute();
+
+            return "ok";         
         }
     }
 

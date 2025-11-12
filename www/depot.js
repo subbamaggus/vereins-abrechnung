@@ -22,7 +22,8 @@ const depotApp = Vue.createApp({
             }
             this.depots = await response.json();
             this.depots.forEach(group => {
-                group.name = '';
+                group.newDepotValue.value = '';
+                group.newDepotValue.date = '';
             });
             this.newDepot.name = '';
         } catch (e) {
@@ -83,7 +84,7 @@ const depotApp = Vue.createApp({
           <label>
             <input type="text" v-model="newDepotValue.value" />
             <input type="text" v-model="newDepotValue.date" />
-            <a href="#" @click.prevent="saveDepotValue(group.id, newDepotValue.date, newDepotValue.value)">neu</a>
+            <a href="#" @click.prevent="saveDepotValue(group.id, group.newDepotValue.date, group.newDepotValue.value)">neu</a>
           </label>
           <br/>-----
         </div>
