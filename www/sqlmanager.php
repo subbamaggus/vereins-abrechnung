@@ -17,13 +17,16 @@ class SQLManager {
         return number_format($value / 100, 2, '.', '');
     }
 
-    function debug_log($message) {
+    function debug_log($line, $message) {
         if($this->debug)
-            error_log($message);
+            error_log($line . ": " . $message);
     }
 
     function insert_item($_name, $_value, $_date) {
         $sql = "INSERT INTO account_item (name, value, date, user, mandant_id) VALUES (?, ?, ?, ?, ?)";
+
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("sssii", $name, $value, $date, $user_id, $mandant);
 
@@ -45,6 +48,9 @@ class SQLManager {
         if(-1 == $_itemid) {
             if(-1 == $_groupid) {
                 $sql = "INSERT INTO account_attribute (name, mandant_id) VALUES (?, ?)";
+
+                $this->debug_log(__LINE__, $sql);
+
                 $stmt = $this -> connection -> prepare($sql);
                 $stmt -> bind_param("si", $name, $mandant);
 
@@ -58,6 +64,9 @@ class SQLManager {
                 return $last_id;
             } else {
                 $sql = "INSERT INTO account_attribute_item (name, mandant_id, attribute_id) VALUES (?, ?, ?)";
+
+                $this->debug_log(__LINE__, $sql);
+
                 $stmt = $this -> connection -> prepare($sql);
                 $stmt -> bind_param("sii", $name, $mandant, $attribute_id);
 
@@ -75,6 +84,9 @@ class SQLManager {
 
         if("" == $_itemid) {
             $sql = "UPDATE account_attribute SET name = ? WHERE id = ? AND mandant_id = ?";
+
+            $this->debug_log(__LINE__, $sql);
+
             $stmt = $this -> connection -> prepare($sql);
             $stmt -> bind_param("sii", $name, $id, $mandant);
 
@@ -89,6 +101,9 @@ class SQLManager {
 
         if(0 < $_itemid and 0 < $_groupid) {
             $sql = "UPDATE account_attribute_item SET name = ? WHERE id = ? AND attribute_id = ? AND mandant_id = ?";
+
+            $this->debug_log(__LINE__, $sql);
+
             $stmt = $this -> connection -> prepare($sql);
             $stmt -> bind_param("siii", $name, $id, $attribute_id, $mandant);
 
@@ -108,6 +123,9 @@ class SQLManager {
     function save_depot($_depotid, $_depotname) {
         if(-1 == $_depotid) {
             $sql = "INSERT INTO account_depot (name, mandant_id) VALUES (?, ?)";
+
+            $this->debug_log(__LINE__, $sql);
+
             $stmt = $this -> connection -> prepare($sql);
             $stmt -> bind_param("si", $name, $mandant);
 
@@ -123,6 +141,9 @@ class SQLManager {
 
         if(0 < $_depotid) {
             $sql = "UPDATE account_depot SET name = ? WHERE id = ? AND mandant_id = ?";
+
+            $this->debug_log(__LINE__, $sql);
+
             $stmt = $this -> connection -> prepare($sql);
             $stmt -> bind_param("sii", $name, $id, $mandant);
 
@@ -140,6 +161,9 @@ class SQLManager {
 
         if(0 < $_depotid) {
             $sql = "INSERT INTO account_depot_value (depot_id, mandant_id, value, date) VALUES (?, ?, ?, ?)";
+
+            $this->debug_log(__LINE__, $sql);
+
             $stmt = $this -> connection -> prepare($sql);
             $stmt -> bind_param("iiis", $depotid, $mandant, $value, $date);
 
@@ -156,6 +180,9 @@ class SQLManager {
 
     function update_image_name($_id, $_newname) {
         $sql = "UPDATE account_item SET file = ? WHERE id = ? and mandant_id = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("sii", $filename, $id, $mandant);
 
@@ -170,6 +197,9 @@ class SQLManager {
 
     function get_all_items() {
         $sql = "SELECT * FROM account_item WHERE mandant_id = ? ORDER BY date";
+
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $mandant);
 
@@ -210,6 +240,9 @@ class SQLManager {
                    AND DATE_FORMAT(date, '%Y') = ($year)
                  ORDER BY date
             END;
+
+            $this->debug_log(__LINE__, $sql);
+
             $stmt = $this->connection->prepare($sql);
         }
         else {
@@ -226,6 +259,9 @@ class SQLManager {
                    AND DATE_FORMAT(ai.date, '%Y') = ($year)
                  ORDER BY ai.date
             END;
+
+            $this->debug_log(__LINE__, $sql);
+
             $stmt = $this->connection->prepare($sql);
             $stmt->bind_param($types, ...$attribute_ids);
         }
@@ -274,6 +310,8 @@ class SQLManager {
             $stmt = $this->connection->prepare($sql);
         }
 
+        $this->debug_log(__LINE__, $sql);
+
         $stmt->execute();
 
         $result_attrs = $stmt->get_result();
@@ -295,6 +333,9 @@ class SQLManager {
 
     function get_years() {
         $sql = "SELECT distinct DATE_FORMAT(date, '%Y') as year FROM account_item WHERE mandant_id = ? ORDER BY 1 desc";
+
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $mandant);
 
@@ -340,7 +381,7 @@ class SQLManager {
              group by mydate, depot_id;
            END;
 
-        $this->debug_log(__LINE__ . $sql);
+        $this->debug_log(__LINE__, $sql);
 
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("ii", $mandant1, $mandant2);
@@ -359,6 +400,9 @@ class SQLManager {
 
     function get_mandants() {
         $sql = "SELECT DISTINCT m.id as mid, m.name FROM account_mandant m, account_mandant_user mu WHERE mu.mandant_id = m.id AND mu.user_id = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $userid);
 
@@ -370,7 +414,11 @@ class SQLManager {
 
         $data = $result -> fetch_all(MYSQLI_ASSOC);
 
+        
         $sql = "SELECT DISTINCT mu.*, u.email FROM account_mandant m, account_mandant_user mu, account_user u WHERE mu.mandant_id = m.id AND mu.user_id = u.id";
+
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
 
         $stmt -> execute();
@@ -393,6 +441,9 @@ class SQLManager {
 
     function validate_user($email, $password) {
         $sql = "SELECT * FROM account_user where email = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("s", $email);
 
@@ -414,6 +465,9 @@ class SQLManager {
 
     function register_user($email, $password) {
         $sql = "INSERT INTO account_user (email, password) VALUES (?,?)";
+        
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("ss", $email, $pw_hash);
 
@@ -438,6 +492,9 @@ class SQLManager {
 
     function get_attributes() {
         $sql = "SELECT * FROM account_attribute WHERE mandant_id = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $mandant);
 
@@ -449,7 +506,11 @@ class SQLManager {
 
         $attributes = $result -> fetch_all(MYSQLI_ASSOC);
 
+        
         $sql = "SELECT * FROM account_attribute_item WHERE mandant_id = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $mandant);
 
@@ -475,6 +536,9 @@ class SQLManager {
 
     function get_depots() {
         $sql = "SELECT * FROM account_depot WHERE mandant_id = ?";
+        
+        $this->debug_log(__LINE__, $sql);
+        
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $mandant);
 
@@ -486,7 +550,11 @@ class SQLManager {
 
         $depots = $result -> fetch_all(MYSQLI_ASSOC);
 
+
         $sql = "SELECT * FROM account_depot_value WHERE mandant_id = ? ORDER BY date";
+
+        $this->debug_log(__LINE__, $sql);
+        
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("i", $mandant);
 
@@ -513,6 +581,9 @@ class SQLManager {
 
     function set_attribute($item_id, $attribute_id) {
         $sql = "SELECT * FROM account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ? AND mandant_id = ?";
+        
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("iii", $item_id, $attribute_id, $mandant);
 
@@ -528,6 +599,9 @@ class SQLManager {
         }
 
         $sql = "INSERT INTO account_item_attribute_item (item_id, attribute_item_id, mandant_id) VALUES (?, ?, ?)";
+
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("iii", $item_id, $attribute_id, $this -> mandant);
 
@@ -538,6 +612,9 @@ class SQLManager {
 
     function reset_attribute($item_id, $attribute_id) {
         $sql = "DELETE FROM account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ? AND mandant_id = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("iii", $item_id, $attribute_id, $mandant);
 
@@ -550,6 +627,8 @@ class SQLManager {
 
     function set_attributes_bulk($item_ids, $attribute_id) {
         $sql = "INSERT INTO account_item_attribute_item (item_id, attribute_item_id, mandant_id) VALUES (?, ?, ?)";
+        
+        $this->debug_log(__LINE__, $sql);
 
         $this -> connection -> begin_transaction();
         try {
@@ -572,6 +651,8 @@ class SQLManager {
     function reset_attributes_bulk($item_ids, $attribute_id) {
         $sql = "DELETE FROM account_item_attribute_item WHERE item_id = ? AND attribute_item_id = ? AND mandant_id = ?";
 
+        $this->debug_log(__LINE__, $sql);
+
         $this -> connection -> begin_transaction();
         try {
             $stmt = $this -> connection -> prepare($sql);
@@ -587,6 +668,25 @@ class SQLManager {
             $this -> connection -> rollback();
             throw $e;
         }
+    }
+
+    function get_mandant($_apikey) {
+        $sql = "SELECT * FROM account_mandant where apikey = ?";
+
+        $this->debug_log(__LINE__, $sql . $_apikey);
+
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("s", $apikey);
+
+        $apikey = $_apikey;
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        return $data;        
     }
 
 }
