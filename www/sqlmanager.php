@@ -390,8 +390,18 @@ class SQLManager {
         $intermediate_data = $result -> fetch_all(MYSQLI_ASSOC);
 
         foreach ($intermediate_data as $single) {
-            if($localdata['id'] <> $single['id']) {
+            $first = false;
+            if(isset($localdata)) {
+                if($localdata['id'] <> $single['id']) {
+                    $first = true;
+                }
+            } else {
+                $first = true;
+            }
+
+            if (true == $first) {
                 if(isset($localdata['id'])) {
+                    // not very first
                     $data[] = $localdata;
                 }
 
@@ -400,8 +410,7 @@ class SQLManager {
 
                 $localdata['id'] = $single['id'];
                 $localdata['mydate'] = $single['mydate'];
-            }
-            if($localdata['id'] == $single['id']) {
+            } else {
                 $localdata['end'] = $single['value'] / 100;
                 $localdata['date_end'] = $single['date'];
             }
