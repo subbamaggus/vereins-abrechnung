@@ -367,7 +367,7 @@ const app = Vue.createApp({
       } finally {
           
       }
-     return myDiff;
+     return myDiff.toFixed(2);
     }
   },
   mounted() {
