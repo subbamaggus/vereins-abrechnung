@@ -25,6 +25,7 @@ const app = Vue.createApp({
   },
   methods: {
     async applyFilters() {
+        this.fetchSummary();
         this.fetchData(this.selectedFilters);
     },
     async login() {
@@ -325,7 +326,7 @@ const app = Vue.createApp({
     },
     async fetchSummary() {
       try {
-        const jsonUrl = 'api.php?method=get_summary';
+        jsonUrl = 'api.php?method=get_summary';
         if(this.currentYear > 0) {
             jsonUrl += '&year=' + this.currentYear;
         }
