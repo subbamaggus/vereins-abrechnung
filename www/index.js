@@ -358,16 +358,15 @@ const app = Vue.createApp({
       }, 0).toFixed(2);
     },
     totalSummary() {
-      myStart = 0;
-      myEnde = 0;
+      myDiff = 0;
       try {
-          // TODO needs to be done better:
-          myStart = this.summary[0].start;
-          myEnde = this.summary[0].end;
+          for (const element of this.summary) {
+            myDiff += element.end - element.start;
+          }
       } finally {
           
       }
-     return myEnde - myStart;
+     return myDiff;
     }
   },
   mounted() {
