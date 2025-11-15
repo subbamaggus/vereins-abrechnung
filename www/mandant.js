@@ -2,6 +2,7 @@ const mandantApp = Vue.createApp({
   data() {
     return {
       mandants: [],
+      allUsers: [],
       error: null,
       success: false,
     };
@@ -18,9 +19,21 @@ const mandantApp = Vue.createApp({
             this.error = e;
         }
     },
+    async fetchAllUsers() {
+        try {
+            const response = await fetch('api.php?method=get_users');
+            if (!response.ok) {
+                throw new Error('Could not fetch users');
+            }
+            this.allUsers = await response.json();
+        } catch (e) {
+            this.error = e;
+        }
+    },
   },
   mounted() {
     this.fetchMandants();
+    this.fetchAllUsers();
   },  
   template: `
     <div>
@@ -32,7 +45,9 @@ const mandantApp = Vue.createApp({
           <input type="text" v-model="mandant.name" /><a href="#">speichern</a>
           <br/>
           <label v-for="user in mandant.user" :key="user.id" style="margin-right: 10px; margin-left: 5px;">
-            <input type="text" v-model="user.email" />
+            <select v-model="user.email">
+              <option v-for="u in allUsers" :key="u.id" :value="u.email">{{ u.email }}</option>
+            </select>
             <input type="text" v-model="user.privilege" />
             <a href="#">speichern</a>
             <br/>

@@ -709,7 +709,22 @@ class SQLManager {
 
         return $data;
     }
-    
+
+    function get_users() {
+        $sql = "SELECT id, email FROM account_user";
+
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        return $data;
+    }
+
     function get_balance($_get) {
         $data['items'] = $this->get_items(value_if_isset($_get, 'attributes'), value_if_isset($_get, 'year'));
 
