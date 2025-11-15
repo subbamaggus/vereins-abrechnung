@@ -22,6 +22,57 @@ class SQLManager {
             error_log($line . ": " . $message);
     }
 
+    function validate_user($email, $password) {
+        $sql = "SELECT * FROM account_user where email = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("s", $email);
+
+        $email = $email;
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        $verify = password_verify($password, $data[0]['password']);
+
+        if(false === $verify)
+            $data = false;
+
+        return $data;
+    }
+
+    function register_user($email, $password) {
+        $sql = "INSERT INTO account_user (email, password) VALUES (?,?)";
+        
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("ss", $email, $pw_hash);
+
+        $email = $email;
+        $pw_hash = password_hash($password, PASSWORD_DEFAULT);
+
+        try {
+            $stmt -> execute();
+
+            $result = $stmt -> get_result();
+
+            error_log("insert result" . json_encode($result));
+
+            $data = array( "success" => "done",);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $data = false;
+        }
+
+        return $data;
+    }
+
     function insert_item($_name, $_value, $_date) {
         $sql = "INSERT INTO account_item (name, value, date, user, mandant_id) VALUES (?, ?, ?, ?, ?)";
 
@@ -58,140 +109,6 @@ class SQLManager {
         $stmt -> execute();
 
         return true;
-    }
-
-    function save_attribute($_groupid, $_itemid, $_text) {
-
-        if(-1 == $_itemid) {
-            if(-1 == $_groupid) {
-                $sql = "INSERT INTO account_attribute (name, mandant_id) VALUES (?, ?)";
-
-                $this->debug_log(__LINE__, $sql);
-
-                $stmt = $this -> connection -> prepare($sql);
-                $stmt -> bind_param("si", $name, $mandant);
-
-                $name = $_text;
-                $mandant = $this->mandant;
-
-                $stmt -> execute();
-
-                $last_id = $stmt -> insert_id;
-
-                return $last_id;
-            } else {
-                $sql = "INSERT INTO account_attribute_item (name, mandant_id, attribute_id) VALUES (?, ?, ?)";
-
-                $this->debug_log(__LINE__, $sql);
-
-                $stmt = $this -> connection -> prepare($sql);
-                $stmt -> bind_param("sii", $name, $mandant, $attribute_id);
-
-                $name = $_text;
-                $mandant = $this->mandant;
-                $attribute_id = $_groupid;
-
-                $stmt -> execute();
-
-                $last_id = $stmt -> insert_id;
-
-                return $last_id;
-            }
-        }
-
-        if("" == $_itemid) {
-            $sql = "UPDATE account_attribute SET name = ? WHERE id = ? AND mandant_id = ?";
-
-            $this->debug_log(__LINE__, $sql);
-
-            $stmt = $this -> connection -> prepare($sql);
-            $stmt -> bind_param("sii", $name, $id, $mandant);
-
-            $name = $_text;
-            $id = $_groupid;
-            $mandant = $this->mandant;
-
-            $stmt -> execute();
-
-            return "ok";         
-        }
-
-        if(0 < $_itemid and 0 < $_groupid) {
-            $sql = "UPDATE account_attribute_item SET name = ? WHERE id = ? AND attribute_id = ? AND mandant_id = ?";
-
-            $this->debug_log(__LINE__, $sql);
-
-            $stmt = $this -> connection -> prepare($sql);
-            $stmt -> bind_param("siii", $name, $id, $attribute_id, $mandant);
-
-            $name = $_text;
-            $id = $_itemid;
-            $attribute_id = $_groupid;
-            $mandant = $this->mandant;
-
-            $stmt -> execute();
-            
-            return "ok";
-        }
-
-        return "uiui";
-    }
-
-    function save_depot($_depotid, $_depotname) {
-        if(-1 == $_depotid) {
-            $sql = "INSERT INTO account_depot (name, mandant_id) VALUES (?, ?)";
-
-            $this->debug_log(__LINE__, $sql);
-
-            $stmt = $this -> connection -> prepare($sql);
-            $stmt -> bind_param("si", $name, $mandant);
-
-            $name = $_depotname;
-            $mandant = $this->mandant;
-
-            $stmt -> execute();
-
-            $last_id = $stmt -> insert_id;
-
-            return $last_id;
-        }
-
-        if(0 < $_depotid) {
-            $sql = "UPDATE account_depot SET name = ? WHERE id = ? AND mandant_id = ?";
-
-            $this->debug_log(__LINE__, $sql);
-
-            $stmt = $this -> connection -> prepare($sql);
-            $stmt -> bind_param("sii", $name, $id, $mandant);
-
-            $name = $_depotname;
-            $id = $_depotid;
-            $mandant = $this->mandant;
-
-            $stmt -> execute();
-
-            return "ok";         
-        }
-    }
-
-    function save_depot_value($_depotid, $_entrydate, $_entryvalue) {
-
-        if(0 < $_depotid) {
-            $sql = "INSERT INTO account_depot_value (depot_id, value, date) VALUES (?, ?, ?)";
-
-            $this->debug_log(__LINE__, $sql);
-
-            $stmt = $this -> connection -> prepare($sql);
-            $stmt -> bind_param("iis", $depotid, $value, $date);
-
-            $depotid = $_depotid;
-            $value = $_entryvalue * 100;
-            $date = $_entrydate;
-
-            $stmt -> execute();
-
-            return "ok";         
-        }
     }
 
     function get_all_items() {
@@ -349,167 +266,81 @@ class SQLManager {
         return $data;
     }
 
-    function get_balance($_get) {
-        $data['items'] = $this->get_items(value_if_isset($_get, 'attributes'), value_if_isset($_get, 'year'));
+    function save_attribute($_groupid, $_itemid, $_text) {
 
-        $data['depots'] = $this->get_summary(value_if_isset($_get, 'year'));
+        if(-1 == $_itemid) {
+            if(-1 == $_groupid) {
+                $sql = "INSERT INTO account_attribute (name, mandant_id) VALUES (?, ?)";
 
-        return $data;
-    }
+                $this->debug_log(__LINE__, $sql);
 
-    function get_summary($_year) {
-        $year = $_year;
-        if(empty($year))
-            $year = date("Y");
+                $stmt = $this -> connection -> prepare($sql);
+                $stmt -> bind_param("si", $name, $mandant);
 
-        $sql = <<<END
-           SELECT dv.depot_id as id
-                , DATE_FORMAT(dv.date, '%Y') as mydate
-                , dv.date
-                , dv.value
-             FROM account_depot_value dv
-                , account_depot d
-            WHERE d.id = dv.depot_id
-              AND d.mandant_id = ?
-              AND DATE_FORMAT(dv.date, '%Y') = '$year'
-              order by dv.depot_id, dv.date;
-           END;
+                $name = $_text;
+                $mandant = $this->mandant;
 
-        $this->debug_log(__LINE__, $sql);
+                $stmt -> execute();
 
-        $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $mandant);
+                $last_id = $stmt -> insert_id;
 
-        $mandant = $this->mandant;
-
-        $stmt -> execute();
-
-        $result = $stmt -> get_result();
-
-        $intermediate_data = $result -> fetch_all(MYSQLI_ASSOC);
-
-        foreach ($intermediate_data as $single) {
-            $first = false;
-            if(isset($localdata)) {
-                if($localdata['id'] <> $single['id']) {
-                    $first = true;
-                }
+                return $last_id;
             } else {
-                $first = true;
-            }
+                $sql = "INSERT INTO account_attribute_item (name, mandant_id, attribute_id) VALUES (?, ?, ?)";
 
-            if (true == $first) {
-                if(isset($localdata['id'])) {
-                    // not very first
-                    $data[] = $localdata;
-                }
+                $this->debug_log(__LINE__, $sql);
 
-                $localdata['start'] = $single['value'] / 100;
-                $localdata['date_start'] = $single['date'];
+                $stmt = $this -> connection -> prepare($sql);
+                $stmt -> bind_param("sii", $name, $mandant, $attribute_id);
 
-                $localdata['id'] = $single['id'];
-                $localdata['mydate'] = $single['mydate'];
-            } else {
-                $localdata['end'] = $single['value'] / 100;
-                $localdata['date_end'] = $single['date'];
-            }
+                $name = $_text;
+                $mandant = $this->mandant;
+                $attribute_id = $_groupid;
 
-        }
-        $data[] = $localdata;
+                $stmt -> execute();
 
-        return $data;
-    }
+                $last_id = $stmt -> insert_id;
 
-    function get_mandants() {
-        $sql = "SELECT DISTINCT m.id as mid, m.name FROM account_mandant m, account_mandant_user mu WHERE mu.mandant_id = m.id AND mu.user_id = ?";
-
-        $this->debug_log(__LINE__, $sql);
-
-        $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $userid);
-
-        $userid = $this->user_id;
-
-        $stmt -> execute();
-
-        $result = $stmt -> get_result();
-
-        $data = $result -> fetch_all(MYSQLI_ASSOC);
-
-        
-        $sql = "SELECT DISTINCT mu.*, u.email FROM account_mandant m, account_mandant_user mu, account_user u WHERE mu.mandant_id = m.id AND mu.user_id = u.id";
-
-        $this->debug_log(__LINE__, $sql);
-
-        $stmt = $this -> connection -> prepare($sql);
-
-        $stmt -> execute();
-
-        $result = $stmt -> get_result();
-
-        $details = $result -> fetch_all(MYSQLI_ASSOC);
-
-        foreach ($data as &$single) {
-            foreach($details as $detail) {
-                if($detail['mandant_id'] == $single['mid']) {
-                    $single['user'][] = $detail;
-                }
+                return $last_id;
             }
         }
-        unset($single);
 
-        return $data;        
-    }
+        if("" == $_itemid) {
+            $sql = "UPDATE account_attribute SET name = ? WHERE id = ? AND mandant_id = ?";
 
-    function validate_user($email, $password) {
-        $sql = "SELECT * FROM account_user where email = ?";
+            $this->debug_log(__LINE__, $sql);
 
-        $this->debug_log(__LINE__, $sql);
+            $stmt = $this -> connection -> prepare($sql);
+            $stmt -> bind_param("sii", $name, $id, $mandant);
 
-        $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("s", $email);
+            $name = $_text;
+            $id = $_groupid;
+            $mandant = $this->mandant;
 
-        $email = $email;
-
-        $stmt -> execute();
-
-        $result = $stmt -> get_result();
-
-        $data = $result -> fetch_all(MYSQLI_ASSOC);
-
-        $verify = password_verify($password, $data[0]['password']);
-
-        if(false === $verify)
-            $data = false;
-
-        return $data;
-    }
-
-    function register_user($email, $password) {
-        $sql = "INSERT INTO account_user (email, password) VALUES (?,?)";
-        
-        $this->debug_log(__LINE__, $sql);
-
-        $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("ss", $email, $pw_hash);
-
-        $email = $email;
-        $pw_hash = password_hash($password, PASSWORD_DEFAULT);
-
-        try {
             $stmt -> execute();
 
-            $result = $stmt -> get_result();
-
-            error_log("insert result" . json_encode($result));
-
-            $data = array( "success" => "done",);
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            $data = false;
+            return "ok";         
         }
 
-        return $data;
+        if(0 < $_itemid and 0 < $_groupid) {
+            $sql = "UPDATE account_attribute_item SET name = ? WHERE id = ? AND attribute_id = ? AND mandant_id = ?";
+
+            $this->debug_log(__LINE__, $sql);
+
+            $stmt = $this -> connection -> prepare($sql);
+            $stmt -> bind_param("siii", $name, $id, $attribute_id, $mandant);
+
+            $name = $_text;
+            $id = $_itemid;
+            $attribute_id = $_groupid;
+            $mandant = $this->mandant;
+
+            $stmt -> execute();
+            
+            return "ok";
+        }
+
+        return "uiui";
     }
 
     function get_attributes() {
@@ -554,58 +385,6 @@ class SQLManager {
         unset($single);
 
         return $attributes;
-    }
-
-    function get_depots() {
-        $sql = "SELECT * FROM account_depot WHERE mandant_id = ?";
-        
-        $this->debug_log(__LINE__, $sql);
-        
-        $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $mandant);
-
-        $mandant = $this->mandant;
-
-        $stmt -> execute();
-
-        $result = $stmt -> get_result();
-
-        $depots = $result -> fetch_all(MYSQLI_ASSOC);
-
-
-        $sql = <<<END
-            SELECT * 
-              FROM account_depot_value dv
-                 , account_depot d
-             WHERE d.mandant_id = ? 
-               AND d.id = dv.depot_id
-             ORDER BY date;
-        END;
-
-        $this->debug_log(__LINE__, $sql);
-        
-        $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("i", $mandant);
-
-        $mandant = $this->mandant;
-
-        $stmt -> execute();
-
-        $result = $stmt -> get_result();
-
-        $depot_values = $result -> fetch_all(MYSQLI_ASSOC);
-
-        foreach ($depots as &$single) {
-            foreach($depot_values as $depot_value) {
-                if($depot_value['depot_id'] == $single['id']) {
-                    $depot_value['value'] = $this->int2eur($depot_value['value']);
-                    $single['depot_value'][] = $depot_value;
-                }
-            }
-        }
-        unset($single);
-
-        return $depots;
     }
 
     function set_attribute($item_id, $attribute_id) {
@@ -699,6 +478,156 @@ class SQLManager {
         }
     }
 
+    function get_depots() {
+        $sql = "SELECT * FROM account_depot WHERE mandant_id = ?";
+        
+        $this->debug_log(__LINE__, $sql);
+        
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $mandant);
+
+        $mandant = $this->mandant;
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $depots = $result -> fetch_all(MYSQLI_ASSOC);
+
+
+        $sql = <<<END
+            SELECT * 
+              FROM account_depot_value dv
+                 , account_depot d
+             WHERE d.mandant_id = ? 
+               AND d.id = dv.depot_id
+             ORDER BY date;
+        END;
+
+        $this->debug_log(__LINE__, $sql);
+        
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $mandant);
+
+        $mandant = $this->mandant;
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $depot_values = $result -> fetch_all(MYSQLI_ASSOC);
+
+        foreach ($depots as &$single) {
+            foreach($depot_values as $depot_value) {
+                if($depot_value['depot_id'] == $single['id']) {
+                    $depot_value['value'] = $this->int2eur($depot_value['value']);
+                    $single['depot_value'][] = $depot_value;
+                }
+            }
+        }
+        unset($single);
+
+        return $depots;
+    }
+
+    function save_depot($_depotid, $_depotname) {
+        if(-1 == $_depotid) {
+            $sql = "INSERT INTO account_depot (name, mandant_id) VALUES (?, ?)";
+
+            $this->debug_log(__LINE__, $sql);
+
+            $stmt = $this -> connection -> prepare($sql);
+            $stmt -> bind_param("si", $name, $mandant);
+
+            $name = $_depotname;
+            $mandant = $this->mandant;
+
+            $stmt -> execute();
+
+            $last_id = $stmt -> insert_id;
+
+            return $last_id;
+        }
+
+        if(0 < $_depotid) {
+            $sql = "UPDATE account_depot SET name = ? WHERE id = ? AND mandant_id = ?";
+
+            $this->debug_log(__LINE__, $sql);
+
+            $stmt = $this -> connection -> prepare($sql);
+            $stmt -> bind_param("sii", $name, $id, $mandant);
+
+            $name = $_depotname;
+            $id = $_depotid;
+            $mandant = $this->mandant;
+
+            $stmt -> execute();
+
+            return "ok";         
+        }
+    }
+
+    function save_depot_value($_depotid, $_entrydate, $_entryvalue) {
+
+        if(0 < $_depotid) {
+            $sql = "INSERT INTO account_depot_value (depot_id, value, date) VALUES (?, ?, ?)";
+
+            $this->debug_log(__LINE__, $sql);
+
+            $stmt = $this -> connection -> prepare($sql);
+            $stmt -> bind_param("iis", $depotid, $value, $date);
+
+            $depotid = $_depotid;
+            $value = $_entryvalue * 100;
+            $date = $_entrydate;
+
+            $stmt -> execute();
+
+            return "ok";         
+        }
+    }
+    
+    function get_mandants() {
+        $sql = "SELECT DISTINCT m.id as mid, m.name FROM account_mandant m, account_mandant_user mu WHERE mu.mandant_id = m.id AND mu.user_id = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $userid);
+
+        $userid = $this->user_id;
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        
+        $sql = "SELECT DISTINCT mu.*, u.email FROM account_mandant m, account_mandant_user mu, account_user u WHERE mu.mandant_id = m.id AND mu.user_id = u.id";
+
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $details = $result -> fetch_all(MYSQLI_ASSOC);
+
+        foreach ($data as &$single) {
+            foreach($details as $detail) {
+                if($detail['mandant_id'] == $single['mid']) {
+                    $single['user'][] = $detail;
+                }
+            }
+        }
+        unset($single);
+
+        return $data;        
+    }
+
     function get_mandant($_apikey) {
         $sql = "SELECT * FROM account_mandant where apikey = ?";
 
@@ -717,6 +646,79 @@ class SQLManager {
 
         return $data;        
     }
+
+    function get_summary($_year) {
+        $year = $_year;
+        if(empty($year))
+            $year = date("Y");
+
+        $sql = <<<END
+           SELECT dv.depot_id as id
+                , DATE_FORMAT(dv.date, '%Y') as mydate
+                , dv.date
+                , dv.value
+             FROM account_depot_value dv
+                , account_depot d
+            WHERE d.id = dv.depot_id
+              AND d.mandant_id = ?
+              AND DATE_FORMAT(dv.date, '%Y') = '$year'
+              order by dv.depot_id, dv.date;
+           END;
+
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("i", $mandant);
+
+        $mandant = $this->mandant;
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $intermediate_data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        foreach ($intermediate_data as $single) {
+            $first = false;
+            if(isset($localdata)) {
+                if($localdata['id'] <> $single['id']) {
+                    $first = true;
+                }
+            } else {
+                $first = true;
+            }
+
+            if (true == $first) {
+                if(isset($localdata['id'])) {
+                    // not very first
+                    $data[] = $localdata;
+                }
+
+                $localdata['start'] = $single['value'] / 100;
+                $localdata['date_start'] = $single['date'];
+
+                $localdata['id'] = $single['id'];
+                $localdata['mydate'] = $single['mydate'];
+            } else {
+                $localdata['end'] = $single['value'] / 100;
+                $localdata['date_end'] = $single['date'];
+            }
+
+        }
+        $data[] = $localdata;
+
+        return $data;
+    }
+    
+    function get_balance($_get) {
+        $data['items'] = $this->get_items(value_if_isset($_get, 'attributes'), value_if_isset($_get, 'year'));
+
+        $data['depots'] = $this->get_summary(value_if_isset($_get, 'year'));
+
+        return $data;
+    }
+
+
 
 }
 
