@@ -318,22 +318,26 @@ class SQLManager {
            select max(mystart)/100 as start
                 , max(myend)/100 as ende
                 , mydate
+                , depot_id
              from (
                     select case when name = 'start' then value else null END as mystart
                          , case when name = 'ende' then value else null END as myend
+                         , depot_id
                          , mydate from (
                                 select 'ende' as name
                                      , value
                                      , DATE_FORMAT(date, '%Y') as mydate
-                                  from account_depot_value
-                                 where date = (SELECT max(date) max_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '$year' and mandant_id = ?)
+                                     , depot_id
+                                  from account_depot_value dv
+                                 where date = (SELECT max(date) max_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '$year' and mandant_id = ? and depot_id = dv.depot_id)
                                  union select 'start' as name
                                      , value, DATE_FORMAT(date, '%Y') as mydate
-                                  from account_depot_value
-                                 where date = (SELECT min(date) min_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '$year' and mandant_id = ?)
+                                     , depot_id
+                                  from account_depot_value dv2
+                                 where date = (SELECT min(date) min_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '$year' and mandant_id = ? and depot_id = dv2.depot_id)
                                  ) myalias
                    ) myalias2
-             group by mydate;
+             group by mydate, depot_id;
            END;
 
         $this->debug_log(__LINE__ . $sql);
