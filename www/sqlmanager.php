@@ -6,6 +6,8 @@ class SQLManager {
     public $user_id;
     public $config;
 
+    public $debug = false;
+
     function __construct($_connection, $_config) {
         $this -> connection = $_connection;
         $this -> config = $_config;
@@ -13,6 +15,11 @@ class SQLManager {
 
     function int2eur($value) {
         return number_format($value / 100, 2, '.', '');
+    }
+
+    function debug_log($message) {
+        if($this->debug)
+            error_log($message);
     }
 
     function insert_item($_name, $_value, $_date) {
@@ -329,12 +336,15 @@ class SQLManager {
              group by mydate;
            END;
 
+        $this->debug_log(__LINE__ . $sql);
+
         $stmt = $this -> connection -> prepare($sql);
         $stmt -> bind_param("ii", $mandant1, $mandant2);
 
-        $stmt -> execute();
         $mandant1 = $this->mandant;
         $mandant2 = $this->mandant;
+
+        $stmt -> execute();
 
         $result = $stmt -> get_result();
 

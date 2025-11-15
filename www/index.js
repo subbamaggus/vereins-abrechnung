@@ -475,7 +475,7 @@ const app = Vue.createApp({
               <td :colspan="attributes.length + 1"></td>
             </tr>
             <tr>
-              <td colspan="3" style="text-align: right;"><strong>Summe:</strong></td>
+              <td colspan="3" style="text-align: right;"><strong>Bilanz:</strong></td>
               <td style="text-align: right;"><strong>{{ totalSummary }} &euro;</strong></td>
               <td :colspan="attributes.length + 1"></td>
             </tr>
