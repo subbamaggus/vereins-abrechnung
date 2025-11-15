@@ -364,39 +364,26 @@ class SQLManager {
             $year = date("Y");
 
         $sql = <<<END
-           select max(mystart)/100 as start
-                , max(myend)/100 as ende
-                , mydate
-                , depot_id
-             from (
-                    select case when name = 'start' then value else null END as mystart
-                         , case when name = 'ende' then value else null END as myend
-                         , depot_id
-                         , mydate from (
-                                select 'start' as name
-                                     , value, DATE_FORMAT(date, '%Y') as mydate
-                                     , depot_id
-                                  from account_depot_value dv2
-                                 where date = (SELECT min(date) min_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '$year' and mandant_id = ? and depot_id = dv2.depot_id)
-                                 union 
-                                select 'ende' as name
-                                     , value
-                                     , DATE_FORMAT(date, '%Y') as mydate
-                                     , depot_id
-                                  from account_depot_value dv
-                                 where date = (SELECT max(date) max_date FROM `account_depot_value` WHERE DATE_FORMAT(date, '%Y') = '$year' and mandant_id = ? and depot_id = dv.depot_id)
-                                 ) myalias
-                   ) myalias2
-             group by mydate, depot_id;
+           SELECT dv.depot_id as id
+                , DATE_FORMAT(dv.date, '%Y') as mydate
+                , min(dv.value)/100 as start
+                , max(dv.value)/100 as end
+                , min(dv.date) as date_start
+                , max(dv.date) as date_end
+             FROM account_depot_value dv
+                , account_depot d
+            WHERE d.id = dv.depot_id
+              AND d.mandant_id = ?
+              AND DATE_FORMAT(dv.date, '%Y') = '$year'
+            GROUP BY depot_id, DATE_FORMAT(dv.date, '%Y');
            END;
 
         $this->debug_log(__LINE__, $sql);
 
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("ii", $mandant1, $mandant2);
+        $stmt -> bind_param("i", $mandant);
 
-        $mandant1 = $this->mandant;
-        $mandant2 = $this->mandant;
+        $mandant = $this->mandant;
 
         $stmt -> execute();
 
@@ -560,7 +547,14 @@ class SQLManager {
         $depots = $result -> fetch_all(MYSQLI_ASSOC);
 
 
-        $sql = "SELECT * FROM account_depot_value WHERE mandant_id = ? ORDER BY date";
+        $sql = <<<END
+            SELECT * 
+              FROM account_depot_value dv
+                 , account_depot d
+             WHERE d.mandant_id = ? 
+               AND d.id = dv.depot_id
+             ORDER BY date;
+        END;
 
         $this->debug_log(__LINE__, $sql);
         
