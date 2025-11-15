@@ -67,7 +67,6 @@ CREATE TABLE `account_depot` (
 CREATE TABLE `account_depot_value` (
   `id` int NOT NULL,
   `depot_id` int NOT NULL,
-  `mandant_id` int NOT NULL,
   `value` int NOT NULL,
   `date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
