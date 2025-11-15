@@ -363,7 +363,7 @@ const app = Vue.createApp({
       try {
           // TODO needs to be done better:
           myStart = this.summary[0].start;
-          myEnde = this.summary[0].ende;
+          myEnde = this.summary[0].end;
       } finally {
           
       }

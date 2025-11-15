@@ -43,6 +43,23 @@ class SQLManager {
         return $last_id;
     }
 
+    function update_image_name($_id, $_newname) {
+        $sql = "UPDATE account_item SET file = ? WHERE id = ? and mandant_id = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("sii", $filename, $id, $mandant);
+
+        $filename = $_newname;
+        $id = $_id;
+        $mandant = $this->mandant;
+
+        $stmt -> execute();
+
+        return true;
+    }
+
     function save_attribute($_groupid, $_itemid, $_text) {
 
         if(-1 == $_itemid) {
@@ -176,23 +193,6 @@ class SQLManager {
 
             return "ok";         
         }
-    }
-
-    function update_image_name($_id, $_newname) {
-        $sql = "UPDATE account_item SET file = ? WHERE id = ? and mandant_id = ?";
-
-        $this->debug_log(__LINE__, $sql);
-
-        $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("sii", $filename, $id, $mandant);
-
-        $filename = $_newname;
-        $id = $_id;
-        $mandant = $this->mandant;
-
-        $stmt -> execute();
-
-        return true;
     }
 
     function get_all_items() {
@@ -366,16 +366,14 @@ class SQLManager {
         $sql = <<<END
            SELECT dv.depot_id as id
                 , DATE_FORMAT(dv.date, '%Y') as mydate
-                , min(dv.value)/100 as start
-                , max(dv.value)/100 as end
-                , min(dv.date) as date_start
-                , max(dv.date) as date_end
+                , dv.date
+                , dv.value
              FROM account_depot_value dv
                 , account_depot d
             WHERE d.id = dv.depot_id
               AND d.mandant_id = ?
               AND DATE_FORMAT(dv.date, '%Y') = '$year'
-            GROUP BY depot_id, DATE_FORMAT(dv.date, '%Y');
+              order by dv.depot_id, dv.date;
            END;
 
         $this->debug_log(__LINE__, $sql);
@@ -389,7 +387,27 @@ class SQLManager {
 
         $result = $stmt -> get_result();
 
-        $data = $result -> fetch_all(MYSQLI_ASSOC);
+        $intermediate_data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        foreach ($intermediate_data as $single) {
+            if($localdata['id'] <> $single['id']) {
+                if(isset($localdata['id'])) {
+                    $data[] = $localdata;
+                }
+
+                $localdata['start'] = $single['value'] / 100;
+                $localdata['date_start'] = $single['date'];
+
+                $localdata['id'] = $single['id'];
+                $localdata['mydate'] = $single['mydate'];
+            }
+            if($localdata['id'] == $single['id']) {
+                $localdata['end'] = $single['value'] / 100;
+                $localdata['date_end'] = $single['date'];
+            }
+
+        }
+        $data[] = $localdata;
 
         return $data;
     }
