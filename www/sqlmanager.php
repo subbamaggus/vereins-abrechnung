@@ -350,6 +350,14 @@ class SQLManager {
         return $data;
     }
 
+    function get_balance($_get) {
+        $data[] = $this->get_items(value_if_isset($_get, 'attributes'), value_if_isset($_get, 'year'));
+
+        $data[] = $this->get_summary(value_if_isset($_get, 'year'));
+
+        return $data;
+    }
+
     function get_summary($_year) {
         $year = $_year;
         if(empty($year))
