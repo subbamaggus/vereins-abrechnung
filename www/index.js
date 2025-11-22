@@ -14,6 +14,7 @@ const app = Vue.createApp({
       currentYear: 0,
       summary: [],
       attributes: [],
+      depots: [],
       mandanten: [],
       selectedItems: [],
       selectedAttribute: null,
@@ -134,6 +135,17 @@ const app = Vue.createApp({
             this.error = e;
         }
     },
+    async fetchDepots() {
+        try {
+            const response = await fetch('api.php?method=get_depots');
+            if (!response.ok) {
+                throw new Error('Could not fetch depots');
+            }
+            this.depots = await response.json();
+        } catch (e) {
+            this.error = e;
+        }
+    },
     async setAttributes(itemId, attributeId) {
         try {
             const response = await fetch('api.php?method=set_attribute', {
@@ -166,6 +178,81 @@ const app = Vue.createApp({
                     if (attribute_item_to_add && result.inserted) {
                         item.attribute.push({ aai_id: attributeId, aai_name: attribute_item_to_add.name });
                     }
+                }
+            }
+        } catch (e) {
+            this.error = e;
+        }
+    },
+    async resetAttributes(itemId, attributeId) {
+        try {
+            const response = await fetch('api.php?method=reset_attribute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `item_id=${itemId}&attribute_id=${attributeId}`,
+            });
+            if (!response.ok) {
+                throw new Error('Could not reset attribute');
+            }
+            const result = await response.json();
+            if (result.success) {
+                // Instead of fetching all data, update the local state
+                const item = this.data.find(i => i.id === itemId);
+                if (item && item.attribute) {
+                    const index = item.attribute.findIndex(attr => attr.aai_id === attributeId);
+                    if (index > -1) {
+                        item.attribute.splice(index, 1);
+                    }
+                }
+            }
+        } catch (e) {
+            this.error = e;
+        }
+    },
+    async setDepot(itemId, depotId) {
+        try {
+            const response = await fetch('api.php?method=set_depot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `item_id=${itemId}&depot_id=${depotId}`,
+            });
+            if (!response.ok) {
+                throw new Error('Could not set depot');
+            }
+            const result = await response.json();
+            if (result.success) {
+                // Instead of fetching all data, update the local state
+                const item = this.data.find(i => i.id === itemId);
+                if (item) {
+                    item.depot_id = depotId;
+                }
+            }
+        } catch (e) {
+            this.error = e;
+        }
+    },
+    async resetDepot(itemId, depotId) {
+        try {
+            const response = await fetch('api.php?method=reset_depot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `item_id=${itemId}&depot_id=${depotId}`,
+            });
+            if (!response.ok) {
+                throw new Error('Could not reset depot');
+            }
+            const result = await response.json();
+            if (result.success) {
+                // Instead of fetching all data, update the local state
+                const item = this.data.find(i => i.id === itemId);
+                if (item) {
+                    item.depot_id = 0;
                 }
             }
         } catch (e) {
@@ -239,33 +326,6 @@ const app = Vue.createApp({
     },
     async clickYear(year) {
       this.currentYear = year;
-    },
-    async resetAttributes(itemId, attributeId) {
-        try {
-            const response = await fetch('api.php?method=reset_attribute', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `item_id=${itemId}&attribute_id=${attributeId}`,
-            });
-            if (!response.ok) {
-                throw new Error('Could not reset attribute');
-            }
-            const result = await response.json();
-            if (result.success) {
-                // Instead of fetching all data, update the local state
-                const item = this.data.find(i => i.id === itemId);
-                if (item && item.attribute) {
-                    const index = item.attribute.findIndex(attr => attr.aai_id === attributeId);
-                    if (index > -1) {
-                        item.attribute.splice(index, 1);
-                    }
-                }
-            }
-        } catch (e) {
-            this.error = e;
-        }
     },
     async fetchData(filters = []) {
       this.loading = true;
@@ -373,6 +433,7 @@ const app = Vue.createApp({
   mounted() {
     this.fetchData();
     this.fetchAttributes();
+    this.fetchDepots();
     this.fetchMandanten();
     this.fetchYears();
     this.fetchSummary();
@@ -444,6 +505,7 @@ const app = Vue.createApp({
               <th>Datum</th>
               <th>Bezeichnung</th>
               <th>Betrag</th>
+              <th>Konto</th>
               <th v-for="attribute in attributes" :key="attribute.id">{{ attribute.name }}</th>
               <th>Bild</th>
             </tr>
@@ -454,6 +516,13 @@ const app = Vue.createApp({
               <td scope="row">{{ item.date }}</td>  
               <td>{{ item.name }}</td> 
               <td style="text-align: right;">{{ item.value }}</td>
+              <td>
+                <span v-for="depot in depots" :key="depot.id">
+                  &nbsp;<a href="#" @click.prevent="setDepot(item.id, depot.id)">{{ depot.name }}</a>
+                  <span v-if="item.depot_id == depot.id">&nbsp;<b><a href="#" @click.prevent="resetDepot(item.id, depot.id)">X</a></b></span>
+                  <br/>
+                </span>
+              </td>
               <td v-for="attribute in attributes" :key="attribute.id">
                 <span v-for="attribute_item in attribute.attribute" :key="attribute_item.id">
                   &nbsp;<a href="#" @click.prevent="setAttributes(item.id, attribute_item.id)">{{ attribute_item.name }}</a>
@@ -472,12 +541,12 @@ const app = Vue.createApp({
             <tr>
               <td colspan="3" style="text-align: right;"><strong>Summe:</strong></td>
               <td style="text-align: right;"><strong>{{ totalValue }} &euro;</strong></td>
-              <td :colspan="attributes.length + 1"></td>
+              <td :colspan="attributes.length + 2"></td>
             </tr>
             <tr>
               <td colspan="3" style="text-align: right;"><strong>Bilanz:</strong></td>
               <td style="text-align: right;"><strong>{{ totalSummary }} &euro;</strong></td>
-              <td :colspan="attributes.length + 1"></td>
+              <td :colspan="attributes.length + 2"></td>
             </tr>
           </tfoot>
         </table>

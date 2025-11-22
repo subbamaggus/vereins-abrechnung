@@ -433,6 +433,31 @@ class SQLManager {
         return ['success' => true];
     }
 
+    function set_depot($item_id, $depot_id) {
+        $sql = "UPDATE account_item SET depot_id = ? WHERE id = ? AND mandant_id = ?";
+        
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("iii", $depot_id, $item_id, $mandant);
+
+        $mandant = $this->mandant;
+
+        $stmt -> execute();
+
+        $count = $stmt -> affected_rows;
+
+        if(0 < $count) {
+            return ['success' => true];
+        }
+
+        return ['success' => false];
+    }
+
+    function reset_depot($item_id, $depot_id) {
+        return $this->set_depot($item_id, 0);
+    }
+
     function set_attributes_bulk($item_ids, $attribute_id) {
         $sql = "INSERT INTO account_item_attribute_item (item_id, attribute_item_id, mandant_id) VALUES (?, ?, ?)";
         

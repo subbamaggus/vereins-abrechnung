@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 15. Nov 2025 um 14:40
+-- Erstellungszeit: 22. Nov 2025 um 10:33
 -- Server-Version: 8.0.43-0ubuntu0.24.04.2
 -- PHP-Version: 8.3.6
 
@@ -84,7 +84,8 @@ CREATE TABLE `account_item` (
   `value` int NOT NULL,
   `date` date NOT NULL,
   `user` int NOT NULL,
-  `file` text COLLATE latin1_general_cs
+  `file` text COLLATE latin1_general_cs,
+  `depot_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
 
 -- --------------------------------------------------------
