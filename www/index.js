@@ -256,13 +256,48 @@ const app = Vue.createApp({
                 }
             }
         } catch (e) {
-            this.error = e;
+    this.error = e;
+  }
+},
+async updateItem(item, field, event) {
+    const newValue = event.target.innerText;
+    const oldValue = item[field];
+    
+    // Optimistically update the UI
+    item[field] = newValue;
+
+    try {
+        const response = await fetch('api.php?method=update_item', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: item.id,
+                field: field,
+                value: newValue
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Update failed');
         }
-    },
-    async applyBulkAction() {
-        if (!this.selectedItems.length || !this.selectedAttribute) {
-            return;
+
+        const result = await response.json();
+        if (!result.success) {
+            // Revert if the server-side update failed
+            item[field] = oldValue;
+            this.error = new Error('Server update failed');
         }
+    } catch (e) {
+        // Revert if the fetch request itself fails
+        item[field] = oldValue;
+        this.error = e;
+    }
+},
+async applyBulkAction() {
+    if (!this.selectedItems.length || !this.selectedAttribute) {
+        return;
+    }
 
         const isAddAction = this.bulkAction === 'add';
         const endpoint = isAddAction ? 'set_attributes_bulk' : 'reset_attributes_bulk';
@@ -513,9 +548,9 @@ const app = Vue.createApp({
           <tbody>
             <tr v-for="item in data" :key="item.id">
               <td><input type="checkbox" :value="item.id" v-model="selectedItems"></td>
-              <td scope="row">{{ item.date }}</td>  
-              <td>{{ item.name }}</td> 
-              <td style="text-align: right;">{{ item.value }}</td>
+              <td contenteditable="true" @blur="updateItem(item, 'date', $event)">{{ item.date }}</td>
+              <td contenteditable="true" @blur="updateItem(item, 'name', $event)">{{ item.name }}</td>
+              <td contenteditable="true" @blur="updateItem(item, 'value', $event)" style="text-align: right;">{{ item.value }}</td>
               <td>
                 <span v-for="depot in depots" :key="depot.id">
                   &nbsp;<a href="#" @click.prevent="setDepot(item.id, depot.id)">{{ depot.name }}</a>

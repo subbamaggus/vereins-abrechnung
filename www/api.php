@@ -116,6 +116,9 @@ try {
     } elseif ("reset_attributes_bulk" == $current_method) {
         $post_data = json_decode(file_get_contents('php://input'), true);
         $mydata = $mySQLManager->reset_attributes_bulk($post_data['item_ids'], $post_data['attribute_id']);
+    } elseif ("update_item" == $current_method) {
+        $post_data = json_decode(file_get_contents('php://input'), true);
+        $mydata = $mySQLManager->update_item($post_data['id'], $post_data['field'], $post_data['value']);
     } elseif ("get_balance" == $current_method) {
         $mydata = $mySQLManager->get_balance($_GET);
     } elseif ("get_summary" == $current_method) {
