@@ -139,7 +139,7 @@ class SQLManager {
         return $data;
     }
 
-    function get_items($_attributelist, $_year) {
+    function get_items($_attributelist, $_year, $_depots) {
         if(0 > $this -> mandant)
             throw new ErrorException("no mandant");
 
@@ -148,38 +148,43 @@ class SQLManager {
             $year = date("Y");
         }
 
+        $base_sql = " FROM account_item WHERE mandant_id = ? AND DATE_FORMAT(date, '%Y') = (?)";
+        $params = [$this->mandant, $year];
+        $types = "is";
+
+        if (!empty($_depots)) {
+            $depot_ids = array_map('intval', explode(',', $_depots));
+            $placeholders = implode(',', array_fill(0, count($depot_ids), '?'));
+            $base_sql .= " AND depot_id IN ($placeholders)";
+            $types .= str_repeat('i', count($depot_ids));
+            $params = array_merge($params, $depot_ids);
+        }
+
         if(empty($_attributelist)) {
-            $sql = <<<END
-                SELECT *
-                  FROM account_item
-                 WHERE mandant_id = {$this -> mandant}
-                   AND DATE_FORMAT(date, '%Y') = ($year)
-                 ORDER BY date
-            END;
-
+            $sql = "SELECT *" . $base_sql . " ORDER BY date";
             $this->debug_log(__LINE__, $sql);
-
             $stmt = $this->connection->prepare($sql);
+            $stmt->bind_param($types, ...$params);
         }
         else {
             $attribute_ids = array_map('intval', explode(',', $_attributelist));
-            $placeholders = implode(',', array_fill(0, count($attribute_ids), '?'));
-            $types = str_repeat('i', count($attribute_ids));
+            $attr_placeholders = implode(',', array_fill(0, count($attribute_ids), '?'));
 
-            $sql = <<<END
-                SELECT DISTINCT ai.*
-                  FROM account_item ai
-                 INNER JOIN account_item_attribute_item aiai ON ai.id = aiai.item_id
-                 WHERE aiai.attribute_item_id IN ($placeholders)
-                   AND ai.mandant_id = {$this -> mandant}
-                   AND DATE_FORMAT(ai.date, '%Y') = ($year)
-                 ORDER BY ai.date
-            END;
+            $sql = "SELECT DISTINCT ai.*
+                      FROM account_item ai
+                     INNER JOIN account_item_attribute_item aiai ON ai.id = aiai.item_id
+                     WHERE aiai.attribute_item_id IN ($attr_placeholders)
+                       AND ai.mandant_id = ? 
+                       AND DATE_FORMAT(ai.date, '%Y') = (?) 
+                     ORDER BY ai.date";
 
             $this->debug_log(__LINE__, $sql);
 
+            $types = str_repeat('i', count($attribute_ids)) . $types;
+            $params = array_merge($attribute_ids, $params);
+
             $stmt = $this->connection->prepare($sql);
-            $stmt->bind_param($types, ...$attribute_ids);
+            $stmt->bind_param($types, ...$params);
         }
 
         $stmt->execute();

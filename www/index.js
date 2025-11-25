@@ -20,6 +20,7 @@ const app = Vue.createApp({
       selectedAttribute: null,
       bulkAction: 'add',
       selectedFilters: [],
+      selectedDepots: [],
       loading: true,
       error: null,
     };
@@ -27,7 +28,7 @@ const app = Vue.createApp({
   methods: {
     async applyFilters() {
         this.fetchSummary();
-        this.fetchData(this.selectedFilters);
+        this.fetchData(this.selectedFilters, this.selectedDepots);
     },
     async login() {
       this.loginError = null;
@@ -362,7 +363,7 @@ async applyBulkAction() {
     async clickYear(year) {
       this.currentYear = year;
     },
-    async fetchData(filters = []) {
+    async fetchData(filters = [], depots = []) {
       this.loading = true;
       this.error = null;
       try {
@@ -371,6 +372,9 @@ async applyBulkAction() {
         let jsonUrl = 'api.php?method=get_items';
         if (filters.length > 0) {
             jsonUrl += '&attributes=' + filters.join(',');
+        }
+        if (depots.length > 0) {
+            jsonUrl += '&depots=' + depots.join(',');
         }
         if(this.currentYear > 0) {
             jsonUrl += '&year=' + this.currentYear;
@@ -526,6 +530,12 @@ async applyBulkAction() {
                     <strong>{{ group.name }}:</strong>
                     <label v-for="attr in group.attribute" :key="attr.id" style="margin-right: 10px; margin-left: 5px;">
                         <input type="checkbox" :value="attr.id" v-model="selectedFilters"> {{ attr.name }}
+                    </label>
+                </div>
+                <div style="margin-bottom: 5px;">
+                    <strong>Depots:</strong>
+                    <label v-for="depot in depots" :key="depot.id" style="margin-right: 10px; margin-left: 5px;">
+                        <input type="checkbox" :value="depot.id" v-model="selectedDepots"> {{ depot.name }}
                     </label>
                 </div>
                 <button @click="applyFilters">Apply Filters</button>

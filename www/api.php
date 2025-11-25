@@ -92,7 +92,7 @@ try {
             exit();
         }
     } elseif ("get_items" == $current_method) {
-        $mydata = $mySQLManager->get_items(value_if_isset($_GET, 'attributes'), value_if_isset($_GET, 'year'));
+        $mydata = $mySQLManager->get_items(value_if_isset($_GET, 'attributes'), value_if_isset($_GET, 'year'), value_if_isset($_GET, 'depots'));
     } elseif ("save_attribute" == $current_method) {
         $last_id = $mySQLManager->save_attribute($_POST['groupid'], $_POST['attributeid'], $_POST['text']);
         $mydata = ['success' => true, 'last_id' => $last_id];
