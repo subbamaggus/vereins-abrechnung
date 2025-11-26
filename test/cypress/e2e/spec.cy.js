@@ -5,6 +5,9 @@ describe('template spec', () => {
     it('passes', () => {
         cy.visit('http://www.weggefoehnt.de/privat/verrechnung/')
         cy.contains('uebersicht')
+    }),    it('passes', () => {
+        cy.visit('http://192.168.177.87/v-a/www/')
+        cy.contains('Login')
     }),
     it('passes', () => {
         cy.visit('http://www.weggefoehnt.de/budget/kohle/', {
