@@ -138,6 +138,44 @@ class SQLManager {
 
         return true;
     }
+    
+    function update_item($id, $field, $value) {
+        // Whitelist the field to prevent SQL injection
+        $allowed_fields = ['date', 'name', 'value'];
+        if (!in_array($field, $allowed_fields)) {
+            throw new Exception("Invalid field specified for update.");
+        }
+
+        // Handle value conversion for the 'value' field
+        if ($field === 'value') {
+            $value = str_replace(',', '.', $value);
+            $value = floatval($value) * 100;
+            $param_type = "i"; // integer
+        } else {
+            $param_type = "s"; // string
+        }
+
+        $sql = "UPDATE account_item SET $field = ? WHERE id = ? AND mandant_id = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this->connection->prepare($sql);
+
+        $item_types = $param_type . "ii";
+        $item_params = array($filename, $value, $id, $this->mandant);
+
+        $stmt -> bind_param($item_types, ...$item_params);
+        $this->audit_log($sql, $item_types, $item_params);
+
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            return ['success' => true];
+        } else {
+            // This could also mean the value was the same as before, which is not an error.
+            return ['success' => true, 'message' => 'No rows updated.'];
+        }
+    }
 
     function get_all_items() {
         $sql = "SELECT * FROM account_item WHERE mandant_id = ? ORDER BY date";
@@ -814,43 +852,6 @@ class SQLManager {
         return $data;
     }
 
-    function update_item($id, $field, $value) {
-        // Whitelist the field to prevent SQL injection
-        $allowed_fields = ['date', 'name', 'value'];
-        if (!in_array($field, $allowed_fields)) {
-            throw new Exception("Invalid field specified for update.");
-        }
-
-        // Handle value conversion for the 'value' field
-        if ($field === 'value') {
-            $value = str_replace(',', '.', $value);
-            $value = floatval($value) * 100;
-            $param_type = "i"; // integer
-        } else {
-            $param_type = "s"; // string
-        }
-
-        $sql = "UPDATE account_item SET $field = ? WHERE id = ? AND mandant_id = ?";
-
-        $this->debug_log(__LINE__, $sql);
-
-        $stmt = $this->connection->prepare($sql);
-
-        $item_types = $param_type . "ii";
-        $item_params = array($filename, $value, $id, $this->mandant);
-
-        $stmt -> bind_param($item_types, ...$item_params);
-        $this->audit_log($sql, $item_types, $item_params);
-
-        $stmt->execute();
-
-        if ($stmt->affected_rows > 0) {
-            return ['success' => true];
-        } else {
-            // This could also mean the value was the same as before, which is not an error.
-            return ['success' => true, 'message' => 'No rows updated.'];
-        }
-    }
 }
 
 ?>
