@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 22. Nov 2025 um 10:33
--- Server-Version: 8.0.43-0ubuntu0.24.04.2
+-- Erstellungszeit: 30. Nov 2025 um 16:41
+-- Server-Version: 8.0.44-0ubuntu0.24.04.1
 -- PHP-Version: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -49,6 +49,20 @@ CREATE TABLE `account_attribute_item` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `account_audit`
+--
+
+CREATE TABLE `account_audit` (
+  `id` int NOT NULL,
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `sql_text` text CHARACTER SET latin1 COLLATE latin1_general_cs NOT NULL,
+  `data_text` text CHARACTER SET latin1 COLLATE latin1_general_cs NOT NULL,
+  `mandant_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `account_depot`
 --
 
@@ -85,7 +99,7 @@ CREATE TABLE `account_item` (
   `date` date NOT NULL,
   `user` int NOT NULL,
   `file` text COLLATE latin1_general_cs,
-  `depot_id` int NOT NULL
+  `depot_id` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
 
 -- --------------------------------------------------------
@@ -158,6 +172,12 @@ ALTER TABLE `account_attribute_item`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indizes für die Tabelle `account_audit`
+--
+ALTER TABLE `account_audit`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indizes für die Tabelle `account_depot`
 --
 ALTER TABLE `account_depot`
@@ -215,6 +235,12 @@ ALTER TABLE `account_attribute`
 -- AUTO_INCREMENT für Tabelle `account_attribute_item`
 --
 ALTER TABLE `account_attribute_item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `account_audit`
+--
+ALTER TABLE `account_audit`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
