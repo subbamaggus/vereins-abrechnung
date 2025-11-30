@@ -183,14 +183,26 @@ class SQLManager {
             // First, delete associated attributes
             $sql_attributes = "DELETE FROM account_item_attribute_item WHERE item_id = ? AND mandant_id = ?";
             $stmt_attributes = $this->connection->prepare($sql_attributes);
-            $stmt_attributes->bind_param("ii", $item_id, $this->mandant);
+
+            $item_types = "ii";
+            $item_params = array($item_id, $this->mandant);
+
+            $stmt_attributes -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql_attributes, $item_types, $item_params);
+
             $stmt_attributes->execute();
             $stmt_attributes->close();
 
             // Then, delete the item itself
             $sql_item = "DELETE FROM account_item WHERE id = ? AND mandant_id = ?";
             $stmt_item = $this->connection->prepare($sql_item);
-            $stmt_item->bind_param("ii", $item_id, $this->mandant);
+
+            $item_types = "ii";
+            $item_params = array($item_id, $this->mandant);
+
+            $stmt_item -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql_item, $item_types, $item_params);
+
             $stmt_item->execute();
             
             if ($stmt_item->affected_rows > 0) {
