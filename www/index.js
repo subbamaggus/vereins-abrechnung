@@ -260,6 +260,36 @@ const app = Vue.createApp({
     this.error = e;
   }
 },
+async deleteItem(itemId) {
+    if (!confirm('Are you sure you want to delete this item?')) {
+        return;
+    }
+    try {
+        const response = await fetch('api.php?method=delete_item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `item_id=${itemId}`,
+        });
+
+        if (!response.ok) {
+            throw new Error('Could not delete item');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+            const index = this.data.findIndex(i => i.id === itemId);
+            if (index > -1) {
+                this.data.splice(index, 1);
+            }
+        } else {
+            throw new Error(result.error || 'Failed to delete item from server');
+        }
+    } catch (e) {
+        this.error = e;
+    }
+},
 async updateItem(item, field, event) {
     const newValue = event.target.innerText;
     const oldValue = item[field];
@@ -554,6 +584,7 @@ async applyBulkAction() {
               <th>Depot</th>
               <th v-for="attribute in attributes" :key="attribute.id">{{ attribute.name }}</th>
               <th>Bild</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -581,18 +612,21 @@ async applyBulkAction() {
               <td>
                 <div class="zoom" v-if="item.file"><img :src="item.file" style="max-width:50px; overflow: auto;"/></div>
               </td>
+              <td>
+                <button @click="deleteItem(item.id)">Delete</button>
+              </td>
             </tr>
           </tbody>
           <tfoot>
             <tr>
               <td colspan="3" style="text-align: right;"><strong>Summe:</strong></td>
               <td style="text-align: right;"><strong>{{ totalValue }} &euro;</strong></td>
-              <td :colspan="attributes.length + 2"></td>
+              <td :colspan="attributes.length + 3"></td>
             </tr>
             <tr>
               <td colspan="3" style="text-align: right;"><strong>Bilanz:</strong></td>
               <td style="text-align: right;"><strong>{{ totalSummary }} &euro;</strong></td>
-              <td :colspan="attributes.length + 2"></td>
+              <td :colspan="attributes.length + 3"></td>
             </tr>
           </tfoot>
         </table>

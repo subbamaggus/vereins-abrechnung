@@ -177,6 +177,35 @@ class SQLManager {
         }
     }
 
+    function delete_item($item_id) {
+        $this->connection->begin_transaction();
+        try {
+            // First, delete associated attributes
+            $sql_attributes = "DELETE FROM account_item_attribute_item WHERE item_id = ? AND mandant_id = ?";
+            $stmt_attributes = $this->connection->prepare($sql_attributes);
+            $stmt_attributes->bind_param("ii", $item_id, $this->mandant);
+            $stmt_attributes->execute();
+            $stmt_attributes->close();
+
+            // Then, delete the item itself
+            $sql_item = "DELETE FROM account_item WHERE id = ? AND mandant_id = ?";
+            $stmt_item = $this->connection->prepare($sql_item);
+            $stmt_item->bind_param("ii", $item_id, $this->mandant);
+            $stmt_item->execute();
+            
+            if ($stmt_item->affected_rows > 0) {
+                $this->connection->commit();
+                return ['success' => true];
+            } else {
+                $this->connection->rollback();
+                return ['success' => false, 'error' => 'Item not found or not authorized to delete.'];
+            }
+        } catch (Exception $e) {
+            $this->connection->rollback();
+            throw $e;
+        }
+    }
+
     function get_all_items() {
         $sql = "SELECT * FROM account_item WHERE mandant_id = ? ORDER BY date";
 

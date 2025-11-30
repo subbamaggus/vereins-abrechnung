@@ -119,6 +119,8 @@ try {
     } elseif ("update_item" == $current_method) {
         $post_data = json_decode(file_get_contents('php://input'), true);
         $mydata = $mySQLManager->update_item($post_data['id'], $post_data['field'], $post_data['value']);
+    } elseif ("delete_item" == $current_method) {
+        $mydata = $mySQLManager->delete_item($_POST['item_id']);
     } elseif ("get_balance" == $current_method) {
         $mydata = $mySQLManager->get_balance($_GET);
     } elseif ("get_summary" == $current_method) {
