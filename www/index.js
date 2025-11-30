@@ -551,7 +551,7 @@ async applyBulkAction() {
               <th>Datum</th>
               <th>Bezeichnung</th>
               <th>Betrag</th>
-              <th>Konto</th>
+              <th>Depot</th>
               <th v-for="attribute in attributes" :key="attribute.id">{{ attribute.name }}</th>
               <th>Bild</th>
             </tr>

@@ -46,3 +46,13 @@ table {
   outline: 2px solid white;
   outline-offset: -2px;
 }
+
+[contenteditable]:hover {
+  background: #fafafa;
+  outline: 2px solid #eee;
+}
+
+[contenteditable]:focus {
+  background: #efefef;
+  outline: 2px solid blue;
+}
