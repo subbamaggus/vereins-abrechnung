@@ -6,7 +6,7 @@ class SQLManager {
     public $user_id;
     public $config;
 
-    public $debug = true;
+    public $debug = false;
 
     function __construct($_connection, $_config) {
         $this -> connection = $_connection;
@@ -107,18 +107,12 @@ class SQLManager {
         $this->debug_log(__LINE__, $sql);
 
         $stmt = $this -> connection -> prepare($sql);
+
         $item_types = "sssii";
+        $item_params = array($_name, $_value * 100, $_date, $this->user_id, $this->mandant);
 
-        $stmt -> bind_param($item_types, $name, $value, $date, $user_id, $mandant);
-
-        $name = $_name;
-        $value = $_value * 100;
-        $date = $_date;
-        $user_id = $this->user_id;
-        $mandant = $this->mandant;
-
-        $item_ids = array($name, $value, $date, $user_id, $mandant);
-        $this->audit_log($sql, $item_types, $item_ids);
+        $stmt -> bind_param($item_types, ...$item_params);
+        $this->audit_log($sql, $item_types, $item_params);
 
         $stmt -> execute();
 
@@ -133,11 +127,12 @@ class SQLManager {
         $this->debug_log(__LINE__, $sql);
 
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("sii", $filename, $id, $mandant);
 
-        $filename = $_newname;
-        $id = $_id;
-        $mandant = $this->mandant;
+        $item_types = "sii";
+        $item_params = array($_newname, $_id, $this->mandant);
+
+        $stmt -> bind_param($item_types, ...$item_params);
+        $this->audit_log($sql, $item_types, $item_params);
 
         $stmt -> execute();
 
@@ -313,10 +308,12 @@ class SQLManager {
                 $this->debug_log(__LINE__, $sql);
 
                 $stmt = $this -> connection -> prepare($sql);
-                $stmt -> bind_param("si", $name, $mandant);
 
-                $name = $_text;
-                $mandant = $this->mandant;
+                $item_types = "si";
+                $item_params = array($_text, $this->mandant);
+
+                $stmt -> bind_param($item_types, ...$item_params);
+                $this->audit_log($sql, $item_types, $item_params);
 
                 $stmt -> execute();
 
@@ -329,11 +326,12 @@ class SQLManager {
                 $this->debug_log(__LINE__, $sql);
 
                 $stmt = $this -> connection -> prepare($sql);
-                $stmt -> bind_param("sii", $name, $mandant, $attribute_id);
 
-                $name = $_text;
-                $mandant = $this->mandant;
-                $attribute_id = $_groupid;
+                $item_types = "sii";
+                $item_params = array($_text, $this->mandant, $_groupid);
+
+                $stmt -> bind_param($item_types, ...$item_params);
+                $this->audit_log($sql, $item_types, $item_params);
 
                 $stmt -> execute();
 
@@ -349,11 +347,12 @@ class SQLManager {
             $this->debug_log(__LINE__, $sql);
 
             $stmt = $this -> connection -> prepare($sql);
-            $stmt -> bind_param("sii", $name, $id, $mandant);
 
-            $name = $_text;
-            $id = $_groupid;
-            $mandant = $this->mandant;
+            $item_types = "sii";
+            $item_params = array($_text, $_groupid, $this->mandant);
+
+            $stmt -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql, $item_types, $item_params);
 
             $stmt -> execute();
 
@@ -366,12 +365,12 @@ class SQLManager {
             $this->debug_log(__LINE__, $sql);
 
             $stmt = $this -> connection -> prepare($sql);
-            $stmt -> bind_param("siii", $name, $id, $attribute_id, $mandant);
 
-            $name = $_text;
-            $id = $_itemid;
-            $attribute_id = $_groupid;
-            $mandant = $this->mandant;
+            $item_types = "siii";
+            $item_params = array($_text, $_itemid, $_groupid, $this->mandant);
+
+            $stmt -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql, $item_types, $item_params);
 
             $stmt -> execute();
             
@@ -462,9 +461,12 @@ class SQLManager {
         $this->debug_log(__LINE__, $sql);
 
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("iii", $item_id, $attribute_id, $mandant);
 
-        $mandant = $this->mandant;
+        $item_types = "iii";
+        $item_params = array($item_id, $attribute_id, $this->mandant);
+
+        $stmt -> bind_param($item_types, ...$item_params);
+        $this->audit_log($sql, $item_types, $item_params);
 
         $stmt -> execute();
 
@@ -477,9 +479,12 @@ class SQLManager {
         $this->debug_log(__LINE__, $sql);
 
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("iii", $depot_id, $item_id, $mandant);
 
-        $mandant = $this->mandant;
+        $item_types = "iii";
+        $item_params = array($depot_id, $item_id, $this->mandant);
+
+        $stmt -> bind_param($item_types, ...$item_params);
+        $this->audit_log($sql, $item_types, $item_params);
 
         $stmt -> execute();
 
@@ -506,8 +511,12 @@ class SQLManager {
             $stmt = $this -> connection -> prepare($sql);
             foreach ($item_ids as $item_id) {
                 // Use IGNORE to prevent errors on duplicate entries
-                $stmt -> bind_param("iii", $item_id, $attribute_id, $mandant);
-                $mandant = $this->mandant;
+                $item_types = "iii";
+                $item_params = array($item_id, $attribute_id, $this->mandant);
+
+                $stmt -> bind_param($item_types, ...$item_params);
+                $this->audit_log($sql, $item_types, $item_params);
+
                 $stmt -> execute();
             }
             $stmt -> close();
@@ -528,8 +537,13 @@ class SQLManager {
         try {
             $stmt = $this -> connection -> prepare($sql);
             foreach ($item_ids as $item_id) {
-                $stmt -> bind_param("iii", $item_id, $attribute_id, $mandant);
-                $mandant = $this->mandant;
+
+                $item_types = "iii";
+                $item_params = array($item_id, $attribute_id, $this->mandant);
+
+                $stmt -> bind_param($item_types, ...$item_params);
+                $this->audit_log($sql, $item_types, $item_params);
+
                 $stmt -> execute();
             }
             $stmt -> close();
@@ -600,10 +614,12 @@ class SQLManager {
             $this->debug_log(__LINE__, $sql);
 
             $stmt = $this -> connection -> prepare($sql);
-            $stmt -> bind_param("si", $name, $mandant);
 
-            $name = $_depotname;
-            $mandant = $this->mandant;
+            $item_types = "si";
+            $item_params = array($filename, $_depotname, $this->mandant);
+
+            $stmt -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql, $item_types, $item_params);
 
             $stmt -> execute();
 
@@ -618,11 +634,12 @@ class SQLManager {
             $this->debug_log(__LINE__, $sql);
 
             $stmt = $this -> connection -> prepare($sql);
-            $stmt -> bind_param("sii", $name, $id, $mandant);
 
-            $name = $_depotname;
-            $id = $_depotid;
-            $mandant = $this->mandant;
+            $item_types = "sii";
+            $item_params = array($_depotname, $_depotid, $this->mandant);
+
+            $stmt -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql, $item_types, $item_params);
 
             $stmt -> execute();
 
@@ -638,11 +655,12 @@ class SQLManager {
             $this->debug_log(__LINE__, $sql);
 
             $stmt = $this -> connection -> prepare($sql);
-            $stmt -> bind_param("iis", $depotid, $value, $date);
 
-            $depotid = $_depotid;
-            $value = $_entryvalue * 100;
-            $date = $_entrydate;
+            $item_types = "iis";
+            $item_params = array($_depotid, $_entryvalue * 100, $_entrydate);
+
+            $stmt -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql, $item_types, $item_params);
 
             $stmt -> execute();
 
@@ -817,7 +835,12 @@ class SQLManager {
         $this->debug_log(__LINE__, $sql);
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bind_param($param_type . "ii", $value, $id, $this->mandant);
+
+        $item_types = $param_type . "ii";
+        $item_params = array($filename, $value, $id, $this->mandant);
+
+        $stmt -> bind_param($item_types, ...$item_params);
+        $this->audit_log($sql, $item_types, $item_params);
 
         $stmt->execute();
 
