@@ -6,7 +6,7 @@ class SQLManager {
     public $user_id;
     public $config;
 
-    public $debug = false;
+    public $debug = true;
 
     function __construct($_connection, $_config) {
         $this -> connection = $_connection;
@@ -20,6 +20,34 @@ class SQLManager {
     function debug_log($line, $message) {
         if($this->debug)
             error_log($line . ": " . $message);
+    }
+
+    function audit_log($_sql, $_types, $_params) {
+        $sql = "INSERT INTO account_audit (sql_text, data_text, mandant_id) VALUES (?, ?, ?)";
+        
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("ssi", $logsql, $data, $mandant);
+
+        $logsql = $_sql;
+        $data = $_types . ":" . implode(',', $_params);
+        $mandant = $this->mandant;
+
+        try {
+            $stmt -> execute();
+
+            $result = $stmt -> get_result();
+
+            $this->debug_log(__LINE__, "insert result" . json_encode($result));
+
+            $data = array( "success" => "done",);
+        } catch (Exception $e) {
+            $this->debug_log(__LINE__, $e->getMessage());
+            $data = false;
+        }
+
+        return $data;        
     }
 
     function validate_user($email, $password) {
@@ -62,11 +90,11 @@ class SQLManager {
 
             $result = $stmt -> get_result();
 
-            error_log("insert result" . json_encode($result));
+            $this->debug_log(__LINE__, "insert result" . json_encode($result));
 
             $data = array( "success" => "done",);
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            $this->debug_log(__LINE__, $e->getMessage());
             $data = false;
         }
 
@@ -79,13 +107,18 @@ class SQLManager {
         $this->debug_log(__LINE__, $sql);
 
         $stmt = $this -> connection -> prepare($sql);
-        $stmt -> bind_param("sssii", $name, $value, $date, $user_id, $mandant);
+        $item_types = "sssii";
+
+        $stmt -> bind_param($item_types, $name, $value, $date, $user_id, $mandant);
 
         $name = $_name;
         $value = $_value * 100;
         $date = $_date;
         $user_id = $this->user_id;
         $mandant = $this->mandant;
+
+        $item_ids = array($name, $value, $date, $user_id, $mandant);
+        $this->audit_log($sql, $item_types, $item_ids);
 
         $stmt -> execute();
 
