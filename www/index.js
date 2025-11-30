@@ -534,6 +534,7 @@ async applyBulkAction() {
                 </div>
                 <div style="margin-bottom: 5px;">
                     <strong>Depots:</strong>
+                    <input type="checkbox" value="0" v-model="selectedDepots"> kein Depot
                     <label v-for="depot in depots" :key="depot.id" style="margin-right: 10px; margin-left: 5px;">
                         <input type="checkbox" :value="depot.id" v-model="selectedDepots"> {{ depot.name }}
                     </label>

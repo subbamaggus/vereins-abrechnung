@@ -138,7 +138,7 @@ class SQLManager {
 
         return true;
     }
-    
+
     function update_item($id, $field, $value) {
         // Whitelist the field to prevent SQL injection
         $allowed_fields = ['date', 'name', 'value'];
@@ -162,7 +162,7 @@ class SQLManager {
         $stmt = $this->connection->prepare($sql);
 
         $item_types = $param_type . "ii";
-        $item_params = array($filename, $value, $id, $this->mandant);
+        $item_params = array($value, $id, $this->mandant);
 
         $stmt -> bind_param($item_types, ...$item_params);
         $this->audit_log($sql, $item_types, $item_params);
@@ -218,7 +218,7 @@ class SQLManager {
         $params = [$this->mandant, $year];
         $types = "is";
 
-        if (!empty($_depots)) {
+        if (!empty($_depots) or (0 == $depots)) {
             $depot_ids = array_map('intval', explode(',', $_depots));
             $placeholders = implode(',', array_fill(0, count($depot_ids), '?'));
             $base_sql .= " AND depot_id IN ($placeholders)";
