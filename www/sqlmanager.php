@@ -218,7 +218,7 @@ class SQLManager {
         $params = [$this->mandant, $year];
         $types = "is";
 
-        if (!empty($_depots) or (0 == $depots)) {
+        if (!empty($_depots) or ("0" === $_depots)) {
             $depot_ids = array_map('intval', explode(',', $_depots));
             $placeholders = implode(',', array_fill(0, count($depot_ids), '?'));
             $base_sql .= " AND depot_id IN ($placeholders)";
