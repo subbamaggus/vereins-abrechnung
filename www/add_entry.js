@@ -38,6 +38,8 @@ const addEntryApp = Vue.createApp({
         if (result.success) {
           this.success = true;
           //window.location.href = 'index.php';
+          this.newEntry.name = '';
+          this.newEntry.value = '';
         } else {
           throw new Error('Failed to add entry');
         }

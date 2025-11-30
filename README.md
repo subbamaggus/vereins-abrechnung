@@ -17,10 +17,7 @@ Das Projekt implementiert Abrechnung für kleinere Vereine.
 
 ### TODOs/Notes
 
-* put create sql to project
 * item without attributes, helper
-* reset value/description when entry is saved
-* set buttons further apart (add_entry)
 
 ## Technologie
 
