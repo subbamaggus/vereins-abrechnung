@@ -1,3 +1,10 @@
+<?php
+
+if(!isset($_COOKIE['mandant'])) {
+  header("Location: index.php");
+}
+
+?>
 <!DOCTYPE html>
 <html>
 <head>

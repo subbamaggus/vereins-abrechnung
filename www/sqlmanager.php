@@ -213,15 +213,17 @@ class SQLManager {
         if(empty($year)) {
             $year = date("Y");
         }
+        $depot_sql = "";
 
-        $base_sql = " FROM account_item WHERE mandant_id = ? AND DATE_FORMAT(date, '%Y') = (?)";
+        $base_sql = " FROM account_item ai WHERE ai.mandant_id = ? AND DATE_FORMAT(ai.date, '%Y') = (?)";
         $params = [$this->mandant, $year];
         $types = "is";
 
         if (!empty($_depots) or ("0" === $_depots)) {
             $depot_ids = array_map('intval', explode(',', $_depots));
             $placeholders = implode(',', array_fill(0, count($depot_ids), '?'));
-            $base_sql .= " AND depot_id IN ($placeholders)";
+            $depot_sql = " AND ai.depot_id IN ($placeholders)";
+            $base_sql .= $depot_sql;
             $types .= str_repeat('i', count($depot_ids));
             $params = array_merge($params, $depot_ids);
         }
@@ -239,17 +241,20 @@ class SQLManager {
             $sql = "SELECT DISTINCT ai.*
                       FROM account_item ai
                      INNER JOIN account_item_attribute_item aiai ON ai.id = aiai.item_id
-                     WHERE aiai.attribute_item_id IN ($attr_placeholders)
-                       AND ai.mandant_id = ? 
-                       AND DATE_FORMAT(ai.date, '%Y') = (?) 
+                     WHERE ai.mandant_id = ? 
+                       AND DATE_FORMAT(ai.date, '%Y') = (?)
+                       $depot_sql
+                       AND aiai.attribute_item_id IN ($attr_placeholders)
                      ORDER BY ai.date";
 
             $this->debug_log(__LINE__, $sql);
+            $this->debug_log(__LINE__, $types . ":" . json_encode($params));
 
-            $types = str_repeat('i', count($attribute_ids)) . $types;
-            $params = array_merge($attribute_ids, $params);
+            $types = $types . str_repeat('i', count($attribute_ids));
+            $params = array_merge($params, $attribute_ids);
 
             $stmt = $this->connection->prepare($sql);
+            $this->debug_log(__LINE__, $types . ":" . json_encode($params));
             $stmt->bind_param($types, ...$params);
         }
 

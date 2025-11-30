@@ -70,7 +70,7 @@ const addEntryApp = Vue.createApp({
           <input type="file" @change="handleFileUpload" ref="fileInput">
         </label>
         <br>
-        <button type="submit">speichern</button>
+        <p align="right"><button type="submit">speichern</button></p>
       </form>
       <p v-if="error" style="color: red;">{{ error }}</p>
       <p v-if="success" style="color: green;">Entry added successfully!</p>
