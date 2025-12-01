@@ -50,6 +50,7 @@ try {
         setcookie("privilege", "", time() - COOKIE_TIMEOUT);
         setcookie("mandant", "", time() - COOKIE_TIMEOUT);
         setcookie("user_id", "", time() - COOKIE_TIMEOUT);
+        setcookie("mandant_name", "", time() - COOKIE_TIMEOUT);
         echo json_encode(['success' => true]);
         exit();
     }
@@ -84,7 +85,15 @@ try {
     } elseif ("set_mandant" == $current_method) {
         if (isset($_POST['mandant'])) {
             setcookie('mandant', $_POST['mandant'], time() + COOKIE_TIMEOUT);
-            setcookie('privilege', USER_ADMIN, time() + COOKIE_TIMEOUT);
+
+            $mandant_name = "";
+            $tmp = $mySQLManager->get_mandant_by_id($_POST['mandant'], $mySQLManager->user_id);
+            $mandant_name = $tmp[0]['name'];
+            $privilege = $tmp[0]['privilege'];
+
+            setcookie('mandant_name', $mandant_name, time() + COOKIE_TIMEOUT);
+            setcookie('privilege', $privilege, time() + COOKIE_TIMEOUT);
+
             $mydata = ['success' => true];
         } else {
             http_response_code(400);

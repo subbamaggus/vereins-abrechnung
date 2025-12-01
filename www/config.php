@@ -9,7 +9,8 @@
 	define('USER_REGISTERED', 0);
 	define('USER_VALIDATED', 1);
 	define('USER_WRITE', 2);
-	define('USER_ADMIN', 3);
+	define('USER_POWER', 3);
+	define('USER_ADMIN', 4);
 
 	define('COOKIE_TIMEOUT', 36000);
 ?>

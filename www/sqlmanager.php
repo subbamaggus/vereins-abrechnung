@@ -812,6 +812,33 @@ class SQLManager {
         return $data;        
     }
 
+    function get_mandant_by_id($_mandant_id, $_user_id) {
+        $sql = "SELECT m.name, mu.privilege, mu.*
+                  FROM account_mandant_user mu
+                    , account_mandant m
+                    , account_user u
+                WHERE mu.mandant_id = m.id
+                  AND mu.user_id = u.id
+                  AND m.id = ? 
+                  AND u.id = ?";
+
+        $this->debug_log(__LINE__, $sql . $_mandant_id);
+
+        $stmt = $this -> connection -> prepare($sql);
+        $stmt -> bind_param("ii", $mandant_id, $user_id);
+
+        $mandant_id = $_mandant_id;
+        $user_id = $_user_id;
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $data = $result -> fetch_all(MYSQLI_ASSOC);
+
+        return $data;        
+    }
+
     function get_summary($_year) {
         $year = $_year;
         if(empty($year))
@@ -870,7 +897,10 @@ class SQLManager {
             }
 
         }
-        $data[] = $localdata;
+        if(isset($localdata))
+            $data[] = $localdata;
+        else
+            $data[] = null;
 
         return $data;
     }
