@@ -3,37 +3,34 @@
 require "config.php";
 
 $privilege = $_COOKIE['privilege'];
+$i_am = basename($_SERVER['PHP_SELF']);
 
-?>
+function print_menu_item($current, $target, $display) {
+    $result = "<a href=\"" . $target . "\">";
+    if($current == $target) $result .= "<strong>";
+    $result .= $display;
+    if($current == $target) $result .= "</strong>";
+    $result .= "</a>&nbsp;";
 
-  <a href="index.php">Home</a>&nbsp;
+    echo $result;
+}
 
-<?php if(USER_WRITE <= $privilege) {
+print_menu_item($i_am, "index.php", "Home");
 
-?>
-  <a href="add_entry.php">Add Entry</a>&nbsp;
-<?php  
+if(USER_WRITE <= $privilege) {
+    print_menu_item($i_am, "add_entry.php", "Add Entry");
+}
+
+if(USER_POWER <= $privilege) {
+    print_menu_item($i_am, "depot.php", "Depot");
+}
+
+if(USER_ADMIN <= $privilege) {
+    print_menu_item($i_am, "attribute.php", "Attribute");
+    print_menu_item($i_am, "mandant.php", "Mandant");
 }
 
 ?>
-<?php if(USER_POWER <= $privilege) {
 
-?>
-  <a href="depot.php">Depot</a>&nbsp;
-<?php  
-}
-
-?>
-<?php if(USER_ADMIN <= $privilege) {
-
-?>
-  <a href="attribute.php">Attribute</a>&nbsp;
-  <a href="mandant.php">Mandant</a>&nbsp;
-<?php  
-}
-
-?>
-  
-  
   <br/><br/>
-  Mandant: <?php echo $_COOKIE['mandant_name']; ?> | Userlevel: <?php echo $privilege; ?> 
+  Mandant: <?php echo $_COOKIE['mandant_name']; ?> | Userlevel: <?php echo $privilege; ?>
