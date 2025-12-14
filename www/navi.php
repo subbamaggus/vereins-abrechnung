@@ -1,5 +1,4 @@
-<table>
-  <tr>
+<div class="w3-row">
 <?php
 
 require "config.php";
@@ -8,12 +7,10 @@ $privilege = $_COOKIE['privilege'];
 $i_am = basename($_SERVER['PHP_SELF']);
 
 function print_menu_item($current, $target, $display) {
-    $result = "<td";
-    if($current == $target) $result .= " class=\"active\"";
-    else $result .= " class=\"passive\"";
-    $result .= "><a href=\"" . $target . "\">";
-    $result .= $display;
-    $result .= "</a></td>";
+    $result = "<a href=\"". $target . "\"><div class=\"w3-col tablink w3-bottombar w3-hover-light-grey w3-padding";
+    if($current == $target) $result .= " w3-border-blue";
+    $result .= "\" style=\"width:20%\">". $display ."</div>";
+    $result .= "</a>";
 
     echo $result;
 }
@@ -34,7 +31,7 @@ if(USER_ADMIN <= $privilege) {
 }
 
 ?>
-  </tr>
-</table>
+</div>
+
   <br/><br/>
   Mandant: <?php echo $_COOKIE['mandant_name']; ?> | Userlevel: <?php echo $privilege; ?>
