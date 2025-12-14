@@ -56,23 +56,23 @@ const addEntryApp = Vue.createApp({
       <h1>Add New Entry</h1>
       
       <form @submit.prevent="storeEntry">
-        <label>Betrag<br>
+        <label>Value<br>
           <input type="number" step="0.01" v-model="newEntry.value">
         </label>
         <br>
-        <label>Datum<br>
+        <label>Date<br>
           <input type="date" v-model="newEntry.date">
         </label>
         <br>
-        <label>Bezeichnung<br>
+        <label>Description<br>
           <input type="text" v-model="newEntry.name">
         </label>
         <br>
-        <label>Bild<br>
+        <label>Image<br>
           <input type="file" @change="handleFileUpload" ref="fileInput">
         </label>
         <br>
-        <p align="right"><button type="submit">speichern</button></p>
+        <p align="right"><button type="submit">save</button></p>
       </form>
       <p v-if="error" style="color: red;">{{ error }}</p>
       <p v-if="success" style="color: green;">Entry added successfully!</p>

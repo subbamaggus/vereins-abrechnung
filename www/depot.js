@@ -101,25 +101,27 @@ const depotApp = Vue.createApp({
 
       <div style="margin-bottom: 10px;">
         <div v-for="group in depots" :key="group.id" style="margin-bottom: 5px;">
-          <strong>Depot</strong>
-          <input type="text" v-model="group.name" /><a href="#" @click.prevent="saveDepot(group.id, group.name)">speichern</a>
+          <strong>Depot:</strong>
+          <input type="text" v-model="group.name" /><a href="#" @click.prevent="saveDepot(group.id, group.name)">save</a>
           <br/>
           <label v-for="value in group.depot_value" :key="value.id" style="margin-right: 10px; margin-left: 5px;">
+            Value:
             <input type="text" v-model="value.value" />
             <input type="date" v-model="value.date" />
-            <a href="#" @click.prevent="saveDepotValue(group.id, value.date, value.value)">speichern</a>
+            <a href="#" @click.prevent="saveDepotValue(group.id, value.date, value.value)">save</a>
             <br/>
           </label>
           <label>
+            New Value:
             <input type="text" v-model="group.newDepotValuevalue" />
             <input type="date" v-model="group.newDepotValuedate" />
-            <a href="#" @click.prevent="saveDepotValue(group.id, group.newDepotValuedate, group.newDepotValuevalue)">neu</a>
+            <a href="#" @click.prevent="saveDepotValue(group.id, group.newDepotValuedate, group.newDepotValuevalue)">save</a>
           </label>
           <br/>-----
         </div>
-        <strong>Depot</strong>
+        <strong>New Depot:</strong>
         <input type="text" v-model="newDepot.name"/>
-        <a href="#" @click.prevent="saveDepot(-1, newDepot.name)">neu</a>
+        <a href="#" @click.prevent="saveDepot(-1, newDepot.name)">save</a>
       </div>
 
       <p v-if="error" style="color: red;">{{ error }}</p>

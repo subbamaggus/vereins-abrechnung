@@ -36,4 +36,4 @@ $privilege = $_COOKIE['privilege'];
   
   
   <br/><br/>
-  Mandant: <?php echo $_COOKIE['mandant_name']; ?> | Benutzerlevel: <?php echo $privilege; ?> 
+  Mandant: <?php echo $_COOKIE['mandant_name']; ?> | Userlevel: <?php echo $privilege; ?> 

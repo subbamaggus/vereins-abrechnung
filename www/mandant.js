@@ -42,24 +42,26 @@ const mandantApp = Vue.createApp({
       <div style="margin-bottom: 10px;">
         <div v-for="mandant in mandants" :key="mandant.mid" style="margin-bottom: 5px;">
           <strong>Mandant</strong>
-          <input type="text" v-model="mandant.name" /><a href="#">speichern</a>
+          <input type="text" v-model="mandant.name" /><a href="#">save</a>
           <br/>
           <label v-for="user in mandant.user" :key="user.id" style="margin-right: 10px; margin-left: 5px;">
+            User:
             <select v-model="user.email">
               <option v-for="u in allUsers" :key="u.id" :value="u.email">{{ u.email }}</option>
             </select>
             <input type="text" v-model="user.privilege" />
-            <a href="#">speichern</a>
+            <a href="#">save</a>
             <br/>
           </label>
           <label>
-            <input type="text" /><a href="#">neu</a>
+            New User:
+            <input type="text" /><a href="#">save</a>
           </label>
           <br/>-----
         </div>
-        <strong>Mandant</strong>
+        <strong>New Mandant</strong>
         <input type="text" />
-        <a href="#">neu</a>
+        <a href="#">save</a>
       </div>
 
       <p v-if="error" style="color: red;">{{ error }}</p>

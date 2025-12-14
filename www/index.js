@@ -541,10 +541,10 @@ async applyBulkAction() {
         </ul>
     </div>
     <div v-else>
-      <div v-if="loading">Lädt...</div>
-      <div v-else-if="error">Fehler: {{ error.message }}</div>
+      <div v-if="loading">Loading...</div>
+      <div v-else-if="error">Error: {{ error.message }}</div>
       <div v-else>
-        <h1>&Uuml;bersicht</h1>
+        <h1>Overview</h1>
         <p align="right"><button @click="logout">Logout</button></p>
 
         <div v-if="attributes.length" style="margin-bottom: 10px;">
@@ -578,12 +578,12 @@ async applyBulkAction() {
           <thead>
             <tr>
               <th></th>
-              <th>Datum</th>
-              <th>Bezeichnung</th>
-              <th>Betrag</th>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Value</th>
               <th>Depot</th>
               <th v-for="attribute in attributes" :key="attribute.id">{{ attribute.name }}</th>
-              <th>Bild</th>
+              <th>Image</th>
               <th>Action</th>
             </tr>
           </thead>

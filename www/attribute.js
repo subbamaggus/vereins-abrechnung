@@ -68,21 +68,23 @@ const attributeApp = Vue.createApp({
 
       <div style="margin-bottom: 10px;">
         <div v-for="group in attributes" :key="group.id" style="margin-bottom: 5px;">
-          <strong>Gruppe</strong>
-          <input type="text" v-model="group.name" /><a href="#" @click.prevent="saveAttribute(group.id, '', group.name)">speichern</a>
+          <strong>Group</strong>
+          <input type="text" v-model="group.name" /><a href="#" @click.prevent="saveAttribute(group.id, '', group.name)">save</a>
           <br/>
           <label v-for="attr in group.attribute" :key="attr.id" style="margin-right: 10px; margin-left: 5px;">
-            <input type="text" v-model="attr.name"/><a href="#" @click.prevent="saveAttribute(group.id, attr.id, attr.name)">speichern</a>
+            Attribute:
+            <input type="text" v-model="attr.name"/><a href="#" @click.prevent="saveAttribute(group.id, attr.id, attr.name)">save</a>
             <br/>
           </label>
           <label>
-            <input type="text" v-model="group.newAttributeItemName"/><a href="#" @click.prevent="saveAttribute(group.id, -1, group.newAttributeItemName)">neu</a>
+            New Attribute:
+            <input type="text" v-model="group.newAttributeItemName"/><a href="#" @click.prevent="saveAttribute(group.id, -1, group.newAttributeItemName)">save</a>
           </label>
           <br/>-----
         </div>
-        <strong>Gruppe</strong>
+        <strong>New Group</strong>
         <input type="text" v-model="newAttribute.name"/>
-        <a href="#" @click.prevent="saveAttribute(-1, -1, newAttribute.name)">neu</a>
+        <a href="#" @click.prevent="saveAttribute(-1, -1, newAttribute.name)">save</a>
       </div>
 
       <p v-if="error" style="color: red;">{{ error }}</p>
