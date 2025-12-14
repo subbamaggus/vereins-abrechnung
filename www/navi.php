@@ -1,3 +1,5 @@
+<table>
+  <tr>
 <?php
 
 require "config.php";
@@ -6,11 +8,12 @@ $privilege = $_COOKIE['privilege'];
 $i_am = basename($_SERVER['PHP_SELF']);
 
 function print_menu_item($current, $target, $display) {
-    $result = "<a href=\"" . $target . "\">";
-    if($current == $target) $result .= "<strong>";
+    $result = "<td";
+    if($current == $target) $result .= " class=\"active\"";
+    else $result .= " class=\"passive\"";
+    $result .= "><a href=\"" . $target . "\">";
     $result .= $display;
-    if($current == $target) $result .= "</strong>";
-    $result .= "</a>&nbsp;";
+    $result .= "</a></td>";
 
     echo $result;
 }
@@ -31,6 +34,7 @@ if(USER_ADMIN <= $privilege) {
 }
 
 ?>
-
+  </tr>
+</table>
   <br/><br/>
   Mandant: <?php echo $_COOKIE['mandant_name']; ?> | Userlevel: <?php echo $privilege; ?>

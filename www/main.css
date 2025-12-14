@@ -21,10 +21,6 @@ body {
     box-sizing: border-box;
 }
 
-.zoom {
-
-}
-
 .zoom:hover {
   -ms-transform: scale(10); /* IE 9 */
   -webkit-transform: scale(10); /* Safari 3-8 */
@@ -33,13 +29,21 @@ body {
   margin-top:-100px;
 }
 
-th, td {
+th, td, tr {
   outline: 1px solid lightgray;
+  background-color:rgb(255, 255, 255);
 }
 
 th {
   font-weight: normal;
   font-size: 2vw;
+}
+
+tr:nth-child(even) > td {background-color:rgb(226, 231, 255);}
+
+.passive {
+  background-color:rgb(179, 179, 179);
+  font-size: 70%;
 }
 
 table {  
@@ -56,3 +60,5 @@ table {
   background: #efefef;
   outline: 2px solid blue;
 }
+
+
