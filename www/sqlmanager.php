@@ -700,7 +700,7 @@ class SQLManager {
             $stmt = $this -> connection -> prepare($sql);
 
             $item_types = "si";
-            $item_params = array($filename, $_depotname, $this->mandant);
+            $item_params = array($_depotname, $this->mandant);
 
             $stmt -> bind_param($item_types, ...$item_params);
             $this->audit_log($sql, $item_types, $item_params);
