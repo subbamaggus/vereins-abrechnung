@@ -438,6 +438,39 @@ async applyBulkAction() {
         this.loading = false;
       }
     },
+    async getData(filters = [], depots = [], mode) {
+      console.log('uiui');
+      try {
+        // We need to check if a mandant is set. The easiest way is to try fetching data
+        // that requires a mandant. If it fails in a specific way, we show the selection.
+        let jsonUrl = 'api.php?method=get_items&mode=' + mode;
+
+        if (filters.length > 0) {
+            jsonUrl += '&attributes=' + filters.join(',');
+        }
+        if (depots.length > 0) {
+            jsonUrl += '&depots=' + depots.join(',');
+        }
+        if(this.currentYear > 0) {
+            jsonUrl += '&year=' + this.currentYear;
+        }
+
+        const response = await fetch(jsonUrl);
+
+        const blob = await response.blob();
+        
+        const link = document.createElement('a');
+		link.href = URL.createObjectURL(blob);
+		link.download = 'data.' + mode;
+
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+
+      } catch (e) {
+        this.error = e;
+      }
+    },
     async fetchYears() {
       try {
         const jsonUrl = 'api.php?method=get_years';
@@ -574,7 +607,7 @@ async applyBulkAction() {
           </details>
         </div>
 
-        <a href="data.csv">csv</a> | <a href="data.pdf">pdf</a>
+        <a href="#" @click.prevent="getData(this.selectedFilters, this.selectedDepots, 'csv')">csv</a> | <a href="#" @click.prevent="getData(this.selectedFilters, this.selectedDepots, 'pdf')">pdf</a>
         <br/>
 
         <table class="table table-striped">
