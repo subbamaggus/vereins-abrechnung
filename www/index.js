@@ -574,6 +574,9 @@ async applyBulkAction() {
           </details>
         </div>
 
+        <a href="data.csv">csv</a> | <a href="data.pdf">pdf</a>
+        <br/>
+
         <table class="table table-striped">
           <thead>
             <tr>
@@ -590,7 +593,7 @@ async applyBulkAction() {
           <tbody>
             <tr v-for="item in data" :key="item.id">
               <td><input type="checkbox" :value="item.id" v-model="selectedItems"></td>
-              <td contenteditable="true" @blur="updateItem(item, 'date', $event)">{{ item.date }}</td>
+              <td contenteditable="true" @blur="updateItem(item, 'date', $event)" style="white-space:nowrap;">{{ item.date }}</td>
               <td contenteditable="true" @blur="updateItem(item, 'name', $event)">{{ item.name }}</td>
               <td contenteditable="true" @blur="updateItem(item, 'value', $event)" style="text-align: right;">{{ item.value }}</td>
               <td>
