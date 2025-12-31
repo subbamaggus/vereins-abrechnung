@@ -3,7 +3,16 @@
 
 require "config.php";
 
-$privilege = $_COOKIE['privilege'];
+$privilege = 0;
+if(isset($_COOKIE['privilege'])) {
+    $privilege = $_COOKIE['privilege'];
+}
+
+$mandant_name = "";
+if(isset($_COOKIE['mandant_name'])) {
+    $mandant_name = $_COOKIE['mandant_name'];
+}
+
 $i_am = basename($_SERVER['PHP_SELF']);
 
 function print_menu_item($current, $target, $display) {
@@ -37,4 +46,4 @@ if(GLOBAL_ADMIN <= $privilege) {
 </div>
 
   <br/><br/>
-  Mandant: <?php echo $_COOKIE['mandant_name']; ?> | Userlevel: <?php echo $privilege; ?>
+  Mandant: <?php echo $mandant_name; ?> | Userlevel: <?php echo $privilege; ?>
