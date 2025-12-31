@@ -897,8 +897,29 @@ class SQLManager {
     }
 
     function save_user($_mandant_id, $_email, $_text) {
+        $last_id = -1;
 
-        if(-1 == $_text) {
+        $sql = "SELECT id FROM account_user where email = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+        $item_types = "s";
+        $item_params = array($_email);
+
+        $stmt -> bind_param($item_types, ...$item_params);
+        $this->audit_log($sql, $item_types, $item_params);
+
+        $stmt -> execute();
+
+        $result = $stmt -> get_result();
+
+        $data = $result -> fetch_all(MYSQLI_ASSOC);
+        if(0 < $result -> num_rows) {
+            $last_id = $data[0]['id'];
+        }
+
+        if(-1 >= $last_id) {
             $sql = "INSERT INTO account_user (email, password) VALUES (?, ?)";
 
             $this->debug_log(__LINE__, $sql);
@@ -910,27 +931,28 @@ class SQLManager {
             
             $stmt -> bind_param($item_types, ...$item_params);
             $this->audit_log($sql, $item_types, $item_params);
-            
+
             $stmt -> execute();
             
             $last_id = $stmt -> insert_id;
+        }
 
-
-
+        if(-1 == $_text) {
             $sql = "INSERT INTO account_mandant_user (mandant_id, user_id, privilege) VALUES (?, ?, ?)";
 
             $this->debug_log(__LINE__, $sql);
-            
+
             $stmt = $this -> connection -> prepare($sql);
-            
+
             $item_types = "iii";
             $item_params = array($_mandant_id, $last_id, 0);
-            
+
             $stmt -> bind_param($item_types, ...$item_params);
             $this->audit_log($sql, $item_types, $item_params);
-            
+
             $stmt -> execute();
 
+            $last_id = $stmt -> insert_id;
 
             return $last_id;       
         }
@@ -942,7 +964,7 @@ class SQLManager {
         $stmt = $this -> connection -> prepare($sql);
 
         $item_types = "iis";
-        $item_params = array($_text, $_mandantid, $_email);
+        $item_params = array($_text, $_mandant_id, $_email);
 
         $stmt -> bind_param($item_types, ...$item_params);
         $this->audit_log($sql, $item_types, $item_params);
