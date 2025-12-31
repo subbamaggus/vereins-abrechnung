@@ -102,6 +102,9 @@ try {
         }
     } elseif ("get_items" == $current_method) {
         $mydata = $mySQLManager->get_items(value_if_isset($_GET, 'attributes'), value_if_isset($_GET, 'year'), value_if_isset($_GET, 'depots'));
+    } elseif ("save_group" == $current_method) {
+        $last_id = $mySQLManager->save_group($_POST['groupid'], $_POST['text']);
+        $mydata = ['success' => true, 'last_id' => $last_id];
     } elseif ("save_attribute" == $current_method) {
         $last_id = $mySQLManager->save_attribute($_POST['groupid'], $_POST['attributeid'], $_POST['text']);
         $mydata = ['success' => true, 'last_id' => $last_id];

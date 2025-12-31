@@ -513,7 +513,7 @@ async applyBulkAction() {
           <h1>LOGIN</h1>
           <form @submit.prevent="login">
               email: <input type="text" v-model="email" /><br/>
-              password: <input type="current-password" v-model="password" /><br/>
+              password: <input type="password" v-model="password" autocomplete="current-password"/><br/>
               <button type="submit">Submit</button>
           </form>
           <p v-if="loginError" style="color: red;">{{ loginError }}</p>
@@ -523,7 +523,7 @@ async applyBulkAction() {
           <h1>REGISTER</h1>
           <form @submit.prevent="register">
               email: <input type="text" v-model="email" /><br/>
-              password: <input type="new-password" v-model="password" /><br/>
+              password: <input type="password" v-model="password" autocomplete="new-password"/><br/>
               <button type="submit">Submit</button>
           </form>
           <p v-if="registerError" style="color: red;">{{ registerError }}</p>

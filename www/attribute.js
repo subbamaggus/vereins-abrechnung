@@ -27,6 +27,36 @@ const attributeApp = Vue.createApp({
             this.error = e;
         }
     },
+    async saveGroup(groupid, value) {
+      this.error = null;
+      this.success = false;
+      const formData = new FormData();
+      formData.append('groupid', groupid);
+      formData.append('text', value);
+
+      try {
+        const response = await fetch('api.php?method=save_group', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to add group');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          this.success = true;
+          //window.location.href = 'index.php';
+          this.fetchAttributes();
+        } else {
+          throw new Error('Failed to add entry');
+        }
+      } catch (e) {
+        this.error = e.message;
+      }
+    },
     async saveAttribute(groupid, attributeid, value) {
       this.error = null;
       this.success = false;
@@ -69,7 +99,7 @@ const attributeApp = Vue.createApp({
       <div style="margin-bottom: 10px;">
         <div v-for="group in attributes" :key="group.id" style="margin-bottom: 5px;">
           <strong>Group</strong>
-          <input type="text" v-model="group.name" /><a href="#" @click.prevent="saveAttribute(group.id, '', group.name)">save</a>
+          <input type="text" v-model="group.name" /><a href="#" @click.prevent="saveGroup(group.id, group.name)">save</a>
           <br/>
           <label v-for="attr in group.attribute" :key="attr.id" style="margin-right: 10px; margin-left: 5px;">
             Attribute:
@@ -84,7 +114,7 @@ const attributeApp = Vue.createApp({
         </div>
         <strong>New Group</strong>
         <input type="text" v-model="newAttribute.name"/>
-        <a href="#" @click.prevent="saveAttribute(-1, -1, newAttribute.name)">save</a>
+        <a href="#" @click.prevent="saveGroup(-1, newAttribute.name)">save</a>
       </div>
 
       <p v-if="error" style="color: red;">{{ error }}</p>

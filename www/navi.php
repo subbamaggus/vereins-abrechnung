@@ -18,7 +18,7 @@ function print_menu_item($current, $target, $display) {
 print_menu_item($i_am, "index.php", "Home");
 
 if(USER_WRITE <= $privilege) {
-    print_menu_item($i_am, "add_entry.php", "Add Entry");
+    print_menu_item($i_am, "add_entry.php", "New");
 }
 
 if(USER_POWER <= $privilege) {

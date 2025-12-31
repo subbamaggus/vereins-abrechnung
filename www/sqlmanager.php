@@ -383,64 +383,65 @@ class SQLManager {
         return $data;
     }
 
+    function save_group($_groupid, $_text) {
+
+        if(-1 == $_groupid) {
+            $sql = "INSERT INTO account_attribute (name, mandant_id) VALUES (?, ?)";
+
+            $this->debug_log(__LINE__, $sql);
+            
+            $stmt = $this -> connection -> prepare($sql);
+            
+            $item_types = "si";
+            $item_params = array($_text, $this->mandant);
+            
+            $stmt -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql, $item_types, $item_params);
+            
+            $stmt -> execute();
+            
+            $last_id = $stmt -> insert_id;
+            
+            return $last_id;
+        }
+
+        $sql = "UPDATE account_attribute SET name = ? WHERE id = ? AND mandant_id = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+
+        $item_types = "sii";
+        $item_params = array($_text, $_groupid, $this->mandant);
+
+        $stmt -> bind_param($item_types, ...$item_params);
+        $this->audit_log($sql, $item_types, $item_params);
+
+        $stmt -> execute();
+        
+        return "ok";
+    }
+
     function save_attribute($_groupid, $_itemid, $_text) {
 
         if(-1 == $_itemid) {
-            if(-1 == $_groupid) {
-                $sql = "INSERT INTO account_attribute (name, mandant_id) VALUES (?, ?)";
-
-                $this->debug_log(__LINE__, $sql);
-
-                $stmt = $this -> connection -> prepare($sql);
-
-                $item_types = "si";
-                $item_params = array($_text, $this->mandant);
-
-                $stmt -> bind_param($item_types, ...$item_params);
-                $this->audit_log($sql, $item_types, $item_params);
-
-                $stmt -> execute();
-
-                $last_id = $stmt -> insert_id;
-
-                return $last_id;
-            } else {
-                $sql = "INSERT INTO account_attribute_item (name, mandant_id, attribute_id) VALUES (?, ?, ?)";
-
-                $this->debug_log(__LINE__, $sql);
-
-                $stmt = $this -> connection -> prepare($sql);
-
-                $item_types = "sii";
-                $item_params = array($_text, $this->mandant, $_groupid);
-
-                $stmt -> bind_param($item_types, ...$item_params);
-                $this->audit_log($sql, $item_types, $item_params);
-
-                $stmt -> execute();
-
-                $last_id = $stmt -> insert_id;
-
-                return $last_id;
-            }
-        }
-
-        if("" == $_itemid) {
-            $sql = "UPDATE account_attribute SET name = ? WHERE id = ? AND mandant_id = ?";
+            $sql = "INSERT INTO account_attribute_item (name, mandant_id, attribute_id) VALUES (?, ?, ?)";
 
             $this->debug_log(__LINE__, $sql);
 
             $stmt = $this -> connection -> prepare($sql);
 
             $item_types = "sii";
-            $item_params = array($_text, $_groupid, $this->mandant);
+            $item_params = array($_text, $this->mandant, $_groupid);
 
             $stmt -> bind_param($item_types, ...$item_params);
             $this->audit_log($sql, $item_types, $item_params);
 
             $stmt -> execute();
 
-            return "ok";         
+            $last_id = $stmt -> insert_id;
+
+            return $last_id;
         }
 
         if(0 < $_itemid and 0 < $_groupid) {
