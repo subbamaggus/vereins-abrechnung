@@ -613,7 +613,7 @@ async applyBulkAction() {
                 <div class="zoom" v-if="item.file"><img :src="item.file" style="max-width:50px; overflow: auto;"/></div>
               </td>
               <td>
-                <button @click="deleteItem(item.id)">Delete</button>
+                <a href="#" @click="deleteItem(item.id)">Delete</a>
               </td>
             </tr>
           </tbody>
