@@ -108,6 +108,12 @@ try {
     } elseif ("save_attribute" == $current_method) {
         $last_id = $mySQLManager->save_attribute($_POST['groupid'], $_POST['attributeid'], $_POST['text']);
         $mydata = ['success' => true, 'last_id' => $last_id];
+    } elseif ("save_mandant" == $current_method) {
+        $last_id = $mySQLManager->save_mandant($_POST['mandantid'], $_POST['text']);
+        $mydata = ['success' => true, 'last_id' => $last_id];
+    } elseif ("save_user" == $current_method) {
+        $last_id = $mySQLManager->save_user($_POST['mandantid'], $_POST['usermail'], $_POST['text']);
+        $mydata = ['success' => true, 'last_id' => $last_id];
     } elseif ("save_depot" == $current_method) {
         $last_id = $mySQLManager->save_depot($_POST['depotid'], $_POST['text']);
         $mydata = ['success' => true, 'last_id' => $last_id];

@@ -840,6 +840,118 @@ class SQLManager {
         return $data;        
     }
 
+    function save_mandant($_mandantid, $_text) {
+
+        if(-1 == $_mandantid) {
+            $sql = "INSERT INTO account_mandant (name, apikey) VALUES (?, ?)";
+
+            $this->debug_log(__LINE__, $sql);
+            
+            $stmt = $this -> connection -> prepare($sql);
+            
+            $item_types = "ss";
+            $item_params = array($_text, uniqid());
+            
+            $stmt -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql, $item_types, $item_params);
+            
+            $stmt -> execute();
+            
+            $last_id = $stmt -> insert_id;
+
+
+
+            $sql = "INSERT INTO account_mandant_user (mandant_id, user_id, privilege) VALUES (?, ?, ?)";
+
+            $this->debug_log(__LINE__, $sql);
+            
+            $stmt = $this -> connection -> prepare($sql);
+            
+            $item_types = "iii";
+            $item_params = array($last_id, $this->user_id, 5);
+            
+            $stmt -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql, $item_types, $item_params);
+            
+            $stmt -> execute();
+
+
+            return $last_id;
+        }
+
+        $sql = "UPDATE account_mandant SET name = ? WHERE id = ?";
+
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+
+        $item_types = "si";
+        $item_params = array($_text, $_mandantid);
+
+        $stmt -> bind_param($item_types, ...$item_params);
+        $this->audit_log($sql, $item_types, $item_params);
+
+        $stmt -> execute();
+        
+        return "ok";
+    }
+
+    function save_user($_mandant_id, $_email, $_text) {
+
+        if(-1 == $_text) {
+            $sql = "INSERT INTO account_user (email, password) VALUES (?, ?)";
+
+            $this->debug_log(__LINE__, $sql);
+            
+            $stmt = $this -> connection -> prepare($sql);
+            
+            $item_types = "ss";
+            $item_params = array($_email, 'default');
+            
+            $stmt -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql, $item_types, $item_params);
+            
+            $stmt -> execute();
+            
+            $last_id = $stmt -> insert_id;
+
+
+
+            $sql = "INSERT INTO account_mandant_user (mandant_id, user_id, privilege) VALUES (?, ?, ?)";
+
+            $this->debug_log(__LINE__, $sql);
+            
+            $stmt = $this -> connection -> prepare($sql);
+            
+            $item_types = "iii";
+            $item_params = array($_mandant_id, $last_id, 0);
+            
+            $stmt -> bind_param($item_types, ...$item_params);
+            $this->audit_log($sql, $item_types, $item_params);
+            
+            $stmt -> execute();
+
+
+            return $last_id;       
+        }
+
+        $sql = "UPDATE account_mandant_user SET privilege = ? WHERE mandant_id = ? and user_id = (SELECT id FROM account_user WHERE email = ?)";
+
+        $this->debug_log(__LINE__, $sql);
+
+        $stmt = $this -> connection -> prepare($sql);
+
+        $item_types = "iis";
+        $item_params = array($_text, $_mandantid, $_email);
+
+        $stmt -> bind_param($item_types, ...$item_params);
+        $this->audit_log($sql, $item_types, $item_params);
+
+        $stmt -> execute();
+        
+        return "ok";
+    }
+
     function get_summary($_year) {
         $year = $_year;
         if(empty($year))

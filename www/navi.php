@@ -27,6 +27,9 @@ if(USER_POWER <= $privilege) {
 
 if(USER_ADMIN <= $privilege) {
     print_menu_item($i_am, "attribute.php", "Attribute");
+}
+
+if(GLOBAL_ADMIN <= $privilege) {
     print_menu_item($i_am, "mandant.php", "Mandant");
 }
 
