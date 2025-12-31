@@ -10,6 +10,10 @@ try {
     if("csv" == $_GET['mode']) {
         header("Content-Type: text/csv");
         header("Content-Disposition: attachment; filename=file.csv");
+        
+        //prepare for elster
+        echo "#v2.4\r\n";
+
         echo json_encode($mydata);
         return;
     }
