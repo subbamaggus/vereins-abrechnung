@@ -7,7 +7,7 @@ require "sessionmanager.php";
 try {
     require "api_helper.php";
 
-    if("csv" == $_GET['mode']) {
+    if(isset($_GET['mode']) and "csv" == $_GET['mode']) {
         header("Content-Type: text/csv");
         header("Content-Disposition: attachment; filename=file.csv");
         
@@ -18,7 +18,7 @@ try {
         return;
     }
 
-    if("pdf" == $_GET['mode']) {
+    if(isset($_GET['mode']) and "pdf" == $_GET['mode']) {
         header("Content-Type: application/pdf");
         header("Content-Disposition: attachment; filename=file.pdf");
         echo json_encode($mydata);
